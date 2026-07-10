@@ -1516,7 +1516,7 @@ function startPolling() {
       { event: '*', schema: 'public', table: 'orders', filter: `code=eq.${storageKeyForCode(teamCode)}` },
       payload => {
         const active = document.activeElement.tagName;
-        if (active === 'INPUT' || active === 'SELECT') return; // avoid clobbering someone mid-type
+        if (active === 'INPUT' || active === 'SELECT' || active === 'TEXTAREA') return; // avoid clobbering someone mid-type
         if (payload.new && payload.new.data) {
           state = { ...state, ...payload.new.data };
           checkManagerStatus();
