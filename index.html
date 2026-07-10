@@ -539,6 +539,38 @@
   .modal-close:hover { background: #3a3c40; }
   .modal-body { padding: 22px; max-height: 72vh; overflow-y: auto; }
 
+  /* New order modal */
+  .new-order-field { margin-bottom: 16px; }
+  .new-order-field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 6px; }
+  .new-order-field input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  .new-order-field input:focus { outline: none; border-color: var(--accent); }
+  .new-order-hint { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .new-order-result { display: none; }
+  .new-order-result.visible { display: block; }
+  .new-order-form.hidden { display: none; }
+  .new-order-code-box {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 2px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .new-order-code-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: #9a9a9c; font-weight: 700; margin-bottom: 6px; }
+  .new-order-code-value { font-family: var(--font-mono); font-size: 22px; font-weight: 700; letter-spacing: 0.03em; word-break: break-all; }
+  .new-order-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .new-order-copied { display: none; font-size: 12px; color: var(--ok); margin-top: 8px; font-weight: 600; }
+  .new-order-copied.visible { display: block; }
+  .new-order-error { display: none; font-size: 12.5px; color: var(--accent-dark); margin-top: 10px; font-weight: 600; }
+  .new-order-error.visible { display: block; }
+
   .image-zoom-overlay {
     display: none;
     position: fixed;
@@ -1008,10 +1040,10 @@
 
   <div class="share-banner" id="shareBanner">
     <div class="share-banner-text">
-      <strong>Filling this in with your team?</strong> Share this order's code with parents, coaches, or teammates. Anyone with the code can add players and edit their own rows, live. Only the manager can pick which garments are on the order, or remove someone else's row.
+      <strong>Got an order code from us?</strong> Enter it below to open your team's order, then share it with parents, coaches, or teammates &mdash; anyone with the code can add players and edit their own rows, live. Only the manager can pick which garments are on the order, or remove someone else's row.
     </div>
     <div class="share-code-row">
-      <input id="teamCode" type="text" placeholder="Order code, e.g. MANAIA-U11" spellcheck="false">
+      <input id="teamCode" type="text" placeholder="Enter the order code we gave you" spellcheck="false">
       <button id="loadCodeBtn" type="button">Load order</button>
       <button id="shareBtn" type="button">Copy link to share</button>
       <button id="managerBtn" type="button" class="secondary">Manager login</button>
@@ -1049,7 +1081,7 @@
   </div>
 
   <footer class="note">
-    Your progress saves automatically, even if you close this tab, refresh, or log out. Anyone with the order code can add players and edit their own entries. Only the manager (logged in with the manager code) can choose which garments are ordered or remove another person's row. Use the size dropdowns to keep everything consistent with our official size charts. Because this list is shared by code, avoid using anything private or sensitive in the order code itself.
+    Your progress saves automatically, even if you close this tab, refresh, or log out. Anyone with the order code can add players and edit their own entries. Only the manager (logged in with the manager code) can choose which garments are ordered or remove another person's row. Use the size dropdowns to keep everything consistent with our official size charts. Don't have an order code yet? Ask us and we'll set one up for your team.
   </footer>
   </div>
 
@@ -1061,7 +1093,10 @@
         <h1>Staff Dashboard</h1>
         <div class="subtitle">All team orders, live from Supabase. No login required &mdash; keep this <code>?staff=1</code> link private to staff.</div>
       </div>
-      <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="newOrderBtn" type="button">+ New order</button>
+        <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
+      </div>
     </header>
 
     <div class="stats-row" id="statsRow"></div>
@@ -1147,6 +1182,45 @@
       </div>
     </div>
     <div class="modal-body" id="reviewModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newOrderOverlay">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">New order</div>
+        <div class="modal-subtitle">Generates a unique order code to give the team</div>
+      </div>
+      <button class="modal-close" id="closeNewOrderBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-form" id="newOrderForm">
+        <div class="new-order-field">
+          <label for="newOrderTeamName">Team / order name (optional)</label>
+          <input id="newOrderTeamName" type="text" placeholder="e.g. Manaia U11s Rugby" spellcheck="false">
+          <div class="new-order-hint">We'll generate a unique order code for this team &mdash; you give it to them, they never have to make one up.</div>
+        </div>
+        <button class="btn" id="generateOrderBtn" type="button">Generate code</button>
+        <div class="new-order-error" id="newOrderError"></div>
+      </div>
+      <div class="new-order-result" id="newOrderResult">
+        <div class="new-order-code-box">
+          <div class="new-order-code-label">Order code</div>
+          <div class="new-order-code-value" id="newOrderCodeValue"></div>
+        </div>
+        <div class="new-order-actions">
+          <button class="btn" id="copyNewOrderLinkBtn" type="button">Copy customer link</button>
+          <button class="btn secondary" id="copyNewOrderCodeBtn" type="button">Copy code only</button>
+          <button class="btn secondary" id="openNewOrderBtn" type="button">Open order</button>
+        </div>
+        <div class="new-order-copied" id="newOrderCopied">Copied.</div>
+        <div class="new-order-hint">Send this to the team manager. They'll load it with the code, and can set up their own manager login from there.</div>
+        <div style="margin-top:16px;">
+          <button class="btn secondary" id="newOrderDoneBtn" type="button">Done</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2214,7 +2288,7 @@ async function initCustomerApp() {
     await loadState(true);
     startPolling();
   } else {
-    document.getElementById('saveText').textContent = 'Enter an order code above to begin (try HC-SUPPORTERS-2026 for a demo)';
+    document.getElementById('saveText').textContent = 'Enter the order code we gave you above to begin (try HC-SUPPORTERS-2026 for a demo)';
     checkManagerStatus();
     render();
   }
@@ -2533,6 +2607,130 @@ function downloadDetailCSV() {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+
+// --- New order (staff generates a code for the team) ---
+function slugifyTeamName(name) {
+  return String(name || '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 24);
+}
+
+function randomCodeSuffix(len) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous 0/O or 1/I
+  let out = '';
+  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
+}
+
+async function orderCodeExists(code) {
+  const { data, error } = await supabaseClient
+    .from('orders')
+    .select('code')
+    .eq('code', code)
+    .limit(1);
+  if (error) throw error;
+  return !!(data && data.length);
+}
+
+async function generateUniqueOrderCode(teamName) {
+  const slug = slugifyTeamName(teamName);
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const suffix = randomCodeSuffix(attempt < 4 ? 4 : 5);
+    const candidate = storageKeyForCode(slug ? (slug + '-' + suffix) : ('ORDER-' + suffix));
+    const exists = await orderCodeExists(candidate);
+    if (!exists) return candidate;
+  }
+  throw new Error('Could not generate a unique code after several attempts.');
+}
+
+let generatedOrderCode = null;
+
+function resetNewOrderModal() {
+  document.getElementById('newOrderTeamName').value = '';
+  document.getElementById('newOrderForm').classList.remove('hidden');
+  document.getElementById('newOrderResult').classList.remove('visible');
+  document.getElementById('newOrderError').classList.remove('visible');
+  document.getElementById('newOrderError').textContent = '';
+  document.getElementById('newOrderCopied').classList.remove('visible');
+  const btn = document.getElementById('generateOrderBtn');
+  btn.disabled = false;
+  btn.textContent = 'Generate code';
+  generatedOrderCode = null;
+}
+
+function openNewOrderModal() {
+  resetNewOrderModal();
+  document.getElementById('newOrderOverlay').classList.add('visible');
+  document.getElementById('newOrderTeamName').focus();
+}
+
+function closeNewOrderModal() {
+  document.getElementById('newOrderOverlay').classList.remove('visible');
+  if (generatedOrderCode) loadOrders();
+}
+
+async function handleGenerateOrder() {
+  const teamName = document.getElementById('newOrderTeamName').value.trim();
+  const errorEl = document.getElementById('newOrderError');
+  const btn = document.getElementById('generateOrderBtn');
+  errorEl.classList.remove('visible');
+  errorEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Generating\u2026';
+  try {
+    const code = await generateUniqueOrderCode(teamName);
+    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: '', status: 'new' };
+    const nowIso = new Date().toISOString();
+    const { error } = await supabaseClient
+      .from('orders')
+      .insert({ code: code, data: newData, updated_at: nowIso });
+    if (error) throw error;
+    generatedOrderCode = code;
+    allOrders.unshift({ code: code, data: newData, updated_at: nowIso });
+    renderStats();
+    renderOrdersTable();
+    document.getElementById('newOrderCodeValue').textContent = code;
+    document.getElementById('newOrderForm').classList.add('hidden');
+    document.getElementById('newOrderResult').classList.add('visible');
+  } catch (e) {
+    console.error('Failed to create order:', e);
+    errorEl.textContent = 'Could not create the order. Please check your connection and try again.';
+    errorEl.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate code';
+  }
+}
+
+function newOrderCustomerLink() {
+  if (!generatedOrderCode) return '';
+  return new URL('index.html?order=' + encodeURIComponent(generatedOrderCode), window.location.href).href;
+}
+
+function copyNewOrderText(text) {
+  const copiedEl = document.getElementById('newOrderCopied');
+  navigator.clipboard.writeText(text).then(() => {
+    copiedEl.classList.add('visible');
+    setTimeout(() => copiedEl.classList.remove('visible'), 2500);
+  }).catch(() => {
+    window.prompt('Copy this manually:', text);
+  });
+}
+
+document.getElementById('newOrderBtn').addEventListener('click', openNewOrderModal);
+document.getElementById('closeNewOrderBtn').addEventListener('click', closeNewOrderModal);
+document.getElementById('newOrderOverlay').addEventListener('click', e => {
+  if (e.target.id === 'newOrderOverlay') closeNewOrderModal();
+});
+document.getElementById('generateOrderBtn').addEventListener('click', handleGenerateOrder);
+document.getElementById('newOrderDoneBtn').addEventListener('click', closeNewOrderModal);
+document.getElementById('copyNewOrderLinkBtn').addEventListener('click', () => copyNewOrderText(newOrderCustomerLink()));
+document.getElementById('copyNewOrderCodeBtn').addEventListener('click', () => copyNewOrderText(generatedOrderCode || ''));
+document.getElementById('openNewOrderBtn').addEventListener('click', () => {
+  if (generatedOrderCode) window.open('index.html?order=' + encodeURIComponent(generatedOrderCode), '_blank');
+});
 
 // --- Wire up events ---
 document.getElementById('searchInput').addEventListener('input', renderOrdersTable);
