@@ -3563,7 +3563,17 @@ async function generateUniqueOrderCode() {
   throw new Error('Could not generate a unique code after several attempts.');
 }
 
+function generateManagerCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return 'MG-' + code;
+}
+
 let generatedOrderCode = null;
+let generatedManagerCode = null;
 let newOrderCustomFields = [];
 
 function renderNewOrderFieldTags() {
@@ -3685,31 +3695,7 @@ async function handleGenerateOrder() {
 
 function newOrderCustomerLink() {
   if (!generatedOrderCode) return '';
-  let url = 'index.html?order=' + encodeURIComponent(generatedOrderCode);
-  if (generatedManagerCode) {
-    url += '&mgr=' + encodeURIComponent(generatedManagerCode);
-  }
-  return new URL(url, window.location.href).href;
-}
-
-function buildNewOrderEmailDraft(orderCode, managerCode, link) {
-  return `Hi there,
-
-I've set up your Beast Mode order. You can start managing it using the details below.
-
-**Order Code:** ${orderCode}
-→ Use this to access the order page and add names on back, sizes, quantities, and notes.
-
-**Manager Code:** ${managerCode}
-→ Share this only with whoever needs to edit the order. It unlocks full editing access.
-
-Quick link: ${link}
-
-Send both codes to the person managing the order. They can use the Order Code to view it, and the Manager Code to make changes.
-
-Let me know if you need any adjustments.
-
-Thanks!`;
+  return new URL('index.html?order=' + encodeURIComponent(generatedOrderCode), window.location.href).href;
 }
 
 function copyNewOrderText(text) {
