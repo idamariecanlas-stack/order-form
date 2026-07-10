@@ -1545,19 +1545,41 @@
         <div class="new-order-error" id="newOrderError"></div>
       </div>
       <div class="new-order-result" id="newOrderResult">
+        <!-- Order Code -->
         <div class="new-order-code-box">
-          <div class="new-order-code-label">Order code</div>
+          <div class="new-order-code-label">ORDER CODE</div>
           <div class="new-order-code-value" id="newOrderCodeValue"></div>
         </div>
-        <div class="new-order-actions">
-          <button class="btn" id="copyNewOrderLinkBtn" type="button">Copy customer link</button>
-          <button class="btn secondary" id="copyNewOrderCodeBtn" type="button">Copy code only</button>
-          <button class="btn secondary" id="openNewOrderBtn" type="button">Open order</button>
+
+        <!-- Manager Code -->
+        <div class="new-order-code-box" style="margin-top:12px; background:#2a2c30;">
+          <div class="new-order-code-label" style="color:#b8b8ba;">MANAGER CODE (keep private)</div>
+          <div class="new-order-code-value" id="newOrderManagerCodeValue" style="color:#f7caca;"></div>
         </div>
+
+        <!-- Action buttons -->
+        <div class="new-order-actions" style="margin-top:12px;">
+          <button class="btn" id="copyNewOrderLinkBtn" type="button">COPY CUSTOMER LINK</button>
+          <button class="btn secondary" id="copyNewOrderCodeBtn" type="button">COPY ORDER CODE</button>
+          <button class="btn secondary" id="copyManagerCodeBtn" type="button">COPY MANAGER CODE</button>
+          <button class="btn secondary" id="openNewOrderBtn" type="button">OPEN ORDER</button>
+        </div>
+
         <div class="new-order-copied" id="newOrderCopied">Copied.</div>
-        <div class="new-order-hint">Send this to the team manager. They'll load it with the code, and can set up their own manager login from there.</div>
+
+        <!-- Email Draft -->
+        <div style="margin-top:20px; border-top:1px solid #3a3c40; padding-top:16px;">
+          <div class="new-order-code-label" style="margin-bottom:6px;">Quick email draft</div>
+          <textarea id="newOrderEmailDraft" readonly rows="6" style="width:100%; font-family:var(--font-body); font-size:13px; background:#1c1e21; color:#d6d6d8; border:1px solid #3a3c40; border-radius:2px; padding:10px; resize:vertical; line-height:1.45;"></textarea>
+          <button class="btn secondary" id="copyEmailDraftBtn" type="button" style="margin-top:8px;">COPY EMAIL DRAFT</button>
+        </div>
+
+        <div class="new-order-hint" style="margin-top:16px;">
+          Give the <strong>Order Code</strong> + <strong>Manager Code</strong> to the person managing the order.
+        </div>
+
         <div style="margin-top:16px;">
-          <button class="btn secondary" id="newOrderDoneBtn" type="button">Done</button>
+          <button class="btn secondary" id="newOrderDoneBtn" type="button">DONE</button>
         </div>
       </div>
     </div>
@@ -3018,12 +3040,7 @@ async function loadOrders() {
     console.error('Failed to load orders:', e);
     allOrders = [];
     document.getElementById('ordersTableBody').innerHTML = '';
-    const msg = (e && (e.message || e.error_description || e.details)) || '';
-    let userMsg = 'Could not load orders. Check your connection and try refreshing.';
-    if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('row-level') || msg.toLowerCase().includes('rls')) {
-      userMsg = 'Could not load orders — this is likely a Row Level Security (RLS) issue. Go to Supabase → Table Editor → orders table → Policies and make sure the anon role has SELECT permission.';
-    }
-    document.getElementById('ordersEmptyState').textContent = userMsg;
+    document.getElementById('ordersEmptyState').textContent = 'Could not load orders. Check your connection and try refreshing.';
     document.getElementById('ordersEmptyState').style.display = 'block';
     document.getElementById('ordersLoadingNote').style.display = 'none';
     renderStats();
@@ -3651,18 +3668,30 @@ async function handleGenerateOrder() {
   btn.textContent = 'Generating\u2026';
   try {
     const code = await generateUniqueOrderCode();
-    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: '', status: 'new', customFields: newOrderCustomFields.slice() };
+    const mgrCode = generateManagerCode();
+    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: mgrCode, status: 'new', customFields: newOrderCustomFields.slice() };
     const nowIso = new Date().toISOString();
     const { error } = await supabaseClient
       .from('orders')
       .upsert({ code: code, data: newData, updated_at: nowIso });
     if (error) throw error;
+
     generatedOrderCode = code;
+    generatedManagerCode = mgrCode;
+
     allOrders.unshift({ code: code, data: newData, updated_at: nowIso });
     renderStats();
     renderOrdersTable();
     logActivity(code, 'Order created', teamName ? ('Team: ' + teamName) : '', 'Staff');
+
     document.getElementById('newOrderCodeValue').textContent = code;
+    document.getElementById('newOrderManagerCodeValue').textContent = mgrCode;
+
+    const link = newOrderCustomerLink();
+    const draft = buildNewOrderEmailDraft(code, mgrCode, link);
+    const draftEl = document.getElementById('newOrderEmailDraft');
+    if (draftEl) draftEl.value = draft;
+
     document.getElementById('newOrderForm').classList.add('hidden');
     document.getElementById('newOrderResult').classList.add('visible');
   } catch (e) {
@@ -3713,6 +3742,11 @@ document.getElementById('newOrderFieldOptionsInput').addEventListener('keydown',
 document.getElementById('newOrderDoneBtn').addEventListener('click', closeNewOrderModal);
 document.getElementById('copyNewOrderLinkBtn').addEventListener('click', () => copyNewOrderText(newOrderCustomerLink()));
 document.getElementById('copyNewOrderCodeBtn').addEventListener('click', () => copyNewOrderText(generatedOrderCode || ''));
+document.getElementById('copyManagerCodeBtn').addEventListener('click', () => copyNewOrderText(generatedManagerCode || ''));
+document.getElementById('copyEmailDraftBtn').addEventListener('click', () => {
+  const draft = document.getElementById('newOrderEmailDraft').value;
+  copyNewOrderText(draft);
+});
 document.getElementById('openNewOrderBtn').addEventListener('click', () => {
   if (generatedOrderCode) window.open('index.html?order=' + encodeURIComponent(generatedOrderCode), '_blank');
 });
