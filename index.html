@@ -3225,7 +3225,7 @@ async function confirmDeleteOrder() {
   const errorEl = document.getElementById('deleteOrderError');
   const btn = document.getElementById('confirmDeleteOrderBtn');
   errorEl.classList.remove('visible');
-  if (input.value.trim() !== deleteOrderCode) {
+  if (input.value.trim().toUpperCase() !== deleteOrderCode.toUpperCase()) {
     errorEl.textContent = 'That doesn\u2019t match the order code. Type it exactly to confirm.';
     errorEl.classList.add('visible');
     return;
