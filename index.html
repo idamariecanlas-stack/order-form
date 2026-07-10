@@ -191,6 +191,20 @@
     gap: 8px;
   }
   .garment-picker-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--muted); }
+  .manage-columns-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    padding: 2px 0;
+    margin-left: auto;
+  }
+  .manage-columns-link:hover { color: var(--accent-dark); text-decoration: underline; }
   .garment-picker-hint { font-size: 11.5px; color: var(--muted); }
 
   .garment-picker-toolbar {
@@ -1242,6 +1256,7 @@
     <div class="garment-picker-head">
       <span class="garment-picker-title">Garments on this order</span>
       <span class="garment-picker-hint" id="garmentPickerHint">Only the manager can change this list</span>
+      <button class="manage-columns-link" id="managerColumnsBtn" type="button" style="display:none;">+ Manage columns</button>
     </div>
     <div id="garmentPickerBody"></div>
   </div>
@@ -1355,6 +1370,36 @@
       <div id="detailActivityBody"><div class="empty-state">Loading\u2026</div></div>
     </div>
   </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="columnsOverlay">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Manage columns</div>
+        <div class="modal-subtitle">Extra columns for this order</div>
+      </div>
+      <button class="modal-close" id="closeColumnsBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-field">
+        <label>Current columns</label>
+        <div class="new-order-field-tags" id="columnsTags"></div>
+        <div class="new-order-hint" id="columnsEmptyHint">No extra columns yet. Add one below.</div>
+        <div class="new-order-hint">Click a column to edit it. Removing a column stops showing that data going forward &mdash; it doesn't delete anything already saved. Changes save automatically.</div>
+      </div>
+      <div class="new-order-field">
+        <label for="columnsFieldInput" id="columnsFieldLabel">Add a column</label>
+        <div style="display:flex;gap:8px;">
+          <input id="columnsFieldInput" type="text" placeholder="e.g. Sleeve Name" spellcheck="false" style="flex:1;">
+          <button class="btn secondary" id="addColumnsFieldBtn" type="button" style="white-space:nowrap;">+ Add column</button>
+        </div>
+        <input id="columnsOptionsInput" type="text" placeholder="Options, comma-separated (optional &mdash; leave blank for free text)" spellcheck="false" style="margin-top:8px;">
+        <div class="new-order-error" id="columnsError"></div>
+      </div>
+      <button class="btn secondary" id="doneColumnsBtn" type="button">Done</button>
+    </div>
   </div>
 </div>
 
@@ -1798,6 +1843,7 @@ function checkManagerStatus() {
   document.getElementById('garmentPickerHint').textContent = isManager
     ? 'Tick the garments included in this order'
     : 'Only the manager can change this list';
+  document.getElementById('managerColumnsBtn').style.display = isManager ? 'inline-block' : 'none';
 
   const note = document.getElementById('managerNote');
   if (!state.managerCode) {
@@ -1942,6 +1988,119 @@ function renderGarmentPicker() {
     body.appendChild(empty);
   }
 }
+
+// --- Manage columns (manager, from the order form itself) ---
+let columnsEditingId = null;
+
+function openColumnsModal() {
+  columnsEditingId = null;
+  document.getElementById('columnsFieldInput').value = '';
+  document.getElementById('columnsOptionsInput').value = '';
+  document.getElementById('columnsFieldLabel').textContent = 'Add a column';
+  document.getElementById('addColumnsFieldBtn').textContent = '+ Add column';
+  document.getElementById('columnsError').classList.remove('visible');
+  renderColumnsTags();
+  document.getElementById('columnsOverlay').classList.add('visible');
+}
+
+function closeColumnsModal() {
+  document.getElementById('columnsOverlay').classList.remove('visible');
+}
+
+function renderColumnsTags() {
+  if (!state.customFields) state.customFields = [];
+  const wrap = document.getElementById('columnsTags');
+  const emptyHint = document.getElementById('columnsEmptyHint');
+  wrap.innerHTML = '';
+  emptyHint.style.display = state.customFields.length === 0 ? 'block' : 'none';
+  state.customFields.forEach(field => {
+    const tag = document.createElement('span');
+    tag.className = 'new-order-field-tag';
+    tag.style.cursor = 'pointer';
+    const label = document.createElement('span');
+    label.textContent = field.label + (field.options && field.options.length ? ' (dropdown \u00b7 ' + field.options.length + ')' : ' (text)');
+    label.title = 'Click to edit';
+    label.addEventListener('click', () => startEditColumnField(field));
+    tag.appendChild(label);
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.textContent = '\u00d7';
+    removeBtn.title = 'Remove this column';
+    removeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!confirm('Remove the "' + field.label + '" column? This stops showing that data going forward, but won\u2019t delete anything already saved.')) return;
+      state.customFields = state.customFields.filter(f => f.id !== field.id);
+      if (columnsEditingId === field.id) cancelEditColumnField();
+      scheduleSave();
+      logActivity(teamCode, 'Columns updated', 'Removed: ' + field.label, personalContactName || 'Manager');
+      renderColumnsTags();
+      render();
+    });
+    tag.appendChild(removeBtn);
+    wrap.appendChild(tag);
+  });
+}
+
+function startEditColumnField(field) {
+  columnsEditingId = field.id;
+  document.getElementById('columnsFieldInput').value = field.label;
+  document.getElementById('columnsOptionsInput').value = (field.options || []).join(', ');
+  document.getElementById('columnsFieldLabel').textContent = 'Editing "' + field.label + '"';
+  document.getElementById('addColumnsFieldBtn').textContent = 'Update column';
+  document.getElementById('columnsFieldInput').focus();
+}
+
+function cancelEditColumnField() {
+  columnsEditingId = null;
+  document.getElementById('columnsFieldInput').value = '';
+  document.getElementById('columnsOptionsInput').value = '';
+  document.getElementById('columnsFieldLabel').textContent = 'Add a column';
+  document.getElementById('addColumnsFieldBtn').textContent = '+ Add column';
+}
+
+function addOrUpdateColumnField() {
+  const input = document.getElementById('columnsFieldInput');
+  const optionsInput = document.getElementById('columnsOptionsInput');
+  const errorEl = document.getElementById('columnsError');
+  errorEl.classList.remove('visible');
+  const label = input.value.trim();
+  if (!label) { input.focus(); return; }
+  if (!state.customFields) state.customFields = [];
+  const duplicate = state.customFields.some(f => f.label.toLowerCase() === label.toLowerCase() && f.id !== columnsEditingId);
+  if (duplicate) {
+    errorEl.textContent = 'There\u2019s already a column called "' + label + '".';
+    errorEl.classList.add('visible');
+    return;
+  }
+  const options = optionsInput.value.split(',').map(s => s.trim()).filter(Boolean);
+  const field = { id: columnsEditingId || uid(), label: label };
+  if (options.length) field.options = options;
+  const wasEditing = !!columnsEditingId;
+  if (columnsEditingId) {
+    state.customFields = state.customFields.map(f => f.id === columnsEditingId ? field : f);
+  } else {
+    state.customFields.push(field);
+  }
+  cancelEditColumnField();
+  scheduleSave();
+  logActivity(teamCode, 'Columns updated', (wasEditing ? 'Edited: ' : 'Added: ') + label, personalContactName || 'Manager');
+  renderColumnsTags();
+  render();
+}
+
+document.getElementById('managerColumnsBtn').addEventListener('click', openColumnsModal);
+document.getElementById('closeColumnsBtn').addEventListener('click', closeColumnsModal);
+document.getElementById('doneColumnsBtn').addEventListener('click', closeColumnsModal);
+document.getElementById('columnsOverlay').addEventListener('click', e => {
+  if (e.target.id === 'columnsOverlay') closeColumnsModal();
+});
+document.getElementById('addColumnsFieldBtn').addEventListener('click', addOrUpdateColumnField);
+document.getElementById('columnsFieldInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addOrUpdateColumnField(); }
+});
+document.getElementById('columnsOptionsInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addOrUpdateColumnField(); }
+});
 
 function renderSections() {
   const container = document.getElementById('sectionsContainer');
@@ -2806,7 +2965,6 @@ async function seedDemoIfNeeded() {
 }
 
 async function initCustomerApp() {
-  await seedDemoIfNeeded();
   const { order, mgr } = getParamsFromURL();
   if (order) {
     teamCode = order;
@@ -2815,7 +2973,7 @@ async function initCustomerApp() {
     await loadState(true);
     startPolling();
   } else {
-    document.getElementById('saveText').textContent = 'Enter the order code we gave you above to begin (try HC-SUPPORTERS-2026 for a demo)';
+    document.getElementById('saveText').textContent = 'Enter the order code we gave you above to begin';
     checkManagerStatus();
     render();
   }
