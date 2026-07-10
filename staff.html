@@ -265,6 +265,7 @@
     padding: 7px 8px;
   }
   table.review-table td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); }
+  table.review-table td.notes-cell { white-space: pre-wrap; }
   table.review-table tr:nth-child(even) td { background: #fafaf9; }
   .review-missing { color: var(--accent); font-style: italic; }
 
@@ -637,7 +638,7 @@ function renderDetail(order) {
       const sizeCell = row.size ? escapeHtml(row.size) : '<span class="review-missing">missing</span>';
       const nameCell = row.name ? escapeHtml(row.name) : '<span class="review-missing">missing</span>';
       tr.innerHTML = '<td>' + (i + 1) + '</td><td>' + nameCell + '</td><td>' + sizeCell + '</td><td>' +
-        escapeHtml(row.number || '') + '</td><td>' + escapeHtml(row.notes || '') + '</td><td>' + escapeHtml(row.addedBy || '') + '</td>';
+        escapeHtml(row.number || '') + '</td><td class="notes-cell">' + escapeHtml(row.notes || '') + '</td><td>' + escapeHtml(row.addedBy || '') + '</td>';
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);

@@ -273,7 +273,7 @@
   tbody td { padding: 4px 6px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
   tbody tr:hover td { background: var(--accent-soft); }
   tbody tr.locked-row:hover td { background: transparent; }
-  tbody input, tbody select {
+  tbody input, tbody select, tbody textarea {
     width: 100%;
     padding: 7px 8px;
     border: 1px solid transparent;
@@ -282,9 +282,15 @@
     font-size: 13.5px;
     border-radius: 2px;
   }
-  tbody input:hover, tbody select:hover { border-color: var(--line-soft); }
-  tbody input:focus, tbody select:focus { background: #fff; border-color: var(--accent); outline: none; }
-  tbody input:disabled, tbody select:disabled { background: #f2f1ee; color: var(--muted); cursor: not-allowed; }
+  tbody input:hover, tbody select:hover, tbody textarea:hover { border-color: var(--line-soft); }
+  tbody input:focus, tbody select:focus, tbody textarea:focus { background: #fff; border-color: var(--accent); outline: none; }
+  tbody input:disabled, tbody select:disabled, tbody textarea:disabled { background: #f2f1ee; color: var(--muted); cursor: not-allowed; }
+  tbody textarea {
+    resize: vertical;
+    min-height: 34px;
+    line-height: 1.4;
+    font-family: inherit;
+  }
   .col-num { width: 28px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
   .col-del { width: 32px; text-align: center; }
   .del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 17px; line-height: 1; padding: 4px; font-weight: 700; }
@@ -416,6 +422,7 @@
     color: var(--muted);
   }
   table.review-table td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); }
+  table.review-table td.notes-cell { white-space: pre-wrap; }
   table.review-table tr:nth-child(even) td { background: #fafaf9; }
   .review-missing { color: var(--accent); font-style: italic; }
   .review-grand-total {
@@ -596,6 +603,11 @@ let state = {
 let saveTimer = null;
 
 function uid() { return Math.random().toString(36).slice(2, 10); }
+
+function autoGrowTextarea(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.max(el.scrollHeight, 34) + 'px';
+}
 
 function newRow() {
   return { id: uid(), name: "", size: "", number: "", notes: "", addedBy: personalContactName || "" };
@@ -915,13 +927,18 @@ function renderSections() {
       tr.appendChild(tdNumber);
 
       const tdNotes = document.createElement('td');
-      const notesInput = document.createElement('input');
-      notesInput.type = 'text';
-      notesInput.placeholder = 'Sponsors, tall fit, etc.';
+      const notesInput = document.createElement('textarea');
+      notesInput.rows = 1;
+      notesInput.placeholder = 'Sponsors, tall fit, etc. (one per line)';
       notesInput.value = row.notes;
       notesInput.disabled = !canEditRow;
-      notesInput.addEventListener('input', e => { row.notes = e.target.value; scheduleSave(); });
+      notesInput.addEventListener('input', e => {
+        row.notes = e.target.value;
+        autoGrowTextarea(e.target);
+        scheduleSave();
+      });
       tdNotes.appendChild(notesInput);
+      requestAnimationFrame(() => autoGrowTextarea(notesInput));
       tr.appendChild(tdNotes);
 
       const tdDel = document.createElement('td');
@@ -1159,7 +1176,7 @@ function openReviewModal() {
       const sizeCell = row.size ? row.size : '<span class="review-missing">missing</span>';
       const nameCell = row.name ? row.name : '<span class="review-missing">missing</span>';
       tr.innerHTML = '<td>' + (i + 1) + '</td><td>' + nameCell + '</td><td>' + sizeCell + '</td><td>' +
-        (row.number || '') + '</td><td>' + (row.notes || '') + '</td><td>' + (row.addedBy || '') + '</td>';
+        (row.number || '') + '</td><td class="notes-cell">' + (row.notes || '') + '</td><td>' + (row.addedBy || '') + '</td>';
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
