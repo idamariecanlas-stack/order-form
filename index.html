@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Beast Mode - Team Orders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
 
   :root {
@@ -12,13 +15,14 @@
     --panel: #ffffff;
     --line: #26282c;
     --line-soft: #dcdad6;
-    --accent: #d81e2c;
-    --accent-dark: #a1141f;
-    --accent-soft: #fbe2e3;
+    --accent: #b8342d;
+    --accent-dark: #8a2521;
+    --accent-soft: #f7e3e1;
     --muted: #6b6c70;
     --ok: #2f6b3a;
-    --font-display: 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
-    --font-body: 'Helvetica Neue', Arial, -apple-system, sans-serif;
+    --font-display: 'Anton', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    --font-condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --font-body: 'Barlow', 'Helvetica Neue', Arial, -apple-system, sans-serif;
     --font-mono: 'SF Mono', 'Consolas', monospace;
   }
   * { box-sizing: border-box; }
@@ -27,6 +31,7 @@
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-body);
+    font-size: 16px;
     padding: 0 0 80px;
   }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
@@ -34,20 +39,23 @@
   .topbar {
     background: var(--ink);
     color: #fff;
-    padding: 12px 20px;
+    padding: 14px 20px;
     margin-bottom: 36px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 8px;
+    border-bottom: 4px solid var(--accent);
   }
   .brand-logo { display: flex; align-items: center; }
   .brand-logo img { display: block; }
   .topbar .tagline {
-    font-size: 11px;
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
     color: #b8b8ba;
   }
 
@@ -63,7 +71,7 @@
   }
   header h1 {
     font-family: var(--font-display);
-    font-weight: 900;
+    font-weight: 400;
     font-size: 32px;
     margin: 0;
     letter-spacing: -0.01em;
@@ -122,14 +130,14 @@
     color: #fff;
     border: none;
     padding: 0 18px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     border-radius: 2px;
     cursor: pointer;
     white-space: nowrap;
-    font-family: var(--font-body);
+    font-family: var(--font-condensed);
   }
   .share-code-row button:hover { background: var(--accent-dark); }
   .share-code-row button.secondary { background: #3a3c40; }
@@ -291,7 +299,7 @@
   }
   .garment-section-title {
     font-family: var(--font-display);
-    font-weight: 900;
+    font-weight: 400;
     font-size: 15px;
     text-transform: uppercase;
     letter-spacing: 0.02em;
@@ -403,7 +411,8 @@
   table { width: 100%; border-collapse: collapse; margin-top: 4px; }
   thead th {
     text-align: left;
-    font-size: 10.5px;
+    font-family: var(--font-condensed);
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-weight: 700;
@@ -474,7 +483,7 @@
   .summary-garment-name { font-weight: 700; min-width: 200px; }
   .size-breakdown { font-family: var(--font-mono); font-size: 12px; color: var(--ink); display: flex; flex-wrap: wrap; gap: 5px; }
   .size-chip { background: var(--ink); color: #fff; padding: 3px 8px; border-radius: 2px; font-weight: 600; }
-  .grand-total { font-family: var(--font-display); font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
+  .grand-total { font-family: var(--font-display); font-weight: 400; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
   .grand-total b { font-size: 30px; color: var(--accent); display: block; letter-spacing: normal; }
 
   .empty-state { color: var(--muted); font-size: 13px; padding: 20px 8px; text-align: center; font-style: italic; }
@@ -508,21 +517,22 @@
     align-items: flex-start;
     flex-wrap: wrap;
     gap: 10px;
+    border-bottom: 3px solid var(--accent);
   }
-  .modal-title { font-family: var(--font-display); font-weight: 900; font-size: 19px; text-transform: uppercase; }
-  .modal-subtitle { font-size: 12px; color: #c8c8ca; margin-top: 4px; }
+  .modal-title { font-family: var(--font-display); font-weight: 400; font-size: 21px; letter-spacing: 0.01em; text-transform: uppercase; }
+  .modal-subtitle { font-family: var(--font-condensed); font-weight: 600; font-size: 12.5px; color: #c8c8ca; margin-top: 4px; }
   .modal-btn {
     background: var(--accent);
     color: #fff;
     border: none;
     padding: 8px 14px;
-    font-size: 11.5px;
+    font-size: 12.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     border-radius: 2px;
     cursor: pointer;
-    font-family: var(--font-body);
+    font-family: var(--font-condensed);
   }
   .modal-btn:hover { background: var(--accent-dark); }
   .modal-close {
@@ -661,7 +671,7 @@
   .review-garment-block:last-child { margin-bottom: 0; }
   .review-garment-heading {
     font-family: var(--font-display);
-    font-weight: 900;
+    font-weight: 400;
     font-size: 15px;
     text-transform: uppercase;
     border-bottom: 3px solid var(--ink);
@@ -692,7 +702,7 @@
     padding-top: 16px;
     border-top: 4px solid var(--ink);
     font-family: var(--font-display);
-    font-weight: 900;
+    font-weight: 400;
     font-size: 16px;
     text-transform: uppercase;
     display: flex;
@@ -717,9 +727,9 @@
     --panel: #ffffff;
     --line: #26282c;
     --line-soft: #dcdad6;
-    --accent: #d81e2c;
-    --accent-dark: #a1141f;
-    --accent-soft: #fbe2e3;
+    --accent: #b8342d;
+    --accent-dark: #8a2521;
+    --accent-soft: #f7e3e1;
     --muted: #6b6c70;
     --ok: #2f6b3a;
     --ok-soft: #e3f0e4;
@@ -727,13 +737,15 @@
     --warn-soft: #fbf0d9;
     --info: #1f5f8b;
     --info-soft: #dcedf7;
-    --font-display: 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
-    --font-body: 'Helvetica Neue', Arial, -apple-system, sans-serif;
+    --font-display: 'Anton', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    --font-condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --font-body: 'Barlow', 'Helvetica Neue', Arial, -apple-system, sans-serif;
     --font-mono: 'SF Mono', 'Consolas', monospace;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
+    font-size: 16px;
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-body);
@@ -744,20 +756,23 @@
   .topbar {
     background: var(--ink);
     color: #fff;
-    padding: 12px 20px;
+    padding: 14px 20px;
     margin-bottom: 36px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 8px;
+    border-bottom: 4px solid var(--accent);
   }
   .brand-logo { display: flex; align-items: center; }
   .brand-logo img { display: block; }
   .topbar .tagline {
-    font-size: 11px;
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
     color: #b8b8ba;
   }
   .topbar-right { display: flex; align-items: center; gap: 14px; }
@@ -784,7 +799,7 @@
   }
   header h1 {
     font-family: var(--font-display);
-    font-weight: 900;
+    font-weight: 400;
     font-size: 30px;
     margin: 0;
     letter-spacing: -0.01em;
@@ -823,16 +838,18 @@
     color: #fff;
     border: none;
     padding: 10px 16px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     cursor: pointer;
     border-radius: 2px;
-    font-family: var(--font-body);
+    font-family: var(--font-condensed);
     white-space: nowrap;
   }
-  .btn:hover { background: var(--accent); }
+  .btn { transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease; }
+  .btn:hover { background: var(--accent); transform: translateY(-1px); box-shadow: 0 3px 0 var(--accent-dark); }
+  .btn:active { transform: translateY(0); box-shadow: none; }
   .btn.secondary { background: #fff; color: var(--ink); border: 2px solid var(--line-soft); }
   .btn.secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -849,15 +866,16 @@
     border-radius: 2px;
     padding: 12px 14px;
   }
-  .stat-card .stat-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+  .stat-card .stat-label { font-family: var(--font-condensed); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
   .stat-card .stat-value { font-family: var(--font-display); font-size: 24px; margin-top: 4px; }
 
   table { width: 100%; border-collapse: collapse; margin-top: 4px; }
   .orders-table thead th {
     text-align: left;
-    font-size: 10.5px;
+    font-family: var(--font-condensed);
+    font-size: 11.5px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     font-weight: 700;
     color: var(--muted);
     border-bottom: 2px solid var(--ink);
@@ -878,9 +896,10 @@
     padding: 6px 8px;
     border: 2px solid var(--line-soft);
     border-radius: 2px;
-    font-family: var(--font-body);
-    font-size: 12.5px;
+    font-family: var(--font-condensed);
+    font-size: 13px;
     font-weight: 700;
+    letter-spacing: 0.03em;
     cursor: pointer;
   }
   .status-new { background: var(--info-soft); color: var(--info); border-color: var(--info); }
@@ -897,13 +916,14 @@
     align-items: center;
     gap: 6px;
     color: var(--muted);
-    font-size: 12.5px;
+    font-family: var(--font-condensed);
+    font-size: 13.5px;
     text-decoration: none;
     cursor: pointer;
     margin-bottom: 14px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
   }
   .back-link:hover { color: var(--accent); }
 
@@ -919,7 +939,7 @@
   }
   .detail-head h2 {
     font-family: var(--font-display);
-    font-weight: 900;
+    font-weight: 400;
     font-size: 24px;
     margin: 0 0 4px;
     text-transform: uppercase;
@@ -948,7 +968,7 @@
   .review-garment-block:last-child { margin-bottom: 0; }
   .review-garment-heading {
     font-family: var(--font-display);
-    font-weight: 900;
+    font-weight: 400;
     font-size: 15px;
     text-transform: uppercase;
     border-bottom: 3px solid var(--ink);
@@ -990,7 +1010,7 @@
   .summary-garment-name { font-weight: 700; min-width: 200px; }
   .size-breakdown { font-family: var(--font-mono); font-size: 12px; color: var(--ink); display: flex; flex-wrap: wrap; gap: 5px; }
   .size-chip { background: var(--ink); color: #fff; padding: 3px 8px; border-radius: 2px; font-weight: 600; }
-  .grand-total { font-family: var(--font-display); font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
+  .grand-total { font-family: var(--font-display); font-weight: 400; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
   .grand-total b { font-size: 30px; color: var(--accent); display: block; letter-spacing: normal; }
 
   .loading-note { color: var(--muted); font-size: 13px; padding: 30px 8px; text-align: center; }
@@ -1199,7 +1219,7 @@
         <div class="new-order-field">
           <label for="newOrderTeamName">Team / order name (optional)</label>
           <input id="newOrderTeamName" type="text" placeholder="e.g. Manaia U11s Rugby" spellcheck="false">
-          <div class="new-order-hint">We'll generate a unique order code for this team &mdash; you give it to them, they never have to make one up.</div>
+          <div class="new-order-hint">Codes follow a uniform BEASTMODE-#### format &mdash; you give it to the team, they never have to make one up.</div>
         </div>
         <button class="btn" id="generateOrderBtn" type="button">Generate code</button>
         <div class="new-order-error" id="newOrderError"></div>
@@ -2609,20 +2629,7 @@ function downloadDetailCSV() {
 }
 
 // --- New order (staff generates a code for the team) ---
-function slugifyTeamName(name) {
-  return String(name || '')
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 24);
-}
-
-function randomCodeSuffix(len) {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous 0/O or 1/I
-  let out = '';
-  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
-}
+const ORDER_CODE_PREFIX = 'BEASTMODE';
 
 async function orderCodeExists(code) {
   const { data, error } = await supabaseClient
@@ -2634,13 +2641,28 @@ async function orderCodeExists(code) {
   return !!(data && data.length);
 }
 
-async function generateUniqueOrderCode(teamName) {
-  const slug = slugifyTeamName(teamName);
+async function nextOrderCodeNumber() {
+  const { data, error } = await supabaseClient
+    .from('orders')
+    .select('code')
+    .like('code', ORDER_CODE_PREFIX + '-%')
+    .order('code', { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  if (data && data.length) {
+    const match = data[0].code.match(new RegExp('^' + ORDER_CODE_PREFIX + '-(\\d+)$'));
+    if (match) return parseInt(match[1], 10) + 1;
+  }
+  return 1;
+}
+
+async function generateUniqueOrderCode() {
+  let n = await nextOrderCodeNumber();
   for (let attempt = 0; attempt < 8; attempt++) {
-    const suffix = randomCodeSuffix(attempt < 4 ? 4 : 5);
-    const candidate = storageKeyForCode(slug ? (slug + '-' + suffix) : ('ORDER-' + suffix));
+    const candidate = ORDER_CODE_PREFIX + '-' + String(n).padStart(4, '0');
     const exists = await orderCodeExists(candidate);
     if (!exists) return candidate;
+    n += 1; // someone beat us to it, try the next number
   }
   throw new Error('Could not generate a unique code after several attempts.');
 }
@@ -2680,7 +2702,7 @@ async function handleGenerateOrder() {
   btn.disabled = true;
   btn.textContent = 'Generating\u2026';
   try {
-    const code = await generateUniqueOrderCode(teamName);
+    const code = await generateUniqueOrderCode();
     const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: '', status: 'new' };
     const nowIso = new Date().toISOString();
     const { error } = await supabaseClient
