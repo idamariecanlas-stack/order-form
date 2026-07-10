@@ -2685,7 +2685,7 @@ async function handleGenerateOrder() {
     const nowIso = new Date().toISOString();
     const { error } = await supabaseClient
       .from('orders')
-      .insert({ code: code, data: newData, updated_at: nowIso });
+      .upsert({ code: code, data: newData, updated_at: nowIso });
     if (error) throw error;
     generatedOrderCode = code;
     allOrders.unshift({ code: code, data: newData, updated_at: nowIso });
@@ -2696,7 +2696,8 @@ async function handleGenerateOrder() {
     document.getElementById('newOrderResult').classList.add('visible');
   } catch (e) {
     console.error('Failed to create order:', e);
-    errorEl.textContent = 'Could not create the order. Please check your connection and try again.';
+    const detail = (e && (e.message || e.error_description || e.details)) || 'Unknown error';
+    errorEl.textContent = 'Could not create the order: ' + detail;
     errorEl.classList.add('visible');
   } finally {
     btn.disabled = false;
