@@ -1545,41 +1545,19 @@
         <div class="new-order-error" id="newOrderError"></div>
       </div>
       <div class="new-order-result" id="newOrderResult">
-        <!-- Order Code -->
         <div class="new-order-code-box">
-          <div class="new-order-code-label">ORDER CODE</div>
+          <div class="new-order-code-label">Order code</div>
           <div class="new-order-code-value" id="newOrderCodeValue"></div>
         </div>
-
-        <!-- Manager Code -->
-        <div class="new-order-code-box" style="margin-top:12px; background:#2a2c30;">
-          <div class="new-order-code-label" style="color:#b8b8ba;">MANAGER CODE (keep private)</div>
-          <div class="new-order-code-value" id="newOrderManagerCodeValue" style="color:#f7caca;"></div>
+        <div class="new-order-actions">
+          <button class="btn" id="copyNewOrderLinkBtn" type="button">Copy customer link</button>
+          <button class="btn secondary" id="copyNewOrderCodeBtn" type="button">Copy code only</button>
+          <button class="btn secondary" id="openNewOrderBtn" type="button">Open order</button>
         </div>
-
-        <!-- Action buttons -->
-        <div class="new-order-actions" style="margin-top:12px;">
-          <button class="btn" id="copyNewOrderLinkBtn" type="button">COPY CUSTOMER LINK</button>
-          <button class="btn secondary" id="copyNewOrderCodeBtn" type="button">COPY ORDER CODE</button>
-          <button class="btn secondary" id="copyManagerCodeBtn" type="button">COPY MANAGER CODE</button>
-          <button class="btn secondary" id="openNewOrderBtn" type="button">OPEN ORDER</button>
-        </div>
-
         <div class="new-order-copied" id="newOrderCopied">Copied.</div>
-
-        <!-- Email Draft -->
-        <div style="margin-top:20px; border-top:1px solid #3a3c40; padding-top:16px;">
-          <div class="new-order-code-label" style="margin-bottom:6px;">Quick email draft</div>
-          <textarea id="newOrderEmailDraft" readonly rows="6" style="width:100%; font-family:var(--font-body); font-size:13px; background:#1c1e21; color:#d6d6d8; border:1px solid #3a3c40; border-radius:2px; padding:10px; resize:vertical; line-height:1.45;"></textarea>
-          <button class="btn secondary" id="copyEmailDraftBtn" type="button" style="margin-top:8px;">COPY EMAIL DRAFT</button>
-        </div>
-
-        <div class="new-order-hint" style="margin-top:16px;">
-          Give the <strong>Order Code</strong> + <strong>Manager Code</strong> to the person managing the order.
-        </div>
-
+        <div class="new-order-hint">Send this to the team manager. They'll load it with the code, and can set up their own manager login from there.</div>
         <div style="margin-top:16px;">
-          <button class="btn secondary" id="newOrderDoneBtn" type="button">DONE</button>
+          <button class="btn secondary" id="newOrderDoneBtn" type="button">Done</button>
         </div>
       </div>
     </div>
@@ -3668,18 +3646,30 @@ async function handleGenerateOrder() {
   btn.textContent = 'Generating\u2026';
   try {
     const code = await generateUniqueOrderCode();
-    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: '', status: 'new', customFields: newOrderCustomFields.slice() };
+    const mgrCode = generateManagerCode();
+    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: mgrCode, status: 'new', customFields: newOrderCustomFields.slice() };
     const nowIso = new Date().toISOString();
     const { error } = await supabaseClient
       .from('orders')
       .upsert({ code: code, data: newData, updated_at: nowIso });
     if (error) throw error;
+
     generatedOrderCode = code;
+    generatedManagerCode = mgrCode;
+
     allOrders.unshift({ code: code, data: newData, updated_at: nowIso });
     renderStats();
     renderOrdersTable();
     logActivity(code, 'Order created', teamName ? ('Team: ' + teamName) : '', 'Staff');
+
     document.getElementById('newOrderCodeValue').textContent = code;
+    document.getElementById('newOrderManagerCodeValue').textContent = mgrCode;
+
+    const link = newOrderCustomerLink();
+    const draft = buildNewOrderEmailDraft(code, mgrCode, link);
+    const draftEl = document.getElementById('newOrderEmailDraft');
+    if (draftEl) draftEl.value = draft;
+
     document.getElementById('newOrderForm').classList.add('hidden');
     document.getElementById('newOrderResult').classList.add('visible');
   } catch (e) {
@@ -3695,7 +3685,31 @@ async function handleGenerateOrder() {
 
 function newOrderCustomerLink() {
   if (!generatedOrderCode) return '';
-  return new URL('index.html?order=' + encodeURIComponent(generatedOrderCode), window.location.href).href;
+  let url = 'index.html?order=' + encodeURIComponent(generatedOrderCode);
+  if (generatedManagerCode) {
+    url += '&mgr=' + encodeURIComponent(generatedManagerCode);
+  }
+  return new URL(url, window.location.href).href;
+}
+
+function buildNewOrderEmailDraft(orderCode, managerCode, link) {
+  return `Hi there,
+
+I've set up your Beast Mode order. You can start managing it using the details below.
+
+**Order Code:** ${orderCode}
+→ Use this to access the order page and add names on back, sizes, quantities, and notes.
+
+**Manager Code:** ${managerCode}
+→ Share this only with whoever needs to edit the order. It unlocks full editing access.
+
+Quick link: ${link}
+
+Send both codes to the person managing the order. They can use the Order Code to view it, and the Manager Code to make changes.
+
+Let me know if you need any adjustments.
+
+Thanks!`;
 }
 
 function copyNewOrderText(text) {
