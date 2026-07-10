@@ -1292,6 +1292,7 @@
         </select>
         <button class="btn secondary" id="detailCsvBtn" type="button">Download CSV</button>
         <button class="btn secondary" id="detailPrintBtn" type="button">Print</button>
+        <button class="btn secondary" id="detailManageColumnsBtn" type="button">Manage columns</button>
         <button class="btn" id="detailOpenCustomerBtn" type="button">Open customer view</button>
       </div>
     </div>
@@ -1322,6 +1323,62 @@
       </div>
     </div>
     <div class="modal-body" id="reviewModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="managerLoginOverlay">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="managerLoginTitle">Manager login</div>
+        <div class="modal-subtitle" id="managerLoginSubtitle">Enter the manager code for this order</div>
+      </div>
+      <button class="modal-close" id="closeManagerLoginBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-field">
+        <label for="managerLoginInput" id="managerLoginLabel">Manager code</label>
+        <input id="managerLoginInput" type="text" placeholder="Enter code" spellcheck="false" autocomplete="off">
+        <div class="new-order-error" id="managerLoginError"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="managerLoginSubmitBtn" type="button">Continue</button>
+        <button class="btn secondary" id="managerLoginCancelBtn" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="manageColumnsOverlay">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Manage columns</div>
+        <div class="modal-subtitle" id="manageColumnsSubtitle">Extra columns for this order</div>
+      </div>
+      <button class="modal-close" id="closeManageColumnsBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-field">
+        <label>Current columns</label>
+        <div class="new-order-field-tags" id="manageColumnsTags"></div>
+        <div class="new-order-hint" id="manageColumnsEmptyHint">No extra columns on this order yet. Add one below.</div>
+        <div class="new-order-hint">Click a column to edit it. Removing a column stops showing that data going forward &mdash; it doesn't delete anything already saved.</div>
+      </div>
+      <div class="new-order-field">
+        <label for="manageColumnsFieldInput" id="manageColumnsFieldLabel">Add a column</label>
+        <div style="display:flex;gap:8px;">
+          <input id="manageColumnsFieldInput" type="text" placeholder="e.g. Sleeve Name" spellcheck="false" style="flex:1;">
+          <button class="btn secondary" id="addManageColumnBtn" type="button" style="white-space:nowrap;">+ Add column</button>
+        </div>
+        <input id="manageColumnsOptionsInput" type="text" placeholder="Options, comma-separated (optional &mdash; leave blank for free text)" spellcheck="false" style="margin-top:8px;">
+        <div class="new-order-error" id="manageColumnsError"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="saveManageColumnsBtn" type="button">Save changes</button>
+        <button class="btn secondary" id="cancelManageColumnsBtn" type="button">Cancel</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2251,31 +2308,91 @@ document.getElementById('shareBtn').addEventListener('click', () => {
   }
 });
 
-document.getElementById('managerBtn').addEventListener('click', async () => {
+let managerLoginMode = 'verify'; // 'verify' or 'create'
+
+document.getElementById('managerBtn').addEventListener('click', () => {
   if (!teamCode) {
     alert('Enter or share an order code first.');
     return;
   }
-  if (!state.managerCode) {
-    const newMgrCode = prompt('No manager code is set for this order yet. Create one now (keep it private, share only with other managers/coaches):');
-    if (!newMgrCode) return;
-    state.managerCode = newMgrCode.trim();
-    managerCode = state.managerCode;
+  openManagerLoginModal(state.managerCode ? 'verify' : 'create');
+});
+
+function openManagerLoginModal(mode) {
+  managerLoginMode = mode;
+  const title = document.getElementById('managerLoginTitle');
+  const subtitle = document.getElementById('managerLoginSubtitle');
+  const label = document.getElementById('managerLoginLabel');
+  const input = document.getElementById('managerLoginInput');
+  const submitBtn = document.getElementById('managerLoginSubmitBtn');
+  const errorEl = document.getElementById('managerLoginError');
+  errorEl.classList.remove('visible');
+  errorEl.textContent = '';
+  input.value = '';
+  if (mode === 'create') {
+    title.textContent = 'Set a manager code';
+    subtitle.textContent = 'No manager code is set for this order yet.';
+    label.textContent = 'Create a manager code (keep it private, share only with other managers/coaches)';
+    input.placeholder = 'Choose a code';
+    submitBtn.textContent = 'Create code';
+  } else {
+    title.textContent = 'Manager login';
+    subtitle.textContent = 'Enter the manager code for this order.';
+    label.textContent = 'Manager code';
+    input.placeholder = 'Enter code';
+    submitBtn.textContent = 'Continue';
+  }
+  document.getElementById('managerLoginOverlay').classList.add('visible');
+  input.focus();
+}
+
+function closeManagerLoginModal() {
+  document.getElementById('managerLoginOverlay').classList.remove('visible');
+}
+
+function submitManagerLogin() {
+  const input = document.getElementById('managerLoginInput');
+  const errorEl = document.getElementById('managerLoginError');
+  const value = input.value.trim();
+  if (!value) {
+    errorEl.textContent = 'Enter a code to continue.';
+    errorEl.classList.add('visible');
+    input.focus();
+    return;
+  }
+  if (managerLoginMode === 'create') {
+    state.managerCode = value;
+    managerCode = value;
     scheduleSave();
     checkManagerStatus();
     setURLParams(teamCode, managerCode);
     render();
+    closeManagerLoginModal();
     return;
   }
-  const entered = prompt('Enter the manager code for this order:');
-  if (!entered) return;
-  if (entered.trim() === state.managerCode) {
-    managerCode = entered.trim();
+  if (value === state.managerCode) {
+    managerCode = value;
     setURLParams(teamCode, managerCode);
     checkManagerStatus();
     render();
+    closeManagerLoginModal();
   } else {
-    alert('That code does not match. Ask your manager for the correct code.');
+    errorEl.textContent = 'That code does not match. Ask your manager for the correct code.';
+    errorEl.classList.add('visible');
+    input.select();
+  }
+}
+
+document.getElementById('managerLoginSubmitBtn').addEventListener('click', submitManagerLogin);
+document.getElementById('managerLoginCancelBtn').addEventListener('click', closeManagerLoginModal);
+document.getElementById('closeManagerLoginBtn').addEventListener('click', closeManagerLoginModal);
+document.getElementById('managerLoginOverlay').addEventListener('click', e => {
+  if (e.target.id === 'managerLoginOverlay') closeManagerLoginModal();
+});
+document.getElementById('managerLoginInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    submitManagerLogin();
   }
 });
 
@@ -2793,6 +2910,149 @@ function setURLCode(code) {
   if (code) url.searchParams.set('code', code); else url.searchParams.delete('code');
   window.history.replaceState({}, '', url);
 }
+
+// --- Manage columns (edit custom fields on an existing order) ---
+let manageColumnsOrderCode = null;
+let manageColumnsFields = [];
+let manageColumnsEditingId = null;
+
+function openManageColumnsModal(code) {
+  const order = allOrders.find(o => o.code === code);
+  if (!order) return;
+  manageColumnsOrderCode = code;
+  manageColumnsFields = ((order.data && order.data.customFields) || []).map(f => Object.assign({}, f, { options: f.options ? f.options.slice() : undefined }));
+  manageColumnsEditingId = null;
+  document.getElementById('manageColumnsSubtitle').textContent = 'Order code: ' + code;
+  document.getElementById('manageColumnsFieldInput').value = '';
+  document.getElementById('manageColumnsOptionsInput').value = '';
+  document.getElementById('manageColumnsFieldLabel').textContent = 'Add a column';
+  document.getElementById('addManageColumnBtn').textContent = '+ Add column';
+  document.getElementById('manageColumnsError').classList.remove('visible');
+  renderManageColumnsTags();
+  document.getElementById('manageColumnsOverlay').classList.add('visible');
+}
+
+function closeManageColumnsModal() {
+  document.getElementById('manageColumnsOverlay').classList.remove('visible');
+}
+
+function renderManageColumnsTags() {
+  const wrap = document.getElementById('manageColumnsTags');
+  const emptyHint = document.getElementById('manageColumnsEmptyHint');
+  wrap.innerHTML = '';
+  emptyHint.style.display = manageColumnsFields.length === 0 ? 'block' : 'none';
+  manageColumnsFields.forEach(field => {
+    const tag = document.createElement('span');
+    tag.className = 'new-order-field-tag';
+    tag.style.cursor = 'pointer';
+    const label = document.createElement('span');
+    label.textContent = field.label + (field.options && field.options.length ? ' (dropdown \u00b7 ' + field.options.length + ')' : ' (text)');
+    label.title = 'Click to edit';
+    label.addEventListener('click', () => startEditManageColumnField(field));
+    tag.appendChild(label);
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.textContent = '\u00d7';
+    removeBtn.title = 'Remove this column';
+    removeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!confirm('Remove the "' + field.label + '" column? This stops showing that data going forward, but won\u2019t delete anything already saved.')) return;
+      manageColumnsFields = manageColumnsFields.filter(f => f.id !== field.id);
+      if (manageColumnsEditingId === field.id) cancelEditManageColumnField();
+      renderManageColumnsTags();
+    });
+    tag.appendChild(removeBtn);
+    wrap.appendChild(tag);
+  });
+}
+
+function startEditManageColumnField(field) {
+  manageColumnsEditingId = field.id;
+  document.getElementById('manageColumnsFieldInput').value = field.label;
+  document.getElementById('manageColumnsOptionsInput').value = (field.options || []).join(', ');
+  document.getElementById('manageColumnsFieldLabel').textContent = 'Editing "' + field.label + '"';
+  document.getElementById('addManageColumnBtn').textContent = 'Update column';
+  document.getElementById('manageColumnsFieldInput').focus();
+}
+
+function cancelEditManageColumnField() {
+  manageColumnsEditingId = null;
+  document.getElementById('manageColumnsFieldInput').value = '';
+  document.getElementById('manageColumnsOptionsInput').value = '';
+  document.getElementById('manageColumnsFieldLabel').textContent = 'Add a column';
+  document.getElementById('addManageColumnBtn').textContent = '+ Add column';
+}
+
+function addOrUpdateManageColumnField() {
+  const input = document.getElementById('manageColumnsFieldInput');
+  const optionsInput = document.getElementById('manageColumnsOptionsInput');
+  const errorEl = document.getElementById('manageColumnsError');
+  errorEl.classList.remove('visible');
+  const label = input.value.trim();
+  if (!label) { input.focus(); return; }
+  const duplicate = manageColumnsFields.some(f => f.label.toLowerCase() === label.toLowerCase() && f.id !== manageColumnsEditingId);
+  if (duplicate) {
+    errorEl.textContent = 'There\u2019s already a column called "' + label + '".';
+    errorEl.classList.add('visible');
+    return;
+  }
+  const options = optionsInput.value.split(',').map(s => s.trim()).filter(Boolean);
+  const field = { id: manageColumnsEditingId || uid(), label: label };
+  if (options.length) field.options = options;
+  if (manageColumnsEditingId) {
+    manageColumnsFields = manageColumnsFields.map(f => f.id === manageColumnsEditingId ? field : f);
+  } else {
+    manageColumnsFields.push(field);
+  }
+  cancelEditManageColumnField();
+  renderManageColumnsTags();
+}
+
+async function saveManageColumns() {
+  const order = allOrders.find(o => o.code === manageColumnsOrderCode);
+  if (!order) return;
+  const saveBtn = document.getElementById('saveManageColumnsBtn');
+  const errorEl = document.getElementById('manageColumnsError');
+  errorEl.classList.remove('visible');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving\u2026';
+  const newData = Object.assign({}, order.data, { customFields: manageColumnsFields.slice() });
+  try {
+    const { error } = await supabaseClient
+      .from('orders')
+      .update({ data: newData, updated_at: new Date().toISOString() })
+      .eq('code', manageColumnsOrderCode);
+    if (error) throw error;
+    order.data = newData;
+    closeManageColumnsModal();
+    if (currentDetailCode === manageColumnsOrderCode) renderDetail(order);
+  } catch (e) {
+    console.error('Failed to save columns:', e);
+    const detail = (e && (e.message || e.error_description || e.details)) || 'Unknown error';
+    errorEl.textContent = 'Could not save: ' + detail;
+    errorEl.classList.add('visible');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save changes';
+  }
+}
+
+document.getElementById('detailManageColumnsBtn').addEventListener('click', () => {
+  if (currentDetailCode) openManageColumnsModal(currentDetailCode);
+});
+document.getElementById('closeManageColumnsBtn').addEventListener('click', closeManageColumnsModal);
+document.getElementById('cancelManageColumnsBtn').addEventListener('click', closeManageColumnsModal);
+document.getElementById('manageColumnsOverlay').addEventListener('click', e => {
+  if (e.target.id === 'manageColumnsOverlay') closeManageColumnsModal();
+});
+document.getElementById('addManageColumnBtn').addEventListener('click', addOrUpdateManageColumnField);
+document.getElementById('manageColumnsFieldInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addOrUpdateManageColumnField(); }
+});
+document.getElementById('manageColumnsOptionsInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addOrUpdateManageColumnField(); }
+});
+document.getElementById('saveManageColumnsBtn').addEventListener('click', saveManageColumns);
 
 function renderDetail(order) {
   const data = order.data || {};
