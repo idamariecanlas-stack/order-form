@@ -3018,7 +3018,12 @@ async function loadOrders() {
     console.error('Failed to load orders:', e);
     allOrders = [];
     document.getElementById('ordersTableBody').innerHTML = '';
-    document.getElementById('ordersEmptyState').textContent = 'Could not load orders. Check your connection and try refreshing.';
+    const msg = (e && (e.message || e.error_description || e.details)) || '';
+    let userMsg = 'Could not load orders. Check your connection and try refreshing.';
+    if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('row-level') || msg.toLowerCase().includes('rls')) {
+      userMsg = 'Could not load orders — this is likely a Row Level Security (RLS) issue. Go to Supabase → Table Editor → orders table → Policies and make sure the anon role has SELECT permission.';
+    }
+    document.getElementById('ordersEmptyState').textContent = userMsg;
     document.getElementById('ordersEmptyState').style.display = 'block';
     document.getElementById('ordersLoadingNote').style.display = 'none';
     renderStats();
@@ -3646,31 +3651,18 @@ async function handleGenerateOrder() {
   btn.textContent = 'Generating\u2026';
   try {
     const code = await generateUniqueOrderCode();
-    const mgrCode = generateManagerCode();
-    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: mgrCode, status: 'new', customFields: newOrderCustomFields.slice() };
+    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: '', status: 'new', customFields: newOrderCustomFields.slice() };
     const nowIso = new Date().toISOString();
     const { error } = await supabaseClient
       .from('orders')
       .upsert({ code: code, data: newData, updated_at: nowIso });
     if (error) throw error;
-
     generatedOrderCode = code;
-    generatedManagerCode = mgrCode;
-
     allOrders.unshift({ code: code, data: newData, updated_at: nowIso });
     renderStats();
     renderOrdersTable();
     logActivity(code, 'Order created', teamName ? ('Team: ' + teamName) : '', 'Staff');
-
     document.getElementById('newOrderCodeValue').textContent = code;
-    document.getElementById('newOrderManagerCodeValue').textContent = mgrCode;
-
-    // Populate improved email draft
-    const link = newOrderCustomerLink();
-    const draft = buildNewOrderEmailDraft(code, mgrCode, link);
-    const draftEl = document.getElementById('newOrderEmailDraft');
-    if (draftEl) draftEl.value = draft;
-
     document.getElementById('newOrderForm').classList.add('hidden');
     document.getElementById('newOrderResult').classList.add('visible');
   } catch (e) {
@@ -3686,31 +3678,7 @@ async function handleGenerateOrder() {
 
 function newOrderCustomerLink() {
   if (!generatedOrderCode) return '';
-  let url = 'index.html?order=' + encodeURIComponent(generatedOrderCode);
-  if (generatedManagerCode) {
-    url += '&mgr=' + encodeURIComponent(generatedManagerCode);
-  }
-  return new URL(url, window.location.href).href;
-}
-
-function buildNewOrderEmailDraft(orderCode, managerCode, link) {
-  return `Hi there,
-
-I've set up your Beast Mode order. You can start managing it using the details below.
-
-**Order Code:** ${orderCode}
-→ Use this to access the order page and add names on back, sizes, quantities, and notes.
-
-**Manager Code:** ${managerCode}
-→ Share this only with whoever needs to edit the order. It unlocks full editing access.
-
-Quick link: ${link}
-
-Send both codes to the person managing the order. They can use the Order Code to view it, and the Manager Code to make changes.
-
-Let me know if you need any adjustments.
-
-Thanks!`;
+  return new URL('index.html?order=' + encodeURIComponent(generatedOrderCode), window.location.href).href;
 }
 
 function copyNewOrderText(text) {
@@ -3745,11 +3713,6 @@ document.getElementById('newOrderFieldOptionsInput').addEventListener('keydown',
 document.getElementById('newOrderDoneBtn').addEventListener('click', closeNewOrderModal);
 document.getElementById('copyNewOrderLinkBtn').addEventListener('click', () => copyNewOrderText(newOrderCustomerLink()));
 document.getElementById('copyNewOrderCodeBtn').addEventListener('click', () => copyNewOrderText(generatedOrderCode || ''));
-document.getElementById('copyManagerCodeBtn').addEventListener('click', () => copyNewOrderText(generatedManagerCode || ''));
-document.getElementById('copyEmailDraftBtn').addEventListener('click', () => {
-  const draft = document.getElementById('newOrderEmailDraft').value;
-  copyNewOrderText(draft);
-});
 document.getElementById('openNewOrderBtn').addEventListener('click', () => {
   if (generatedOrderCode) window.open('index.html?order=' + encodeURIComponent(generatedOrderCode), '_blank');
 });
