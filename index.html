@@ -335,21 +335,47 @@
     border-radius: 2px;
   }
   .size-chart-link .size-chart-hint { font-size: 11.5px; color: var(--muted); }
-  .garment-thumb-wrap { flex-shrink: 0; margin-right: 4px; }
+  .garment-thumb-wrap {
+    flex-shrink: 0;
+    margin-right: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .garment-thumb {
     display: block;
-    height: 56px;
+    height: 110px;
     width: auto;
-    max-width: 70px;
+    max-width: 130px;
     object-fit: contain;
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 4px;
-    cursor: pointer;
-    transition: border-color .15s ease, transform .15s ease;
+    padding: 6px;
+    cursor: zoom-in;
+    transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .garment-thumb:hover { border-color: var(--accent); transform: scale(1.04); }
+  .garment-thumb:hover { border-color: var(--accent); transform: scale(1.04); box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+  .garment-thumb-zoom-btn {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(17,18,20,0.75);
+    color: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: background .15s ease;
+  }
+  .garment-thumb-zoom-btn:hover { background: var(--accent); }
+  .garment-thumb-zoom-btn svg { width: 13px; height: 13px; }
   .size-chart-link a {
     font-size: 12px;
     font-weight: 700;
@@ -512,6 +538,93 @@
   }
   .modal-close:hover { background: #3a3c40; }
   .modal-body { padding: 22px; max-height: 72vh; overflow-y: auto; }
+
+  .image-zoom-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,11,0.88);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+  .image-zoom-overlay.visible { display: flex; }
+  .image-zoom-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .image-zoom-stage img {
+    max-width: 90vw;
+    max-height: 80vh;
+    transition: transform .18s ease;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none;
+    border-radius: 4px;
+    background: #fff;
+  }
+  .image-zoom-controls {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(28,29,32,0.92);
+    border: 1px solid #4a4c50;
+    border-radius: 30px;
+    padding: 6px;
+    z-index: 201;
+  }
+  .image-zoom-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .image-zoom-btn:hover { background: rgba(255,255,255,0.14); }
+  .image-zoom-btn svg { width: 17px; height: 17px; }
+  .image-zoom-pct { color: #d8d8da; font-family: var(--font-mono); font-size: 12px; min-width: 44px; text-align: center; }
+  .image-zoom-close {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(28,29,32,0.92);
+    border: 1px solid #4a4c50;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 201;
+  }
+  .image-zoom-close:hover { background: #3a3c40; }
+  .image-zoom-caption {
+    position: fixed;
+    top: 22px;
+    left: 24px;
+    color: #d8d8da;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 201;
+  }
   .review-garment-block { margin-bottom: 26px; }
   .review-garment-block:last-child { margin-bottom: 0; }
   .review-garment-heading {
@@ -1052,6 +1165,24 @@
   </div>
 </div>
 
+<div class="image-zoom-overlay" id="imageZoomOverlay">
+  <div class="image-zoom-caption" id="imageZoomCaption"></div>
+  <button class="image-zoom-close" id="imageZoomClose">&times;</button>
+  <div class="image-zoom-stage" id="imageZoomStage">
+    <img id="imageZoomImg" src="" alt="" draggable="false">
+  </div>
+  <div class="image-zoom-controls">
+    <button class="image-zoom-btn" id="imageZoomOut" title="Zoom out">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </button>
+    <span class="image-zoom-pct" id="imageZoomPct">100%</span>
+    <button class="image-zoom-btn" id="imageZoomIn" title="Zoom in">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </button>
+    <button class="image-zoom-btn" id="imageZoomReset" title="Reset zoom" style="width:auto;padding:0 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;">Reset</button>
+  </div>
+</div>
+
 <script>
 // --- View bootstrap: this single file serves both the customer order form
 // and the staff dashboard. Add ?staff=1 to the URL to see the staff view. ---
@@ -1485,9 +1616,19 @@ function renderSections() {
       thumb.className = 'garment-thumb';
       thumb.src = GARMENT_IMAGES[garment];
       thumb.alt = garment;
-      thumb.title = 'View size chart';
-      thumb.addEventListener('click', () => openSizeChartModal(garment));
+      thumb.title = 'Click to zoom';
+      thumb.addEventListener('click', () => openImageZoom(GARMENT_IMAGES[garment], garment));
       thumbWrap.appendChild(thumb);
+      const zoomBtn = document.createElement('button');
+      zoomBtn.type = 'button';
+      zoomBtn.className = 'garment-thumb-zoom-btn';
+      zoomBtn.title = 'Zoom in';
+      zoomBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>';
+      zoomBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        openImageZoom(GARMENT_IMAGES[garment], garment);
+      });
+      thumbWrap.appendChild(zoomBtn);
       refLeft.appendChild(thumbWrap);
     }
     const refHint = document.createElement('span');
@@ -1853,6 +1994,84 @@ function closeReviewModal() {
 function sizeChartAnchorId(garment) {
   return 'szc-' + garment.replace(/[^a-zA-Z0-9]/g, '_');
 }
+
+// --- Image zoom lightbox (garment photos) ---
+let imageZoomScale = 1;
+let imageZoomPanX = 0;
+let imageZoomPanY = 0;
+let imageZoomDragging = false;
+let imageZoomDragStart = { x: 0, y: 0 };
+const IMAGE_ZOOM_MIN = 1;
+const IMAGE_ZOOM_MAX = 4;
+const IMAGE_ZOOM_STEP = 0.5;
+
+function applyImageZoomTransform() {
+  const img = document.getElementById('imageZoomImg');
+  img.style.transform = 'translate(' + imageZoomPanX + 'px,' + imageZoomPanY + 'px) scale(' + imageZoomScale + ')';
+  img.style.cursor = imageZoomScale > 1 ? 'grab' : 'zoom-in';
+  document.getElementById('imageZoomPct').textContent = Math.round(imageZoomScale * 100) + '%';
+}
+
+function setImageZoomScale(newScale) {
+  imageZoomScale = Math.min(IMAGE_ZOOM_MAX, Math.max(IMAGE_ZOOM_MIN, newScale));
+  if (imageZoomScale === IMAGE_ZOOM_MIN) { imageZoomPanX = 0; imageZoomPanY = 0; }
+  applyImageZoomTransform();
+}
+
+function openImageZoom(src, label) {
+  imageZoomScale = 1;
+  imageZoomPanX = 0;
+  imageZoomPanY = 0;
+  document.getElementById('imageZoomImg').src = src;
+  document.getElementById('imageZoomImg').alt = label || '';
+  document.getElementById('imageZoomCaption').textContent = label || '';
+  applyImageZoomTransform();
+  document.getElementById('imageZoomOverlay').classList.add('visible');
+}
+
+function closeImageZoom() {
+  document.getElementById('imageZoomOverlay').classList.remove('visible');
+}
+
+document.getElementById('imageZoomClose').addEventListener('click', closeImageZoom);
+document.getElementById('imageZoomOverlay').addEventListener('click', e => {
+  if (e.target.id === 'imageZoomOverlay') closeImageZoom();
+});
+document.getElementById('imageZoomIn').addEventListener('click', () => setImageZoomScale(imageZoomScale + IMAGE_ZOOM_STEP));
+document.getElementById('imageZoomOut').addEventListener('click', () => setImageZoomScale(imageZoomScale - IMAGE_ZOOM_STEP));
+document.getElementById('imageZoomReset').addEventListener('click', () => setImageZoomScale(1));
+document.getElementById('imageZoomImg').addEventListener('click', e => {
+  e.stopPropagation();
+  setImageZoomScale(imageZoomScale >= IMAGE_ZOOM_MAX ? 1 : imageZoomScale + IMAGE_ZOOM_STEP);
+});
+document.getElementById('imageZoomStage').addEventListener('wheel', e => {
+  if (!document.getElementById('imageZoomOverlay').classList.contains('visible')) return;
+  e.preventDefault();
+  setImageZoomScale(imageZoomScale + (e.deltaY < 0 ? IMAGE_ZOOM_STEP : -IMAGE_ZOOM_STEP));
+}, { passive: false });
+document.getElementById('imageZoomImg').addEventListener('mousedown', e => {
+  if (imageZoomScale <= 1) return;
+  imageZoomDragging = true;
+  imageZoomDragStart = { x: e.clientX - imageZoomPanX, y: e.clientY - imageZoomPanY };
+  document.getElementById('imageZoomImg').style.cursor = 'grabbing';
+});
+window.addEventListener('mousemove', e => {
+  if (!imageZoomDragging) return;
+  imageZoomPanX = e.clientX - imageZoomDragStart.x;
+  imageZoomPanY = e.clientY - imageZoomDragStart.y;
+  applyImageZoomTransform();
+});
+window.addEventListener('mouseup', () => {
+  imageZoomDragging = false;
+  const img = document.getElementById('imageZoomImg');
+  if (img) img.style.cursor = imageZoomScale > 1 ? 'grab' : 'zoom-in';
+});
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('imageZoomOverlay').classList.contains('visible')) return;
+  if (e.key === 'Escape') closeImageZoom();
+  if (e.key === '+' || e.key === '=') setImageZoomScale(imageZoomScale + IMAGE_ZOOM_STEP);
+  if (e.key === '-') setImageZoomScale(imageZoomScale - IMAGE_ZOOM_STEP);
+});
 
 function openSizeChartModal(garment) {
   const overlay = document.getElementById('sizeChartOverlay');
