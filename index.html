@@ -967,6 +967,8 @@
   .btn.secondary { background: #fff; color: var(--ink); border: 2px solid var(--line-soft); }
   .btn.secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-danger { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+  .btn-danger:hover { background: var(--accent); color: #fff; box-shadow: 0 3px 0 var(--accent-dark); }
 
   .stats-row {
     display: grid;
@@ -1023,6 +1025,43 @@
   .status-cancelled { background: var(--accent-soft); color: var(--accent-dark); border-color: var(--accent); }
 
   .empty-state { color: var(--muted); font-size: 13px; padding: 40px 8px; text-align: center; font-style: italic; }
+
+  .activity-log-row {
+    display: flex;
+    gap: 12px;
+    padding: 10px 2px;
+    border-bottom: 1px solid var(--line-soft);
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .activity-log-row:last-child { border-bottom: none; }
+  .activity-log-time { font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap; width: 128px; flex-shrink: 0; }
+  .activity-log-main { flex: 1; min-width: 200px; }
+  .activity-log-action { font-family: var(--font-condensed); font-weight: 700; text-transform: uppercase; font-size: 11.5px; letter-spacing: 0.04em; color: var(--ink); }
+  .activity-log-code {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    background: var(--paper);
+    padding: 2px 6px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid var(--line-soft);
+  }
+  .activity-log-code:hover { border-color: var(--accent); color: var(--accent); }
+  .activity-log-detail { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .activity-log-actor { font-size: 11px; color: var(--muted); font-style: italic; white-space: nowrap; }
+
+  .detail-activity-section {
+    margin-top: 24px;
+    border-top: 2px solid var(--line-soft);
+    padding-top: 16px;
+  }
+  .detail-activity-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
 
   /* Detail view */
   .back-link {
@@ -1235,6 +1274,7 @@
       </div>
       <div style="display:flex;gap:8px;">
         <button class="btn" id="newOrderBtn" type="button">+ New order</button>
+        <button class="btn secondary" id="activityLogBtn" type="button">Activity log</button>
         <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
       </div>
     </header>
@@ -1294,6 +1334,7 @@
         <button class="btn secondary" id="detailPrintBtn" type="button">Print</button>
         <button class="btn secondary" id="detailManageColumnsBtn" type="button">Manage columns</button>
         <button class="btn" id="detailOpenCustomerBtn" type="button">Open customer view</button>
+        <button class="btn btn-danger" id="detailDeleteOrderBtn" type="button">Delete order</button>
       </div>
     </div>
 
@@ -1304,6 +1345,14 @@
     <div class="summary">
       <div class="summary-by-garment" id="detailSummaryByGarment"></div>
       <div class="grand-total">Total pieces<b id="detailGrandTotal">0</b></div>
+    </div>
+
+    <div class="detail-activity-section">
+      <div class="detail-activity-head">
+        <span class="garment-picker-title">Recent activity on this order</span>
+        <button class="btn secondary" id="detailActivityRefreshBtn" type="button">Refresh</button>
+      </div>
+      <div id="detailActivityBody"><div class="empty-state">Loading\u2026</div></div>
     </div>
   </div>
   </div>
@@ -1344,6 +1393,45 @@
       <div style="display:flex;gap:8px;">
         <button class="btn" id="managerLoginSubmitBtn" type="button">Continue</button>
         <button class="btn secondary" id="managerLoginCancelBtn" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="activityLogOverlay">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Activity log</div>
+        <div class="modal-subtitle">Recent actions across all orders &mdash; including deleted ones</div>
+      </div>
+      <button class="modal-close" id="closeActivityLogBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input id="activityLogSearchInput" type="text" placeholder="Filter by order code&hellip;" spellcheck="false" style="width:100%;padding:9px 11px;border:2px solid var(--line-soft);border-radius:2px;font-family:var(--font-body);font-size:14px;margin-bottom:14px;box-sizing:border-box;">
+      <div id="activityLogBody"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteOrderOverlay">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Delete order</div>
+        <div class="modal-subtitle">This cannot be undone.</div>
+      </div>
+      <button class="modal-close" id="closeDeleteOrderBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-field">
+        <label id="deleteOrderLabel">Type the order code to confirm deletion</label>
+        <input id="deleteOrderConfirmInput" type="text" placeholder="Order code" spellcheck="false" autocomplete="off">
+        <div class="new-order-error" id="deleteOrderError"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-danger" id="confirmDeleteOrderBtn" type="button">Delete permanently</button>
+        <button class="btn secondary" id="cancelDeleteOrderBtn" type="button">Cancel</button>
       </div>
     </div>
   </div>
@@ -1498,6 +1586,21 @@ function isStaffMode() {
 const SUPABASE_URL = "https://rwlcetkcvsturthbxhaq.supabase.co"; // e.g. https://abcxyz.supabase.co
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3bGNldGtjdnN0dXJ0aGJ4aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NjQ3NzksImV4cCI6MjA5OTI0MDc3OX0.TK07VDFh1cJmHl8wWMmbk1dmjM4cWspPCSsC8lqaXtQ";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// --- Activity log ---
+// Requires an `activity_log` table in Supabase (code, action, detail, actor, created_at).
+// Logging is best-effort: if the table doesn't exist yet, this fails silently in the console
+// rather than breaking the app.
+async function logActivity(code, action, detail, actor) {
+  try {
+    const { error } = await supabaseClient
+      .from('activity_log')
+      .insert({ code: code || '', action: action, detail: detail || '', actor: actor || 'Unknown' });
+    if (error) console.warn('Activity log insert failed (has the activity_log table been created?):', error);
+  } catch (e) {
+    console.warn('Activity log failed:', e);
+  }
+}
 
 const SIZE_CHARTS = {
   "T-Shirt (Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
@@ -1784,6 +1887,7 @@ function renderGarmentPicker() {
     if (!state.garments.includes(g)) state.garments.push(g);
     if (!state.rowsByGarment[g]) state.rowsByGarment[g] = [];
     scheduleSave();
+    logActivity(teamCode, 'Garment added', g, personalContactName || 'Team member');
     render();
   }
   addBtn.addEventListener('click', addSelectedGarment);
@@ -1891,6 +1995,7 @@ function renderSections() {
         state.garments = state.garments.filter(g => g !== garment);
         delete state.rowsByGarment[garment];
         scheduleSave();
+        logActivity(teamCode, 'Garment removed', garment + ' (' + allRows.length + ' entries)', personalContactName || 'Manager');
         render();
       });
       right.appendChild(removeBtn);
@@ -1991,6 +2096,7 @@ function renderSections() {
             clearSearch();
             state.rowsByGarment[garment].push(newRow());
             scheduleSave();
+            logActivity(teamCode, 'Person added', garment, personalContactName || 'Team member');
             render();
             focusNewRowInGarment(garment);
           }
@@ -2099,6 +2205,7 @@ function renderSections() {
           state.rowsByGarment[garment].splice(idx + 1, 0, copy);
           clearSearch();
           scheduleSave();
+          logActivity(teamCode, 'Person duplicated', (row.name || 'Unnamed') + ' \u2014 ' + garment, personalContactName || 'Team member');
           render();
           requestAnimationFrame(() => {
             const newTr = document.querySelector('tr[data-row-id="' + copy.id + '"]');
@@ -2119,6 +2226,7 @@ function renderSections() {
         if (!confirm('Remove ' + (row.name ? '"' + row.name + '"' : 'this entry') + ' from the order?')) return;
         state.rowsByGarment[garment] = state.rowsByGarment[garment].filter(r => r.id !== row.id);
         scheduleSave();
+        logActivity(teamCode, 'Person removed', (row.name || 'Unnamed') + ' \u2014 ' + garment, personalContactName || 'Team member');
         render();
       });
       tdDel.appendChild(delBtn);
@@ -2136,6 +2244,7 @@ function renderSections() {
       addBtn.addEventListener('click', () => {
         state.rowsByGarment[garment].push(newRow());
         scheduleSave();
+        logActivity(teamCode, 'Person added', garment, personalContactName || 'Team member');
         render();
         focusNewRowInGarment(garment);
       });
@@ -2366,6 +2475,7 @@ function submitManagerLogin() {
     scheduleSave();
     checkManagerStatus();
     setURLParams(teamCode, managerCode);
+    logActivity(teamCode, 'Manager code set', '', personalContactName || 'Someone');
     render();
     closeManagerLoginModal();
     return;
@@ -2868,6 +2978,7 @@ function renderOrdersTable() {
 async function updateStatus(code, newStatus) {
   const order = allOrders.find(o => o.code === code);
   if (!order) return;
+  const oldStatus = (order.data && order.data.status) || 'new';
   const newData = { ...(order.data || {}), status: newStatus };
   order.data = newData; // optimistic local update
   try {
@@ -2876,6 +2987,9 @@ async function updateStatus(code, newStatus) {
       .update({ data: newData, updated_at: new Date().toISOString() })
       .eq('code', code);
     if (error) throw error;
+    if (oldStatus !== newStatus) {
+      logActivity(code, 'Status changed', (STATUS_LABELS[oldStatus] || oldStatus) + ' \u2192 ' + (STATUS_LABELS[newStatus] || newStatus), 'Staff');
+    }
   } catch (e) {
     console.error('Failed to update status:', e);
     alert('Could not save the status change. Please try again.');
@@ -2893,9 +3007,42 @@ function openDetail(code) {
   currentDetailCode = code;
   setURLCode(code);
   renderDetail(order);
+  loadDetailActivity(code);
   document.getElementById('dashboardView').style.display = 'none';
   document.getElementById('detailView').style.display = 'block';
   window.scrollTo(0, 0);
+}
+
+async function loadDetailActivity(code) {
+  const body = document.getElementById('detailActivityBody');
+  body.innerHTML = '<div class="empty-state">Loading\u2026</div>';
+  try {
+    const { data, error } = await supabaseClient
+      .from('activity_log')
+      .select('code, action, detail, actor, created_at')
+      .eq('code', code)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    if (currentDetailCode !== code) return; // user navigated away before this resolved
+    if (!data || data.length === 0) {
+      body.innerHTML = '<div class="empty-state">No activity recorded for this order yet.</div>';
+      return;
+    }
+    body.innerHTML = data.map(r =>
+      '<div class="activity-log-row">' +
+        '<div class="activity-log-time">' + formatDate(r.created_at) + '</div>' +
+        '<div class="activity-log-main">' +
+          '<span class="activity-log-action">' + escapeHtml(r.action) + '</span>' +
+          (r.detail ? '<div class="activity-log-detail">' + escapeHtml(r.detail) + '</div>' : '') +
+        '</div>' +
+        '<div class="activity-log-actor">' + escapeHtml(r.actor || '') + '</div>' +
+      '</div>'
+    ).join('');
+  } catch (e) {
+    console.error('Failed to load order activity:', e);
+    body.innerHTML = '<div class="empty-state">Couldn\u2019t load activity. The <code>activity_log</code> table may not be set up yet.</div>';
+  }
 }
 
 function closeDetail() {
@@ -3024,6 +3171,8 @@ async function saveManageColumns() {
       .eq('code', manageColumnsOrderCode);
     if (error) throw error;
     order.data = newData;
+    const colSummary = manageColumnsFields.length ? manageColumnsFields.map(f => f.label).join(', ') : 'None';
+    logActivity(manageColumnsOrderCode, 'Columns updated', colSummary, 'Staff');
     closeManageColumnsModal();
     if (currentDetailCode === manageColumnsOrderCode) renderDetail(order);
   } catch (e) {
@@ -3053,6 +3202,73 @@ document.getElementById('manageColumnsOptionsInput').addEventListener('keydown',
   if (e.key === 'Enter') { e.preventDefault(); addOrUpdateManageColumnField(); }
 });
 document.getElementById('saveManageColumnsBtn').addEventListener('click', saveManageColumns);
+
+// --- Delete order ---
+let deleteOrderCode = null;
+
+function openDeleteOrderModal(code) {
+  deleteOrderCode = code;
+  document.getElementById('deleteOrderLabel').innerHTML = 'Type <strong>' + escapeHtml(code) + '</strong> to confirm deletion';
+  document.getElementById('deleteOrderConfirmInput').value = '';
+  document.getElementById('deleteOrderError').classList.remove('visible');
+  document.getElementById('deleteOrderOverlay').classList.add('visible');
+  document.getElementById('deleteOrderConfirmInput').focus();
+}
+
+function closeDeleteOrderModal() {
+  document.getElementById('deleteOrderOverlay').classList.remove('visible');
+  deleteOrderCode = null;
+}
+
+async function confirmDeleteOrder() {
+  const input = document.getElementById('deleteOrderConfirmInput');
+  const errorEl = document.getElementById('deleteOrderError');
+  const btn = document.getElementById('confirmDeleteOrderBtn');
+  errorEl.classList.remove('visible');
+  if (input.value.trim() !== deleteOrderCode) {
+    errorEl.textContent = 'That doesn\u2019t match the order code. Type it exactly to confirm.';
+    errorEl.classList.add('visible');
+    return;
+  }
+  const order = allOrders.find(o => o.code === deleteOrderCode);
+  const teamName = order && order.data && order.data.teamName;
+  btn.disabled = true;
+  btn.textContent = 'Deleting\u2026';
+  try {
+    const { error } = await supabaseClient
+      .from('orders')
+      .delete()
+      .eq('code', deleteOrderCode);
+    if (error) throw error;
+    logActivity(deleteOrderCode, 'Order deleted', teamName ? ('Team: ' + teamName) : '', 'Staff');
+    allOrders = allOrders.filter(o => o.code !== deleteOrderCode);
+    closeDeleteOrderModal();
+    closeDetail();
+    renderStats();
+    renderOrdersTable();
+  } catch (e) {
+    console.error('Failed to delete order:', e);
+    const detail = (e && (e.message || e.error_description || e.details)) || 'Unknown error';
+    errorEl.textContent = 'Could not delete: ' + detail;
+    errorEl.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Delete permanently';
+  }
+}
+
+document.getElementById('detailDeleteOrderBtn').addEventListener('click', () => {
+  if (currentDetailCode) openDeleteOrderModal(currentDetailCode);
+});
+document.getElementById('closeDeleteOrderBtn').addEventListener('click', closeDeleteOrderModal);
+document.getElementById('cancelDeleteOrderBtn').addEventListener('click', closeDeleteOrderModal);
+document.getElementById('deleteOrderOverlay').addEventListener('click', e => {
+  if (e.target.id === 'deleteOrderOverlay') closeDeleteOrderModal();
+});
+document.getElementById('confirmDeleteOrderBtn').addEventListener('click', confirmDeleteOrder);
+document.getElementById('deleteOrderConfirmInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); confirmDeleteOrder(); }
+});
 
 function renderDetail(order) {
   const data = order.data || {};
@@ -3305,6 +3521,7 @@ async function handleGenerateOrder() {
     allOrders.unshift({ code: code, data: newData, updated_at: nowIso });
     renderStats();
     renderOrdersTable();
+    logActivity(code, 'Order created', teamName ? ('Team: ' + teamName) : '', 'Staff');
     document.getElementById('newOrderCodeValue').textContent = code;
     document.getElementById('newOrderForm').classList.add('hidden');
     document.getElementById('newOrderResult').classList.add('visible');
@@ -3373,6 +3590,73 @@ document.getElementById('detailStatusSelect').addEventListener('change', e => {
 document.getElementById('detailOpenCustomerBtn').addEventListener('click', () => {
   if (!currentDetailCode) return;
   window.open('index.html?order=' + encodeURIComponent(currentDetailCode), '_blank');
+});
+
+// --- Activity log (global) ---
+let activityLogRows = [];
+
+async function openActivityLogModal() {
+  document.getElementById('activityLogSearchInput').value = '';
+  document.getElementById('activityLogOverlay').classList.add('visible');
+  document.getElementById('activityLogBody').innerHTML = '<div class="empty-state">Loading activity\u2026</div>';
+  try {
+    const { data, error } = await supabaseClient
+      .from('activity_log')
+      .select('code, action, detail, actor, created_at')
+      .order('created_at', { ascending: false })
+      .limit(300);
+    if (error) throw error;
+    activityLogRows = data || [];
+    renderActivityLog();
+  } catch (e) {
+    console.error('Failed to load activity log:', e);
+    document.getElementById('activityLogBody').innerHTML =
+      '<div class="empty-state">Couldn\u2019t load the activity log. If this is the first time, you may need to create the <code>activity_log</code> table in Supabase &mdash; ask Claude for the setup SQL.</div>';
+  }
+}
+
+function closeActivityLogModal() {
+  document.getElementById('activityLogOverlay').classList.remove('visible');
+}
+
+function renderActivityLog() {
+  const body = document.getElementById('activityLogBody');
+  const q = document.getElementById('activityLogSearchInput').value.trim().toLowerCase();
+  const filtered = q ? activityLogRows.filter(r => (r.code || '').toLowerCase().includes(q)) : activityLogRows;
+  if (filtered.length === 0) {
+    body.innerHTML = '<div class="empty-state">' + (q ? 'No activity matching "' + escapeHtml(q) + '".' : 'No activity recorded yet.') + '</div>';
+    return;
+  }
+  body.innerHTML = filtered.map(r => {
+    const stillExists = allOrders.some(o => o.code === r.code);
+    const codeHtml = r.code
+      ? '<span class="activity-log-code" data-code="' + escapeHtml(r.code) + '" data-exists="' + stillExists + '">' + escapeHtml(r.code) + (stillExists ? '' : ' (deleted)') + '</span>'
+      : '';
+    return '<div class="activity-log-row">' +
+      '<div class="activity-log-time">' + formatDate(r.created_at) + '</div>' +
+      '<div class="activity-log-main">' +
+        '<span class="activity-log-action">' + escapeHtml(r.action) + '</span> ' + codeHtml +
+        (r.detail ? '<div class="activity-log-detail">' + escapeHtml(r.detail) + '</div>' : '') +
+      '</div>' +
+      '<div class="activity-log-actor">' + escapeHtml(r.actor || '') + '</div>' +
+    '</div>';
+  }).join('');
+  body.querySelectorAll('.activity-log-code[data-exists="true"]').forEach(el => {
+    el.addEventListener('click', () => {
+      closeActivityLogModal();
+      openDetail(el.getAttribute('data-code'));
+    });
+  });
+}
+
+document.getElementById('activityLogBtn').addEventListener('click', openActivityLogModal);
+document.getElementById('closeActivityLogBtn').addEventListener('click', closeActivityLogModal);
+document.getElementById('activityLogOverlay').addEventListener('click', e => {
+  if (e.target.id === 'activityLogOverlay') closeActivityLogModal();
+});
+document.getElementById('activityLogSearchInput').addEventListener('input', renderActivityLog);
+document.getElementById('detailActivityRefreshBtn').addEventListener('click', () => {
+  if (currentDetailCode) loadDetailActivity(currentDetailCode);
 });
 
 // --- Init ---
