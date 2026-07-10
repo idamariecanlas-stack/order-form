@@ -398,6 +398,1757 @@
   }
   .garment-thumb-zoom-btn:hover { background: var(--accent); }
   .garment-thumb-zoom-btn svg { width: 13px; height: 13px; }
+  .garment-carousel {
+    flex-shrink: 0;
+    margin-right: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .carousel-arrow {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--line-soft);
+    background: #fff;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .carousel-arrow:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .carousel-arrow svg { width: 14px; height: 14px; }
+  .carousel-main-wrap { position: relative; flex-shrink: 0; }
+  .carousel-caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    text-align: center;
+    font-family: var(--font-condensed);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(17,18,20,0.68);
+    padding: 2px 4px;
+    border-radius: 0 0 5px 5px;
+    pointer-events: none;
+  }
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--line-soft);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .carousel-dot.active { background: var(--accent); }
+  .carousel-next-preview {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    opacity: 0.75;
+    transition: opacity .15s ease;
+  }
+  .carousel-next-preview:hover { opacity: 1; }
+  .carousel-next-preview img {
+    display: block;
+    height: 62px;
+    width: auto;
+    max-width: 80px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid var(--line-soft);
+    border-radius: 6px;
+    padding: 4px;
+  }
+  .carousel-next-preview span {
+    font-family: var(--font-condensed);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .size-chart-link a {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--info);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--info);
+    white-space: nowrap;
+  }
+  .size-chart-link a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .size-chart-index { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 18px; }
+  .size-chart-index a {
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--line-soft);
+    padding: 3px 9px;
+    border-radius: 2px;
+  }
+  .size-chart-index a:hover { color: var(--accent); border-color: var(--accent); }
+  .size-chart-block { scroll-margin-top: 12px; }
+  .size-chart-block.size-chart-highlight .review-garment-heading { color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  thead th {
+    text-align: left;
+    font-family: var(--font-condensed);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 2px solid var(--line-soft);
+    padding: 7px 6px;
+  }
+  tbody td { padding: 4px 6px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+  tbody tr:hover td { background: var(--accent-soft); }
+  tbody tr.locked-row:hover td { background: transparent; }
+  tbody input, tbody select, tbody textarea {
+    width: 100%;
+    padding: 7px 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    border-radius: 2px;
+  }
+  tbody input:hover, tbody select:hover, tbody textarea:hover { border-color: var(--line-soft); }
+  tbody input:focus, tbody select:focus, tbody textarea:focus { background: #fff; border-color: var(--accent); outline: none; }
+  tbody input:disabled, tbody select:disabled, tbody textarea:disabled { background: #f2f1ee; color: var(--muted); cursor: not-allowed; }
+  tbody textarea {
+    resize: vertical;
+    min-height: 34px;
+    max-height: 110px;
+    overflow-y: auto;
+    line-height: 1.4;
+    font-family: inherit;
+  }
+  .col-num { width: 28px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+  .col-del { width: 60px; text-align: center; white-space: nowrap; }
+  .del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 17px; line-height: 1; padding: 4px; font-weight: 700; }
+  .del-btn:hover { color: var(--accent); }
+  .del-btn:disabled { color: #d0cfcc; cursor: not-allowed; }
+  .dup-btn { background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px; line-height: 1; vertical-align: middle; }
+  .dup-btn svg { width: 15px; height: 15px; display: block; }
+  .dup-btn:hover { color: var(--accent); }
+  .lock-icon { color: var(--muted); font-size: 12px; }
+
+  tbody select.field-missing {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .find-entry-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 8px 12px;
+    margin-top: 20px;
+    position: relative;
+  }
+  .find-entry-icon { width: 16px; height: 16px; color: var(--muted); flex-shrink: 0; }
+  .find-entry-row input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    background: transparent;
+  }
+  .find-entry-row button.secondary {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .find-entry-row button.secondary:hover { color: var(--accent); }
+
+  .add-row-btn {
+    margin-top: 10px;
+    background: var(--ink);
+    border: none;
+    color: #fff;
+    padding: 10px 14px;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    cursor: pointer;
+    border-radius: 2px;
+    font-family: var(--font-body);
+  }
+  .add-row-btn:hover { background: var(--accent); }
+
+  /* Mobile-friendly stacked rows for the roster table */
+  @media (max-width: 720px) {
+    table.row-table thead { display: none; }
+    table.row-table, table.row-table tbody, table.row-table tr, table.row-table td {
+      display: block;
+      width: 100%;
+    }
+    table.row-table tr {
+      border: 2px solid var(--line-soft);
+      border-radius: 3px;
+      margin-bottom: 12px;
+      padding: 10px 12px 6px;
+      position: relative;
+    }
+    table.row-table tr.locked-row { opacity: 0.75; }
+    table.row-table td {
+      border-bottom: none;
+      padding: 6px 0;
+    }
+    table.row-table td.col-num {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: auto;
+    }
+    table.row-table td.col-del {
+      text-align: right;
+      border-top: 1px solid var(--line-soft);
+      margin-top: 4px;
+      padding-top: 8px;
+    }
+    table.row-table td:not(.col-num):not(.col-del)::before {
+      content: attr(data-label);
+      display: block;
+      font-family: var(--font-condensed);
+      font-weight: 700;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    table.row-table tbody input, table.row-table tbody select, table.row-table tbody textarea {
+      border-color: var(--line-soft);
+    }
+  }
+
+  .summary {
+    margin-top: 30px;
+    border-top: 4px solid var(--ink);
+    padding-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .summary-by-garment { display: flex; flex-direction: column; gap: 8px; }
+  .summary-garment-row { display: flex; align-items: baseline; gap: 10px; font-size: 12.5px; }
+  .summary-garment-name { font-weight: 700; min-width: 200px; }
+  .size-breakdown { font-family: var(--font-mono); font-size: 12px; color: var(--ink); display: flex; flex-wrap: wrap; gap: 5px; }
+  .size-chip { background: var(--ink); color: #fff; padding: 3px 8px; border-radius: 2px; font-weight: 600; }
+  .grand-total { font-family: var(--font-display); font-weight: 400; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
+  .grand-total b { font-size: 30px; color: var(--accent); display: block; letter-spacing: normal; }
+
+  .empty-state { color: var(--muted); font-size: 13px; padding: 20px 8px; text-align: center; font-style: italic; }
+
+  footer.note { margin-top: 30px; font-size: 12px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--line-soft); padding-top: 14px; }
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(17,18,20,0.72);
+    z-index: 100;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    overflow-y: auto;
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal {
+    background: var(--panel);
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .modal-head {
+    background: var(--ink);
+    color: #fff;
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 3px solid var(--accent);
+  }
+  .modal-title { font-family: var(--font-display); font-weight: 400; font-size: 21px; letter-spacing: 0.01em; text-transform: uppercase; }
+  .modal-subtitle { font-family: var(--font-condensed); font-weight: 600; font-size: 12.5px; color: #c8c8ca; margin-top: 4px; }
+  .modal-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--font-condensed);
+  }
+  .modal-btn:hover { background: var(--accent-dark); }
+  .modal-close {
+    background: none;
+    border: 1px solid #4a4c50;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .modal-close:hover { background: #3a3c40; }
+  .modal-body { padding: 22px; max-height: 72vh; overflow-y: auto; }
+
+  /* New order modal */
+  .new-order-field { margin-bottom: 16px; }
+  .new-order-field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 6px; }
+  .new-order-field input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  .new-order-field input:focus { outline: none; border-color: var(--accent); }
+  .new-order-hint { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .new-order-result { display: none; }
+  .new-order-result.visible { display: block; }
+  .new-order-form.hidden { display: none; }
+  .new-order-code-box {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 2px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .new-order-code-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: #9a9a9c; font-weight: 700; margin-bottom: 6px; }
+  .new-order-code-value { font-family: var(--font-mono); font-size: 22px; font-weight: 700; letter-spacing: 0.03em; word-break: break-all; }
+  .new-order-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .new-order-copied { display: none; font-size: 12px; color: var(--ok); margin-top: 8px; font-weight: 600; }
+  .new-order-copied.visible { display: block; }
+  .new-order-error { display: none; font-size: 12.5px; color: var(--accent-dark); margin-top: 10px; font-weight: 600; }
+  .new-order-error.visible { display: block; }
+  .new-order-field-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .new-order-field-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 5px 6px 5px 10px;
+    border-radius: 2px;
+  }
+  .new-order-field-tag button {
+    background: none;
+    border: none;
+    color: #b8b8ba;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .new-order-field-tag button:hover { color: #fff; }
+
+  .image-zoom-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,11,0.88);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+  .image-zoom-overlay.visible { display: flex; }
+  .image-zoom-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .image-zoom-stage img {
+    max-width: 90vw;
+    max-height: 80vh;
+    transition: transform .18s ease;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none;
+    border-radius: 4px;
+    background: #fff;
+  }
+  .image-zoom-controls {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(28,29,32,0.92);
+    border: 1px solid #4a4c50;
+    border-radius: 30px;
+    padding: 6px;
+    z-index: 201;
+  }
+  .image-zoom-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .image-zoom-btn:hover { background: rgba(255,255,255,0.14); }
+  .image-zoom-btn svg { width: 17px; height: 17px; }
+  .image-zoom-pct { color: #d8d8da; font-family: var(--font-mono); font-size: 12px; min-width: 44px; text-align: center; }
+  .image-zoom-close {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(28,29,32,0.92);
+    border: 1px solid #4a4c50;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 201;
+  }
+  .image-zoom-close:hover { background: #3a3c40; }
+  .image-zoom-caption {
+    position: fixed;
+    top: 22px;
+    left: 24px;
+    color: #d8d8da;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 201;
+  }
+  .review-garment-block { margin-bottom: 26px; }
+  .review-garment-block:last-child { margin-bottom: 0; }
+  .review-garment-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 15px;
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .review-garment-heading small { font-family: var(--font-mono); font-weight: 400; color: var(--muted); font-size: 12px; text-transform: none; }
+  table.review-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.review-table th {
+    text-align: left;
+    background: var(--paper);
+    border-bottom: 2px solid var(--line-soft);
+    padding: 7px 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  table.review-table td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); }
+  table.review-table td.notes-cell { white-space: pre-wrap; }
+  table.review-table tr:nth-child(even) td { background: #fafaf9; }
+  .review-missing { color: var(--accent); font-style: italic; }
+  .review-grand-total {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 4px solid var(--ink);
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 16px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .review-grand-total b { font-size: 32px; color: var(--accent); }
+
+  @media print {
+    body * { visibility: hidden; }
+    .modal-overlay, .modal-overlay * { visibility: visible; }
+    .modal-overlay { position: absolute; inset: auto; padding: 0; background: #fff; }
+    .modal { max-width: 100%; }
+    .modal-head button { display: none; }
+    .modal-head { background: #fff !important; color: #000 !important; border-bottom: 4px solid #000; }
+    .modal-subtitle { color: #333 !important; }
+  }
+
+  :root {
+    --ink: #111214;
+    --paper: #f5f4f2;
+    --panel: #ffffff;
+    --line: #26282c;
+    --line-soft: #dcdad6;
+    --accent: #b8342d;
+    --accent-dark: #8a2521;
+    --accent-soft: #f7e3e1;
+    --muted: #6b6c70;
+    --ok: #2f6b3a;
+    --ok-soft: #e3f0e4;
+    --warn: #9a6b0f;
+    --warn-soft: #fbf0d9;
+    --info: #1f5f8b;
+    --info-soft: #dcedf7;
+    --font-display: 'Anton', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    --font-condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --font-body: 'Barlow', 'Helvetica Neue', Arial, -apple-system, sans-serif;
+    --font-mono: 'SF Mono', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-size: 16px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    padding: 0 0 80px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+
+  .topbar {
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 4px solid var(--accent);
+  }
+  .brand-logo { display: flex; align-items: center; }
+  .brand-logo img { display: block; }
+  .topbar .tagline {
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #b8b8ba;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .staff-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #cfcfd1;
+    border: 1px solid #3a3c40;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 4px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 30px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  header .subtitle { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .toolbar input[type="text"] {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 12px;
+    border: 2px solid var(--line-soft);
+    background: var(--panel);
+    font-family: var(--font-body);
+    font-size: 14px;
+    border-radius: 2px;
+  }
+  .toolbar input[type="text"]:focus { outline: none; border-color: var(--accent); }
+  .toolbar select {
+    padding: 10px 12px;
+    border: 2px solid var(--line-soft);
+    background: var(--panel);
+    font-family: var(--font-body);
+    font-size: 13px;
+    border-radius: 2px;
+  }
+  .btn {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    cursor: pointer;
+    border-radius: 2px;
+    font-family: var(--font-condensed);
+    white-space: nowrap;
+  }
+  .btn { transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease; }
+  .btn:hover { background: var(--accent); transform: translateY(-1px); box-shadow: 0 3px 0 var(--accent-dark); }
+  .btn:active { transform: translateY(0); box-shadow: none; }
+  .btn.secondary { background: #fff; color: var(--ink); border: 2px solid var(--line-soft); }
+  .btn.secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-danger { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+  .btn-danger:hover { background: var(--accent); color: #fff; box-shadow: 0 3px 0 var(--accent-dark); }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 12px 14px;
+  }
+  .stat-card .stat-label { font-family: var(--font-condensed); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+  .stat-card .stat-value { font-family: var(--font-display); font-size: 24px; margin-top: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .orders-table thead th {
+    text-align: left;
+    font-family: var(--font-condensed);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 2px solid var(--ink);
+    padding: 9px 8px;
+    background: var(--panel);
+    position: sticky;
+    top: 0;
+  }
+  .orders-table tbody td { padding: 10px 8px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; font-size: 13.5px; }
+  .orders-table tbody tr:hover td { background: var(--accent-soft); }
+  .orders-table .code-cell { font-family: var(--font-mono); font-size: 12.5px; }
+  .orders-table-wrap { background: var(--panel); border: 2px solid var(--line-soft); border-radius: 2px; overflow: hidden; }
+  .orders-table-wrap .orders-table { margin: 0; }
+  .orders-table-wrap thead th:first-child { padding-left: 14px; }
+  .orders-table-wrap tbody td:first-child { padding-left: 14px; }
+
+  select.status-select {
+    padding: 6px 8px;
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    font-family: var(--font-condensed);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+  }
+  .status-new { background: var(--info-soft); color: var(--info); border-color: var(--info); }
+  .status-in_production { background: var(--warn-soft); color: var(--warn); border-color: var(--warn); }
+  .status-ready { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+  .status-completed { background: #ececec; color: var(--muted); border-color: var(--line-soft); }
+  .status-cancelled { background: var(--accent-soft); color: var(--accent-dark); border-color: var(--accent); }
+
+  .empty-state { color: var(--muted); font-size: 13px; padding: 40px 8px; text-align: center; font-style: italic; }
+
+  .activity-log-row {
+    display: flex;
+    gap: 12px;
+    padding: 10px 2px;
+    border-bottom: 1px solid var(--line-soft);
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .activity-log-row:last-child { border-bottom: none; }
+  .activity-log-time { font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap; width: 128px; flex-shrink: 0; }
+  .activity-log-main { flex: 1; min-width: 200px; }
+  .activity-log-action { font-family: var(--font-condensed); font-weight: 700; text-transform: uppercase; font-size: 11.5px; letter-spacing: 0.04em; color: var(--ink); }
+  .activity-log-code {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    background: var(--paper);
+    padding: 2px 6px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid var(--line-soft);
+  }
+  .activity-log-code:hover { border-color: var(--accent); color: var(--accent); }
+  .activity-log-detail { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .activity-log-actor { font-size: 11px; color: var(--muted); font-style: italic; white-space: nowrap; }
+
+  .detail-activity-section {
+    margin-top: 24px;
+    border-top: 2px solid var(--line-soft);
+    padding-top: 16px;
+  }
+  .detail-activity-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  /* Detail view */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-family: var(--font-condensed);
+    font-size: 13.5px;
+    text-decoration: none;
+    cursor: pointer;
+    margin-bottom: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 4px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .detail-head h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 24px;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+  }
+  .detail-meta { font-size: 12.5px; color: var(--muted); line-height: 1.7; }
+  .detail-meta code { font-family: var(--font-mono); background: var(--paper); padding: 1px 6px; border-radius: 2px; }
+  .detail-actions { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .info-card {
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 12px 14px;
+  }
+  .info-card .info-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+  .info-card .info-value { font-size: 14px; font-weight: 600; }
+  .info-card .info-value.mono { font-family: var(--font-mono); font-size: 13px; }
+
+  .review-garment-block { margin-bottom: 26px; }
+  .review-garment-block:last-child { margin-bottom: 0; }
+  .review-garment-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 15px;
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .review-garment-heading small { font-family: var(--font-mono); font-weight: 400; font-size: 11.5px; color: var(--muted); text-transform: none; }
+  table.review-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.review-table th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 2px solid var(--line-soft);
+    padding: 7px 8px;
+  }
+  table.review-table td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); }
+  table.review-table td.notes-cell { white-space: pre-wrap; }
+  table.review-table tr:nth-child(even) td { background: #fafaf9; }
+  .review-missing { color: var(--accent); font-style: italic; }
+
+  .summary {
+    margin-top: 30px;
+    border-top: 4px solid var(--ink);
+    padding-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .summary-by-garment { display: flex; flex-direction: column; gap: 8px; }
+  .summary-garment-row { display: flex; align-items: baseline; gap: 10px; font-size: 12.5px; }
+  .summary-garment-name { font-weight: 700; min-width: 200px; }
+  .size-breakdown { font-family: var(--font-mono); font-size: 12px; color: var(--ink); display: flex; flex-wrap: wrap; gap: 5px; }
+  .size-chip { background: var(--ink); color: #fff; padding: 3px 8px; border-radius: 2px; font-weight: 600; }
+  .grand-total { font-family: var(--font-display); font-weight: 400; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
+  .grand-total b { font-size: 30px; color: var(--accent); display: block; letter-spacing: normal; }
+
+  .loading-note { color: var(--muted); font-size: 13px; padding: 30px 8px; text-align: center; }
+
+  @media print {
+    .topbar, .toolbar, .back-link, .detail-actions, .btn { display: none !important; }
+  }
+
+
+  /* --- merged-view extras --- */
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  #backToOrderFormLink {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #cfcfd1;
+    text-decoration: none;
+    border: 1px solid #3a3c40;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  #backToOrderFormLink:hover { color: #fff; border-color: #fff; }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand-logo"><img src="data:image/png;base64,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" alt="Beast Mode" height="48"></div>
+  <div class="topbar-right">
+    <div class="tagline">Your Gear, Your Way</div>
+    <div class="staff-pill" id="staffPill" style="display:none;">Staff area</div>
+    <a href="#" id="backToOrderFormLink" style="display:none;">&larr; Back to order form</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="customerApp">
+  <header>
+    <h1>Team Order Form</h1>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="role-badge viewer" id="roleBadge">Viewer</span>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">All changes saved</span></div>
+    </div>
+  </header>
+
+  <div class="share-banner" id="shareBanner">
+    <div class="share-banner-text">
+      <strong>Got an order code from us?</strong> Enter it below to open your team's order, then share it with parents, coaches, or teammates &mdash; anyone with the code can add players and edit their own rows, live. Only the manager can pick which garments are on the order, or remove someone else's row.
+    </div>
+    <div class="share-code-row">
+      <input id="teamCode" type="text" placeholder="Enter the order code we gave you" spellcheck="false">
+      <button id="loadCodeBtn" type="button">Load order</button>
+      <button id="shareBtn" type="button">Copy link to share</button>
+      <button id="managerBtn" type="button" class="secondary">Manager login</button>
+      <button id="sizeChartBtn" type="button" class="secondary">Size chart</button>
+      <button id="exportBtn" type="button" class="secondary" style="display:none;">Download full list</button>
+    </div>
+    <div class="share-copied" id="shareCopied">Link copied. Send it to your team.</div>
+    <div class="manager-note" id="managerNote"></div>
+  </div>
+
+  <div class="meta-row">
+    <div class="field">
+      <label for="teamName">Team / Order name</label>
+      <input id="teamName" type="text" placeholder="e.g. Manaia U11s Rugby">
+    </div>
+    <div class="field">
+      <label for="contactName">Your name</label>
+      <input id="contactName" type="text" placeholder="So we know who added what">
+    </div>
+  </div>
+
+  <div class="garment-picker" id="garmentPicker">
+    <div class="garment-picker-head">
+      <span class="garment-picker-title">Garments on this order</span>
+      <span class="garment-picker-hint" id="garmentPickerHint">Only the manager can change this list</span>
+      <button class="manage-columns-link" id="managerColumnsBtn" type="button" style="display:none;">+ Manage columns</button>
+      <button class="manage-columns-link" id="customerImportBtn" type="button" style="display:none; margin-left:8px;">Import Excel/CSV</button>
+    </div>
+    <div id="garmentPickerBody"></div>
+  </div>
+
+  <div class="find-entry-row" id="findEntryRow" style="display:none;">
+    <svg class="find-entry-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="findEntrySearch" type="text" placeholder="Find your name across this order&hellip;" spellcheck="false">
+    <button id="findEntryClearBtn" type="button" class="secondary" style="display:none;">Clear</button>
+  </div>
+
+  <div id="sectionsContainer"></div>
+
+  <div class="summary">
+    <div class="summary-by-garment" id="summaryByGarment"></div>
+    <div class="grand-total">Total pieces<b id="grandTotal">0</b></div>
+  </div>
+
+  <footer class="note">
+    Your progress saves automatically, even if you close this tab, refresh, or log out. Anyone with the order code can add players and edit their own entries. Only the manager (logged in with the manager code) can choose which garments are ordered or remove another person's row. Use the size dropdowns to keep everything consistent with our official size charts. Don't have an order code yet? Ask us and we'll set one up for your team.
+  </footer>
+  </div>
+
+  <div id="staffApp" style="display:none;">
+
+  <div id="dashboardView">
+    <header>
+      <div>
+        <h1>Staff Dashboard</h1>
+        <div class="subtitle">All team orders, live from Supabase. No login required &mdash; keep this <code>?staff=1</code> link private to staff.</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="newOrderBtn" type="button">+ New order</button>
+        <button class="btn secondary" id="activityLogBtn" type="button">Activity log</button>
+        <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
+      </div>
+    </header>
+
+    <div class="stats-row" id="statsRow"></div>
+
+    <div class="toolbar">
+      <input id="searchInput" type="text" placeholder="Search by order code or team name&hellip;">
+      <select id="statusFilter">
+        <option value="">All statuses</option>
+        <option value="new">New</option>
+        <option value="in_production">In production</option>
+        <option value="ready">Ready for pickup</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+
+    <div class="orders-table-wrap">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Order code</th>
+            <th style="width:26%">Team / order name</th>
+            <th style="width:10%">Pieces</th>
+            <th style="width:16%">Status</th>
+            <th style="width:16%">Last updated</th>
+            <th style="width:10%"></th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+      <div class="empty-state" id="ordersEmptyState" style="display:none;">No orders found.</div>
+      <div class="loading-note" id="ordersLoadingNote">Loading orders&hellip;</div>
+    </div>
+  </div>
+
+  <div id="detailView" style="display:none;">
+    <a class="back-link" id="backLink">&larr; Back to all orders</a>
+
+    <div class="detail-head">
+      <div>
+        <h2 id="detailTeamName">&nbsp;</h2>
+        <div class="detail-meta">
+          Order code: <code id="detailCode"></code> &nbsp;&bull;&nbsp; Last updated: <span id="detailUpdated"></span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <select class="status-select" id="detailStatusSelect">
+          <option value="new">New</option>
+          <option value="in_production">In production</option>
+          <option value="ready">Ready for pickup</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <button class="btn secondary" id="detailCsvBtn" type="button">Download CSV</button>
+        <button class="btn secondary" id="detailPrintBtn" type="button">Print</button>
+        <button class="btn secondary" id="detailManageColumnsBtn" type="button">Manage columns</button>
+        <button class="btn" id="detailOpenCustomerBtn" type="button">Open customer view</button>
+        <button class="btn btn-danger" id="detailDeleteOrderBtn" type="button">Delete order</button>
+      </div>
+    </div>
+
+    <div class="info-grid" id="detailInfoGrid"></div>
+
+    <div id="detailBody"></div>
+
+    <div class="summary">
+      <div class="summary-by-garment" id="detailSummaryByGarment"></div>
+      <div class="grand-total">Total pieces<b id="detailGrandTotal">0</b></div>
+    </div>
+
+    <div class="detail-activity-section">
+      <div class="detail-activity-head">
+        <span class="garment-picker-title">Recent activity on this order</span>
+        <button class="btn secondary" id="detailActivityRefreshBtn" type="button">Refresh</button>
+      </div>
+      <div id="detailActivityBody"><div class="empty-state">Loading\u2026</div></div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="columnsOverlay">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Manage columns</div>
+        <div class="modal-subtitle">Extra columns for this order</div>
+      </div>
+      <button class="modal-close" id="closeColumnsBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-field">
+        <label>Current columns</label>
+        <div class="new-order-field-tags" id="columnsTags"></div>
+        <div class="new-order-hint" id="columnsEmptyHint">No extra columns yet. Add one below.</div>
+        <div class="new-order-hint">Click a column to edit it. Removing a column stops showing that data going forward &mdash; it doesn't delete anything already saved. Changes save automatically.</div>
+      </div>
+      <div class="new-order-field">
+        <label for="columnsFieldInput" id="columnsFieldLabel">Add a column</label>
+        <div style="display:flex;gap:8px;">
+          <input id="columnsFieldInput" type="text" placeholder="e.g. Sleeve Name" spellcheck="false" style="flex:1;">
+          <button class="btn secondary" id="addColumnsFieldBtn" type="button" style="white-space:nowrap;">+ Add column</button>
+        </div>
+        <input id="columnsOptionsInput" type="text" placeholder="Options, comma-separated (optional &mdash; leave blank for free text)" spellcheck="false" style="margin-top:8px;">
+        <div class="new-order-error" id="columnsError"></div>
+      </div>
+      <button class="btn secondary" id="doneColumnsBtn" type="button">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reviewOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="reviewModalTitle">Full order review</div>
+        <div class="modal-subtitle" id="reviewModalSubtitle"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-btn" id="printReviewBtn">Print</button>
+        <button class="modal-btn" id="csvReviewBtn">Download CSV</button>
+        <button class="modal-close" id="closeReviewBtn">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body" id="reviewModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="managerLoginOverlay">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="managerLoginTitle">Manager login</div>
+        <div class="modal-subtitle" id="managerLoginSubtitle">Enter the manager code for this order</div>
+      </div>
+      <button class="modal-close" id="closeManagerLoginBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-field">
+        <label for="managerLoginInput" id="managerLoginLabel">Manager code</label>
+        <input id="managerLoginInput" type="text" placeholder="Enter code" spellcheck="false" autocomplete="off">
+        <div class="new-order-error" id="managerLoginError"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="managerLoginSubmitBtn" type="button">Continue</button>
+        <button class="btn secondary" id="managerLoginCancelBtn" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="activityLogOverlay">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Activity log</div>
+        <div class="modal-subtitle">Recent actions across all orders &mdash; including deleted ones</div>
+      </div>
+      <button class="modal-close" id="closeActivityLogBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input id="activityLogSearchInput" type="text" placeholder="Filter by order code&hellip;" spellcheck="false" style="width:100%;padding:9px 11px;border:2px solid var(--line-soft);border-radius:2px;font-family:var(--font-body);font-size:14px;margin-bottom:14px;box-sizing:border-box;">
+      <div id="activityLogBody"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteOrderOverlay">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Delete order</div>
+        <div class="modal-subtitle">This cannot be undone.</div>
+      </div>
+      <button class="modal-close" id="closeDeleteOrderBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-field">
+        <label id="deleteOrderLabel">Type the order code to confirm deletion</label>
+        <input id="deleteOrderConfirmInput" type="text" placeholder="Order code" spellcheck="false" autocomplete="off">
+        <div class="new-order-error" id="deleteOrderError"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-danger" id="confirmDeleteOrderBtn" type="button">Delete permanently</button>
+        <button class="btn secondary" id="cancelDeleteOrderBtn" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="manageColumnsOverlay">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Manage columns</div>
+        <div class="modal-subtitle" id="manageColumnsSubtitle">Extra columns for this order</div>
+      </div>
+      <button class="modal-close" id="closeManageColumnsBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-field">
+        <label>Current columns</label>
+        <div class="new-order-field-tags" id="manageColumnsTags"></div>
+        <div class="new-order-hint" id="manageColumnsEmptyHint">No extra columns on this order yet. Add one below.</div>
+        <div class="new-order-hint">Click a column to edit it. Removing a column stops showing that data going forward &mdash; it doesn't delete anything already saved.</div>
+      </div>
+      <div class="new-order-field">
+        <label for="manageColumnsFieldInput" id="manageColumnsFieldLabel">Add a column</label>
+        <div style="display:flex;gap:8px;">
+          <input id="manageColumnsFieldInput" type="text" placeholder="e.g. Sleeve Name" spellcheck="false" style="flex:1;">
+          <button class="btn secondary" id="addManageColumnBtn" type="button" style="white-space:nowrap;">+ Add column</button>
+        </div>
+        <input id="manageColumnsOptionsInput" type="text" placeholder="Options, comma-separated (optional &mdash; leave blank for free text)" spellcheck="false" style="margin-top:8px;">
+        <div class="new-order-error" id="manageColumnsError"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="saveManageColumnsBtn" type="button">Save changes</button>
+        <button class="btn secondary" id="cancelManageColumnsBtn" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newOrderOverlay">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">New order</div>
+        <div class="modal-subtitle">Generates a unique order code to give the team</div>
+      </div>
+      <button class="modal-close" id="closeNewOrderBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="new-order-form" id="newOrderForm">
+        <div class="new-order-field">
+          <label for="newOrderTeamName">Team / order name (optional)</label>
+          <input id="newOrderTeamName" type="text" placeholder="e.g. Manaia U11s Rugby" spellcheck="false">
+          <div class="new-order-hint">Codes follow a uniform BEASTMODE-#### format &mdash; you give it to the team, they never have to make one up.</div>
+        </div>
+        <div class="new-order-field">
+          <label for="newOrderFieldInput">Extra columns for this order (optional)</label>
+          <div style="display:flex;gap:8px;">
+            <input id="newOrderFieldInput" type="text" placeholder="e.g. Sleeve Name" spellcheck="false" style="flex:1;">
+            <button class="btn secondary" id="addNewOrderFieldBtn" type="button" style="white-space:nowrap;">+ Add column</button>
+          </div>
+          <input id="newOrderFieldOptionsInput" type="text" placeholder="Options, comma-separated (optional &mdash; leave blank for free text, e.g. Home, Away, Training)" spellcheck="false" style="margin-top:8px;">
+          <div class="new-order-field-tags" id="newOrderFieldTags"></div>
+          <div class="new-order-hint">Every row gets one extra column for each of these. Add options to make it a dropdown (fewer typos/variants) &mdash; e.g. "Sleeve Name" for AIMS Games basketball orders.</div>
+        </div>
+        <button class="btn" id="generateOrderBtn" type="button">Generate code</button>
+        <div class="new-order-error" id="newOrderError"></div>
+      </div>
+      <div class="new-order-result" id="newOrderResult">
+        <div class="new-order-code-box">
+          <div class="new-order-code-label">Order code</div>
+          <div class="new-order-code-value" id="newOrderCodeValue"></div>
+        </div>
+        <div class="new-order-actions">
+          <button class="btn" id="copyNewOrderLinkBtn" type="button">Copy customer link</button>
+          <button class="btn secondary" id="copyNewOrderCodeBtn" type="button">Copy code only</button>
+          <button class="btn secondary" id="openNewOrderBtn" type="button">Open order</button>
+        </div>
+        <div class="new-order-copied" id="newOrderCopied">Copied.</div>
+        <div class="new-order-hint">Send this to the team manager. They'll load it with the code, and can set up their own manager login from there.</div>
+        <div style="margin-top:16px;">
+          <button class="btn secondary" id="newOrderDoneBtn" type="button">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="sizeChartOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Size chart</div>
+        <div class="modal-subtitle" id="sizeChartModalSubtitle">Reference sizes for every garment</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-close" id="closeSizeChartBtn">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body" id="sizeChartModalBody"></div>
+  </div>
+</div>
+
+<div class="image-zoom-overlay" id="imageZoomOverlay">
+  <div class="image-zoom-caption" id="imageZoomCaption"></div>
+  <button class="image-zoom-close" id="imageZoomClose">&times;</button>
+  <div class="image-zoom-stage" id="imageZoomStage">
+    <img id="imageZoomImg" src="" alt="" draggable="false">
+  </div>
+  <div class="image-zoom-controls">
+    <button class="image-zoom-btn" id="imageZoomOut" title="Zoom out">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </button>
+    <span class="image-zoom-pct" id="imageZoomPct">100%</span>
+    <button class="image-zoom-btn" id="imageZoomIn" title="Zoom in">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </button>
+    <button class="image-zoom-btn" id="imageZoomReset" title="Reset zoom" style="width:auto;padding:0 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;">Reset</button>
+  </div>
+</div>
+
+<script>
+// --- View bootstrap: this single file serves both the customer order form
+// and the staff dashboard. Add ?staff=1 to the URL to see the staff view. ---
+function isStaffMode() {
+  return new URLSearchParams(window.location.search).get('staff') === '1';
+}
+
+(function bootstrapView() {
+  const staffMode = isStaffMode();
+  document.getElementById('customerApp').style.display = staffMode ? 'none' : 'block';
+  document.getElementById('staffApp').style.display = staffMode ? 'block' : 'none';
+  document.getElementById('staffPill').style.display = staffMode ? 'inline-block' : 'none';
+  const backLink = document.getElementById('backToOrderFormLink');
+  if (staffMode) {
+    backLink.style.display = 'inline-block';
+    backLink.addEventListener('click', e => {
+      e.preventDefault();
+      const url = new URL(window.location.href);
+      url.searchParams.delete('staff');
+      url.searchParams.delete('code');
+      window.location.href = url.toString();
+    });
+  }
+})();
+
+// ============================================================
+// Customer order form logic
+// ============================================================
+
+// --- Supabase setup ---
+// Fill these in from your Supabase project: Settings -> API
+const SUPABASE_URL = "https://rwlcetkcvsturthbxhaq.supabase.co"; // e.g. https://abcxyz.supabase.co
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3bGNldGtjdnN0dXJ0aGJ4aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NjQ3NzksImV4cCI6MjA5OTI0MDc3OX0.TK07VDFh1cJmHl8wWMmbk1dmjM4cWspPCSsC8lqaXtQ";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// --- Activity log ---
+// Requires an `activity_log` table in Supabase (code, action, detail, actor, created_at).
+// Logging is best-effort: if the table doesn't exist yet, this fails silently in the console
+// rather than breaking the app.
+async function logActivity(code, action, detail, actor) {
+  try {
+    const { error } = await supabaseClient
+      .from('activity_log')
+      .insert({ code: code || '', action: action, detail: detail || '', actor: actor || 'Unknown' });
+    if (error) console.warn('Activity log insert failed (has the activity_log table been created?):', error);
+  } catch (e) {
+    console.warn('Activity log failed:', e);
+  }
+}
+
+const SIZE_CHARTS = {
+  "T-Shirt (Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
+  "T-Shirt (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL","W6XL","W7XL","W8XL","W9XL","W10XL","W11XL","W12XL"],
+  "Long Sleeve T-Shirt (Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Long Sleeve T-Shirt (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Fitted Volleyball T-Shirt": ["Y6","Y8","Y10","Y12","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Polo Shirt (Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
+  "Polo Shirt (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL","W6XL","W7XL","W8XL","W9XL","W10XL","W11XL","W12XL"],
+  "Hoodie (Youth/Adult Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Hoodie (Womens)": ["W3XS","WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL"],
+  "Quarter Zip Jumper (Unisex)": ["XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Quarter Zip Jumper (Youth)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16"],
+  "Quarter Zip Jumper (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Singlet (Unisex)": ["Y2","Y3","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
+  "Singlet (Womens)": ["W8","W10","W12","W14","W16","W18","W20","W22","W24","W26","W28","W30","W32","W34","W36","W38"],
+  "Cycling Shirt (Unisex)": ["XS","S","M","L","XL","2XL","3XL"],
+  "Cycling Shirt (Womens)": ["W3XS","W2XS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Goalie Smock": ["3XS","2XS","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Puffer Jacket (Youth/Adult Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","S","M","L","XL","2XL","3XL","4XL"],
+  "Puffer Jacket (Womens)": ["W3XS","WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL"],
+  "Tracksuit Jacket (Youth/Adult Unisex)": ["4","6","8","10","12","14","S","M","L","XL","2XL","3XL","4XL"],
+  "Tracksuit Jacket (Womens)": ["W3XS","WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL"],
+  "Rain Jacket (Youth/Adult Unisex)": ["YXS","YS","YM","YL","YXL","XS","S","M","L","XL","2XL","3XL","4XL"],
+  "Rain Jacket (Womens)": ["12/W3XS","WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL"],
+  "Rugby Jersey (Youth & Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","Y16/XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL"],
+  "Rugby Jersey (Womens)": ["WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL","W6XL","W7XL"],
+  "Rugby Shorts (Youth Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","Y16/XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL"],
+  "Rugby Shorts (Womens)": ["W6","W8","W10","W12","W14","W16","W18","W20","W22","W24","W26"],
+  "Rugby Training Jacket": ["Y6","Y8","Y10","Y12","Y14","XS","S","M","L","XL","2XL","3XL","4XL"],
+  "Baseball Jersey (Youth/Adult Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Baseball Jersey (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Baseball Pants": ["YXS","YS","YM","YL","YXL","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Baseball Cage Jacket (Unisex)": ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
+  "Baseball Cage Jacket (Youth)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16"],
+  "Trackpants (Youth/Adult Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Trackpants (Womens)": ["XXS","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Football Shorts (Unisex)": ["K2","K4","K6","K8","K10","K12","K14","K16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Basketball Shorts (Unisex)": ["K2","K4","K6","K8","K10","K12","K14","K16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Muay Thai Shorts": ["XXS","XS","S","M","L","XL","2XL"],
+  "MMA Shorts": ["K6","K8","K10","K12","K14","K16","XS","S","M","L","XL","XXL"],
+  "Compression Shorts": ["Y10","Y12","Y14","Y16","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Compression Leggings": ["Y10","Y12","Y14","Y16","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Skirt/Skort": ["Y4","Y6","Y8","W6/W2XS","W8/WXS","W10/WS","W12/WM","W14/WL","W16/WXL","W18/W2XL","W20/W3XL","W22/W4XL","W24/W5XL","W26/W6XL","W28/W7XL","W30/W7XL"],
+  "School Skirt": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","S","M","L","XL","2XL","3XL","4XL"],
+  "Netball Dress": ["K6","K8","K10","K12","K14","W6","W8","W10","W12","W14","W16","W18","W20","W22","W24"],
+  "Swim Cap": ["50g","55g","60g","65g"],
+  "Rugby/Football Socks": ["XXS","XS","S","M","L","XL","XXL"],
+  "Waka Ama Rash Shirt (Short Sleeve)": ["YXS","YS","YM","YL","YXL","XS","S","M","L","XL","2XL","3XL","4XL"],
+  "Waka Ama Rash Shirt (Long Sleeve)": ["YXS","YS","YM","YL","YXL","XS","S","M","L","XL","2XL","3XL","4XL"]
+};
+const GARMENT_IMAGES = {"T-Shirt (Unisex)": "data:image/png;base64,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  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+  .topbar {
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 4px solid var(--accent);
+  }
+  .brand-logo { display: flex; align-items: center; }
+  .brand-logo img { display: block; }
+  .topbar .tagline {
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #b8b8ba;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 4px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 32px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .role-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+  .role-badge.manager { background: var(--accent); color: #fff; }
+  .role-badge.viewer { background: var(--line-soft); color: var(--ink); }
+
+  .save-status {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .save-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); transition: background 0.2s; }
+  .save-dot.saving { background: var(--accent); }
+
+  .share-banner {
+    background: var(--ink);
+    color: #fff;
+    padding: 16px 18px;
+    border-radius: 3px;
+    margin-top: 20px;
+  }
+  .share-banner-text { font-size: 12.5px; line-height: 1.5; color: #d6d6d8; margin-bottom: 10px; }
+  .share-banner-text strong { color: #fff; }
+  .share-code-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .share-code-row input {
+    flex: 1;
+    min-width: 140px;
+    padding: 9px 11px;
+    border: 2px solid #3a3c40;
+    background: #1c1e21;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .share-code-row input::placeholder { color: #6b6c70; text-transform: none; }
+  .share-code-row input:focus { outline: none; border-color: var(--accent); }
+  .share-code-row button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: var(--font-condensed);
+  }
+  .share-code-row button:hover { background: var(--accent-dark); }
+  .share-code-row button.secondary { background: #3a3c40; }
+  .share-code-row button.secondary:hover { background: #4a4c50; }
+  .share-copied { display: none; font-size: 12px; color: #7ed19a; margin-top: 8px; font-weight: 600; }
+  .share-copied.visible { display: block; }
+  .manager-note { font-size: 11px; color: #9a9a9c; margin-top: 10px; line-height: 1.5; }
+
+  .row-author { font-size: 10px; color: var(--muted); display: block; margin-top: 2px; padding-left: 8px; }
+
+  .meta-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 22px 0 20px;
+  }
+  .field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 5px;
+    font-weight: 700;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 2px solid var(--line-soft);
+    background: var(--panel);
+    font-family: var(--font-body);
+    font-size: 14px;
+    border-radius: 2px;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--accent); }
+  .field input:disabled, .field select:disabled { background: #eeece9; color: var(--muted); cursor: not-allowed; }
+
+  .garment-picker {
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 16px;
+    margin-bottom: 28px;
+  }
+  .garment-picker-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .garment-picker-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--muted); }
+  .manage-columns-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    padding: 2px 0;
+    margin-left: auto;
+  }
+  .manage-columns-link:hover { color: var(--accent-dark); text-decoration: underline; }
+  .garment-picker-hint { font-size: 11.5px; color: var(--muted); }
+
+  .garment-picker-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .garment-add-row { display: flex; gap: 8px; flex: 1; min-width: 260px; }
+  .garment-add-select {
+    flex: 1;
+    min-width: 220px;
+    padding: 9px 11px;
+    border: 2px solid var(--line-soft);
+    background: var(--paper);
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .garment-add-select:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .garment-add-btn {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 0 18px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    white-space: nowrap;
+  }
+  .garment-add-btn:hover { background: var(--accent); }
+  .garment-selected-count {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .garment-selected-count b { color: var(--ink); }
+
+  .garment-selected-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .garment-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ink);
+    color: #fff;
+    padding: 5px 6px 5px 11px;
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .garment-chip .garment-chip-remove {
+    background: none;
+    border: none;
+    color: #9a9a9c;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 2px 3px;
+    font-weight: 700;
+  }
+  .garment-chip .garment-chip-remove:hover { color: #fff; }
+  .garment-chip.locked { background: #ececea; color: var(--ink); }
+
+  .garment-locked-note {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    padding: 6px 2px;
+  }
+  .garment-no-results { font-size: 12.5px; color: var(--muted); font-style: italic; padding: 10px 4px; }
+
+  .garment-section {
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+  .garment-section-head {
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .garment-section-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .garment-section-count { font-family: var(--font-mono); font-size: 12px; color: #cfcfd1; }
+  .garment-section-remove {
+    background: none;
+    border: 1px solid #4a4c50;
+    color: #cfcfd1;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .garment-section-remove:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .garment-section-body { padding: 14px 16px 16px; }
+
+  .size-reference {
+    background: var(--paper);
+    border: 1px solid var(--line-soft);
+    border-left: 4px solid var(--accent);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    border-radius: 2px;
+  }
+  .size-reference-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+  .size-reference-codes { font-family: var(--font-mono); font-size: 12px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .size-reference-codes span { background: #fff; border: 1px solid var(--line-soft); padding: 2px 7px; border-radius: 2px; }
+
+  .size-chart-link {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--paper);
+    border: 1px solid var(--line-soft);
+    border-left: 4px solid var(--info);
+    padding: 8px 14px;
+    border-radius: 2px;
+  }
+  .size-chart-link .size-chart-hint { font-size: 11.5px; color: var(--muted); }
+  .garment-thumb-wrap {
+    flex-shrink: 0;
+    margin-right: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .garment-thumb {
+    display: block;
+    height: 110px;
+    width: auto;
+    max-width: 130px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px;
+    cursor: zoom-in;
+    transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .garment-thumb:hover { border-color: var(--accent); transform: scale(1.04); box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+  .garment-thumb-zoom-btn {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(17,18,20,0.75);
+    color: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: background .15s ease;
+  }
+  .garment-thumb-zoom-btn:hover { background: var(--accent); }
+  .garment-thumb-zoom-btn svg { width: 13px; height: 13px; }
   .size-chart-link a {
     font-size: 12px;
     font-weight: 700;
