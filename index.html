@@ -1469,15 +1469,15 @@
       <button class="modal-close" id="closeDeleteOrderBtn" type="button">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="new-order-field">
-        <label id="deleteOrderLabel">Type the order code to confirm deletion</label>
-        <input id="deleteOrderConfirmInput" type="text" placeholder="Order code" spellcheck="false" autocomplete="off">
-        <div class="new-order-error" id="deleteOrderError"></div>
-      </div>
+      <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.5; color: #444;">
+        Are you sure you want to <strong>permanently delete</strong> this order?<br>
+        This action cannot be undone.
+      </p>
       <div style="display:flex;gap:8px;">
         <button class="btn btn-danger" id="confirmDeleteOrderBtn" type="button">Delete permanently</button>
         <button class="btn secondary" id="cancelDeleteOrderBtn" type="button">Cancel</button>
       </div>
+      <div class="new-order-error" id="deleteOrderError" style="margin-top:12px;"></div>
     </div>
   </div>
 </div>
@@ -3343,11 +3343,8 @@ let deleteOrderCode = null;
 
 function openDeleteOrderModal(code) {
   deleteOrderCode = code;
-  document.getElementById('deleteOrderLabel').innerHTML = 'Type <strong>' + escapeHtml(code) + '</strong> to confirm deletion';
-  document.getElementById('deleteOrderConfirmInput').value = '';
   document.getElementById('deleteOrderError').classList.remove('visible');
   document.getElementById('deleteOrderOverlay').classList.add('visible');
-  document.getElementById('deleteOrderConfirmInput').focus();
 }
 
 function closeDeleteOrderModal() {
@@ -3356,25 +3353,23 @@ function closeDeleteOrderModal() {
 }
 
 async function confirmDeleteOrder() {
-  const input = document.getElementById('deleteOrderConfirmInput');
   const errorEl = document.getElementById('deleteOrderError');
   const btn = document.getElementById('confirmDeleteOrderBtn');
   errorEl.classList.remove('visible');
-  if (input.value.trim().toUpperCase() !== deleteOrderCode.toUpperCase()) {
-    errorEl.textContent = 'That doesn\u2019t match the order code. Type it exactly to confirm.';
-    errorEl.classList.add('visible');
-    return;
-  }
+
   const order = allOrders.find(o => o.code === deleteOrderCode);
   const teamName = order && order.data && order.data.teamName;
+
   btn.disabled = true;
   btn.textContent = 'Deleting\u2026';
+
   try {
     const { error } = await supabaseClient
       .from('orders')
       .delete()
       .eq('code', deleteOrderCode);
     if (error) throw error;
+
     logActivity(deleteOrderCode, 'Order deleted', teamName ? ('Team: ' + teamName) : '', 'Staff');
     allOrders = allOrders.filter(o => o.code !== deleteOrderCode);
     closeDeleteOrderModal();
@@ -3401,9 +3396,6 @@ document.getElementById('deleteOrderOverlay').addEventListener('click', e => {
   if (e.target.id === 'deleteOrderOverlay') closeDeleteOrderModal();
 });
 document.getElementById('confirmDeleteOrderBtn').addEventListener('click', confirmDeleteOrder);
-document.getElementById('deleteOrderConfirmInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); confirmDeleteOrder(); }
-});
 
 function renderDetail(order) {
   const data = order.data || {};
@@ -3646,33 +3638,18 @@ async function handleGenerateOrder() {
   btn.textContent = 'Generating\u2026';
   try {
     const code = await generateUniqueOrderCode();
-    const mgrCode = generateManagerCode();
-    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: mgrCode, status: 'new', customFields: newOrderCustomFields.slice() };
+    const newData = { teamName: teamName, garments: [], rowsByGarment: {}, managerCode: '', status: 'new', customFields: newOrderCustomFields.slice() };
     const nowIso = new Date().toISOString();
     const { error } = await supabaseClient
       .from('orders')
       .upsert({ code: code, data: newData, updated_at: nowIso });
     if (error) throw error;
-
     generatedOrderCode = code;
-    generatedManagerCode = mgrCode;
-
     allOrders.unshift({ code: code, data: newData, updated_at: nowIso });
     renderStats();
     renderOrdersTable();
     logActivity(code, 'Order created', teamName ? ('Team: ' + teamName) : '', 'Staff');
-
-    const codeEl = document.getElementById('newOrderCodeValue');
-    if (codeEl) codeEl.textContent = code;
-
-    const mgrEl = document.getElementById('newOrderManagerCodeValue');
-    if (mgrEl) mgrEl.textContent = mgrCode;
-
-    const link = newOrderCustomerLink();
-    const draft = buildNewOrderEmailDraft(code, mgrCode, link);
-    const draftEl = document.getElementById('newOrderEmailDraft');
-    if (draftEl) draftEl.value = draft;
-
+    document.getElementById('newOrderCodeValue').textContent = code;
     document.getElementById('newOrderForm').classList.add('hidden');
     document.getElementById('newOrderResult').classList.add('visible');
   } catch (e) {
