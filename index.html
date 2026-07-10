@@ -186,21 +186,39 @@
   .garment-picker-toolbar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
-  .garment-search-input {
+  .garment-add-row { display: flex; gap: 8px; flex: 1; min-width: 260px; }
+  .garment-add-select {
     flex: 1;
-    min-width: 200px;
-    padding: 8px 11px;
+    min-width: 220px;
+    padding: 9px 11px;
     border: 2px solid var(--line-soft);
     background: var(--paper);
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 13.5px;
     border-radius: 2px;
+    cursor: pointer;
   }
-  .garment-search-input:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .garment-add-select:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .garment-add-btn {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 0 18px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    white-space: nowrap;
+  }
+  .garment-add-btn:hover { background: var(--accent); }
   .garment-selected-count {
     font-size: 11px;
     text-transform: uppercase;
@@ -243,39 +261,6 @@
   .garment-chip .garment-chip-remove:hover { color: #fff; }
   .garment-chip.locked { background: #ececea; color: var(--ink); }
 
-  .garment-categories-scroll {
-    max-height: 320px;
-    overflow-y: auto;
-    padding-right: 4px;
-  }
-  .garment-category { margin-bottom: 16px; }
-  .garment-category:last-child { margin-bottom: 4px; }
-  .garment-category-title {
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-    color: var(--accent-dark);
-    margin-bottom: 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .garment-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 2px 10px;
-  }
-  .garment-check {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    font-size: 13px;
-    border-radius: 2px;
-  }
-  .garment-check:hover { background: var(--accent-soft); }
-  .garment-check input { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
-  .garment-check label { cursor: pointer; flex: 1; }
   .garment-locked-note {
     font-size: 12px;
     color: var(--muted);
@@ -288,6 +273,7 @@
     background: var(--panel);
     border: 2px solid var(--line-soft);
     border-radius: 2px;
+
     margin-bottom: 22px;
     overflow: hidden;
   }
@@ -364,6 +350,8 @@
   tbody textarea {
     resize: vertical;
     min-height: 34px;
+    max-height: 110px;
+    overflow-y: auto;
     line-height: 1.4;
     font-family: inherit;
   }
@@ -672,7 +660,6 @@ function categorizeGarment(name) {
   if (/(short|pant|legging|skirt|skort)/.test(n)) return "Bottoms";
   return "Tops & Jerseys";
 }
-let garmentSearchTerm = "";
 
 let teamCode = "";
 let managerCode = "";
@@ -850,21 +837,56 @@ function renderGarmentPicker() {
   // Editable picker for the manager (or before a manager code is set)
   const toolbar = document.createElement('div');
   toolbar.className = 'garment-picker-toolbar';
-  const searchInput = document.createElement('input');
-  searchInput.type = 'text';
-  searchInput.className = 'garment-search-input';
-  searchInput.placeholder = 'Search garments\u2026';
-  searchInput.value = garmentSearchTerm;
-  searchInput.addEventListener('input', e => {
-    garmentSearchTerm = e.target.value;
-    renderGarmentPicker();
-    const newInput = document.getElementById('garmentPickerBody').querySelector('.garment-search-input');
-    if (newInput) {
-      newInput.focus();
-      newInput.selectionStart = newInput.selectionEnd = newInput.value.length;
-    }
+
+  const addRow = document.createElement('div');
+  addRow.className = 'garment-add-row';
+
+  const select = document.createElement('select');
+  select.className = 'garment-add-select';
+  const placeholderOpt = document.createElement('option');
+  placeholderOpt.value = '';
+  placeholderOpt.textContent = 'Add a garment\u2026';
+  placeholderOpt.disabled = true;
+  placeholderOpt.selected = true;
+  select.appendChild(placeholderOpt);
+
+  const available = GARMENT_LIST.filter(g => !state.garments.includes(g));
+  GARMENT_CATEGORY_ORDER.forEach(cat => {
+    const items = available.filter(g => categorizeGarment(g) === cat);
+    if (items.length === 0) return;
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = cat;
+    items.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g;
+      opt.textContent = g;
+      optgroup.appendChild(opt);
+    });
+    select.appendChild(optgroup);
   });
-  toolbar.appendChild(searchInput);
+  addRow.appendChild(select);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'garment-add-btn';
+  addBtn.textContent = '+ Add';
+  function addSelectedGarment() {
+    const g = select.value;
+    if (!g) return;
+    if (!state.garments.includes(g)) state.garments.push(g);
+    if (!state.rowsByGarment[g]) state.rowsByGarment[g] = [];
+    scheduleSave();
+    render();
+  }
+  addBtn.addEventListener('click', addSelectedGarment);
+  select.addEventListener('change', addSelectedGarment);
+  addRow.appendChild(addBtn);
+
+  if (available.length === 0) {
+    addRow.innerHTML = '<div class="garment-no-results">All garments have been added to this order.</div>';
+  }
+  toolbar.appendChild(addRow);
+
   const countEl = document.createElement('div');
   countEl.className = 'garment-selected-count';
   countEl.innerHTML = '<b>' + state.garments.length + '</b> selected';
@@ -874,6 +896,9 @@ function renderGarmentPicker() {
   if (state.garments.length > 0) {
     const chips = document.createElement('div');
     chips.className = 'garment-selected-chips';
+    chips.style.marginBottom = '0';
+    chips.style.paddingBottom = '0';
+    chips.style.borderBottom = 'none';
     state.garments.forEach(g => {
       const chip = document.createElement('span');
       chip.className = 'garment-chip';
@@ -897,69 +922,13 @@ function renderGarmentPicker() {
       chips.appendChild(chip);
     });
     body.appendChild(chips);
+  } else {
+    const empty = document.createElement('div');
+    empty.className = 'garment-no-results';
+    empty.style.marginTop = '4px';
+    empty.textContent = 'No garments added yet \u2014 pick one from the dropdown above.';
+    body.appendChild(empty);
   }
-
-  const scrollWrap = document.createElement('div');
-  scrollWrap.className = 'garment-categories-scroll';
-
-  const term = garmentSearchTerm.trim().toLowerCase();
-  const byCategory = {};
-  GARMENT_LIST.forEach(g => {
-    if (term && !g.toLowerCase().includes(term)) return;
-    const cat = categorizeGarment(g);
-    if (!byCategory[cat]) byCategory[cat] = [];
-    byCategory[cat].push(g);
-  });
-
-  const anyResults = GARMENT_CATEGORY_ORDER.some(cat => byCategory[cat] && byCategory[cat].length > 0);
-  if (!anyResults) {
-    scrollWrap.innerHTML = '<div class="garment-no-results">No garments match "' + garmentSearchTerm + '".</div>';
-    body.appendChild(scrollWrap);
-    return;
-  }
-
-  GARMENT_CATEGORY_ORDER.forEach(cat => {
-    const items = byCategory[cat];
-    if (!items || items.length === 0) return;
-
-    const catDiv = document.createElement('div');
-    catDiv.className = 'garment-category';
-    const catTitle = document.createElement('div');
-    catTitle.className = 'garment-category-title';
-    catTitle.textContent = cat + ' (' + items.length + ')';
-    catDiv.appendChild(catTitle);
-
-    const grid = document.createElement('div');
-    grid.className = 'garment-grid';
-    items.forEach(g => {
-      const row = document.createElement('div');
-      row.className = 'garment-check';
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.id = 'g-' + g.replace(/[^a-zA-Z0-9]/g, '');
-      cb.checked = state.garments.includes(g);
-      cb.addEventListener('change', () => {
-        if (cb.checked) {
-          if (!state.garments.includes(g)) state.garments.push(g);
-          if (!state.rowsByGarment[g]) state.rowsByGarment[g] = [];
-        } else {
-          state.garments = state.garments.filter(x => x !== g);
-        }
-        scheduleSave();
-        render();
-      });
-      const label = document.createElement('label');
-      label.htmlFor = cb.id;
-      label.textContent = g;
-      row.appendChild(cb);
-      row.appendChild(label);
-      grid.appendChild(row);
-    });
-    catDiv.appendChild(grid);
-    scrollWrap.appendChild(catDiv);
-  });
-
-  body.appendChild(scrollWrap);
 }
 
 function renderSections() {
