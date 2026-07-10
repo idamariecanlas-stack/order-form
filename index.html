@@ -1204,6 +1204,7 @@
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="topbar">
@@ -1348,6 +1349,7 @@
         <button class="btn secondary" id="detailCsvBtn" type="button">Download CSV</button>
         <button class="btn secondary" id="detailPrintBtn" type="button">Print</button>
         <button class="btn secondary" id="detailManageColumnsBtn" type="button">Manage columns</button>
+        <button class="btn secondary" id="detailImportBtn" type="button">Import Excel/CSV</button>
         <button class="btn" id="detailOpenCustomerBtn" type="button">Open customer view</button>
         <button class="btn btn-danger" id="detailDeleteOrderBtn" type="button">Delete order</button>
       </div>
@@ -1469,15 +1471,51 @@
       <button class="modal-close" id="closeDeleteOrderBtn" type="button">&times;</button>
     </div>
     <div class="modal-body">
-      <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.5; color: #444;">
-        Are you sure you want to <strong>permanently delete</strong> this order?<br>
-        This action cannot be undone.
-      </p>
+      <div class="new-order-field">
+        <label id="deleteOrderLabel">Type the order code to confirm deletion</label>
+        <input id="deleteOrderConfirmInput" type="text" placeholder="Order code" spellcheck="false" autocomplete="off">
+        <div class="new-order-error" id="deleteOrderError"></div>
+      </div>
       <div style="display:flex;gap:8px;">
         <button class="btn btn-danger" id="confirmDeleteOrderBtn" type="button">Delete permanently</button>
         <button class="btn secondary" id="cancelDeleteOrderBtn" type="button">Cancel</button>
       </div>
-      <div class="new-order-error" id="deleteOrderError" style="margin-top:12px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Import Excel/CSV Modal -->
+<div class="modal-overlay" id="importOverlay">
+  <div class="modal" style="max-width: 620px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Import from Excel / CSV</div>
+        <div class="modal-subtitle" id="importModalSubtitle">Add entries to this order</div>
+      </div>
+      <button class="modal-close" id="closeImportBtn" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:6px;">Target Garment</label>
+        <select id="importGarmentSelect" style="width:100%; padding:9px 11px; border:2px solid var(--line-soft); border-radius:2px; font-size:14px;"></select>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:6px;">File (.xlsx or .csv)</label>
+        <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv" style="width:100%;">
+      </div>
+
+      <div id="importPreview" style="display:none; margin-bottom:16px; background:#f8f7f4; border:1px solid var(--line-soft); border-radius:3px; padding:12px;">
+        <div style="font-size:13px; font-weight:700; margin-bottom:8px;">Preview</div>
+        <div id="importPreviewContent" style="font-size:13px; line-height:1.5;"></div>
+      </div>
+
+      <div class="new-order-error" id="importError" style="display:none; margin-bottom:12px;"></div>
+
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button class="btn secondary" id="cancelImportBtn" type="button">Cancel</button>
+        <button class="btn" id="confirmImportBtn" type="button" disabled>Import entries</button>
+      </div>
     </div>
   </div>
 </div>
@@ -3324,6 +3362,9 @@ async function saveManageColumns() {
 document.getElementById('detailManageColumnsBtn').addEventListener('click', () => {
   if (currentDetailCode) openManageColumnsModal(currentDetailCode);
 });
+document.getElementById('detailImportBtn').addEventListener('click', () => {
+  if (currentDetailCode) openImportModal(currentDetailCode);
+});
 document.getElementById('closeManageColumnsBtn').addEventListener('click', closeManageColumnsModal);
 document.getElementById('cancelManageColumnsBtn').addEventListener('click', closeManageColumnsModal);
 document.getElementById('manageColumnsOverlay').addEventListener('click', e => {
@@ -3343,8 +3384,11 @@ let deleteOrderCode = null;
 
 function openDeleteOrderModal(code) {
   deleteOrderCode = code;
+  document.getElementById('deleteOrderLabel').innerHTML = 'Type <strong>' + escapeHtml(code) + '</strong> to confirm deletion';
+  document.getElementById('deleteOrderConfirmInput').value = '';
   document.getElementById('deleteOrderError').classList.remove('visible');
   document.getElementById('deleteOrderOverlay').classList.add('visible');
+  document.getElementById('deleteOrderConfirmInput').focus();
 }
 
 function closeDeleteOrderModal() {
@@ -3353,23 +3397,25 @@ function closeDeleteOrderModal() {
 }
 
 async function confirmDeleteOrder() {
+  const input = document.getElementById('deleteOrderConfirmInput');
   const errorEl = document.getElementById('deleteOrderError');
   const btn = document.getElementById('confirmDeleteOrderBtn');
   errorEl.classList.remove('visible');
-
+  if (input.value.trim().toUpperCase() !== deleteOrderCode.toUpperCase()) {
+    errorEl.textContent = 'That doesn\u2019t match the order code. Type it exactly to confirm.';
+    errorEl.classList.add('visible');
+    return;
+  }
   const order = allOrders.find(o => o.code === deleteOrderCode);
   const teamName = order && order.data && order.data.teamName;
-
   btn.disabled = true;
   btn.textContent = 'Deleting\u2026';
-
   try {
     const { error } = await supabaseClient
       .from('orders')
       .delete()
       .eq('code', deleteOrderCode);
     if (error) throw error;
-
     logActivity(deleteOrderCode, 'Order deleted', teamName ? ('Team: ' + teamName) : '', 'Staff');
     allOrders = allOrders.filter(o => o.code !== deleteOrderCode);
     closeDeleteOrderModal();
@@ -3396,6 +3442,279 @@ document.getElementById('deleteOrderOverlay').addEventListener('click', e => {
   if (e.target.id === 'deleteOrderOverlay') closeDeleteOrderModal();
 });
 document.getElementById('confirmDeleteOrderBtn').addEventListener('click', confirmDeleteOrder);
+document.getElementById('deleteOrderConfirmInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); confirmDeleteOrder(); }
+});
+
+// ============================================================
+// Import from Excel/CSV (smart import with auto column creation)
+// ============================================================
+
+let importCurrentOrderCode = null;
+let importParsedData = null; // { headers, rows, mappedRows, newColumns }
+
+function openImportModal(orderCode) {
+  importCurrentOrderCode = orderCode;
+  importParsedData = null;
+
+  const order = allOrders.find(o => o.code === orderCode);
+  if (!order) return;
+
+  // Populate garment select
+  const select = document.getElementById('importGarmentSelect');
+  select.innerHTML = '';
+  const garments = order.data.garments || [];
+  if (garments.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '__new__';
+    opt.textContent = 'Create new garment (General)';
+    select.appendChild(opt);
+  } else {
+    garments.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g;
+      opt.textContent = g;
+      select.appendChild(opt);
+    });
+    // Also allow creating new
+    const newOpt = document.createElement('option');
+    newOpt.value = '__new__';
+    newOpt.textContent = '+ Create new garment...';
+    select.appendChild(newOpt);
+  }
+
+  document.getElementById('importFileInput').value = '';
+  document.getElementById('importPreview').style.display = 'none';
+  document.getElementById('importError').style.display = 'none';
+  document.getElementById('confirmImportBtn').disabled = true;
+
+  document.getElementById('importOverlay').classList.add('visible');
+
+  // Wire file input
+  const fileInput = document.getElementById('importFileInput');
+  fileInput.onchange = handleImportFileSelect;
+}
+
+function closeImportModal() {
+  document.getElementById('importOverlay').classList.remove('visible');
+  importCurrentOrderCode = null;
+  importParsedData = null;
+}
+
+async function handleImportFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const errorEl = document.getElementById('importError');
+  errorEl.style.display = 'none';
+
+  try {
+    const parsed = await parseExcelOrCsv(file);
+    importParsedData = parsed;
+
+    // Show preview
+    const previewEl = document.getElementById('importPreview');
+    const contentEl = document.getElementById('importPreviewContent');
+
+    let html = `<strong>${parsed.rows.length}</strong> rows detected<br>`;
+    if (parsed.newColumns && parsed.newColumns.length > 0) {
+      html += `<span style="color:#b8342d;">${parsed.newColumns.length} new columns will be created:</span> ${parsed.newColumns.join(', ')}<br>`;
+    }
+    html += `<span style="color:#2f6b3a;">Will be added to selected garment.</span>`;
+    contentEl.innerHTML = html;
+    previewEl.style.display = 'block';
+
+    document.getElementById('confirmImportBtn').disabled = false;
+  } catch (err) {
+    errorEl.textContent = 'Failed to read file: ' + (err.message || err);
+    errorEl.style.display = 'block';
+    document.getElementById('confirmImportBtn').disabled = true;
+  }
+}
+
+async function parseExcelOrCsv(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        let data;
+        if (file.name.toLowerCase().endsWith('.csv')) {
+          // Simple CSV parsing (basic)
+          const text = e.target.result;
+          const lines = text.trim().split(/\r?\n/);
+          if (lines.length < 2) throw new Error('CSV must have header + at least one data row');
+          const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+          const rows = lines.slice(1).map(line => {
+            const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+            const obj = {};
+            headers.forEach((h, i) => obj[h] = values[i] || '');
+            return obj;
+          });
+          data = { headers, rows };
+        } else {
+          // Excel via SheetJS
+          const workbook = XLSX.read(e.target.result, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const json = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+          if (json.length === 0) throw new Error('No data found in first sheet');
+          const headers = Object.keys(json[0]);
+          data = { headers, rows: json };
+        }
+
+        // Smart mapping + new column detection
+        const order = allOrders.find(o => o.code === importCurrentOrderCode);
+        const existingCustomLabels = (order?.data?.customFields || []).map(f => f.label.toLowerCase());
+
+        const newColumns = [];
+        const mappedRows = data.rows.map(rawRow => {
+          const row = { name: '', size: '', number: '', custom: {} };
+
+          Object.keys(rawRow).forEach(header => {
+            const val = String(rawRow[header] || '').trim();
+            if (!val) return;
+
+            const hLower = header.toLowerCase();
+
+            // Smart mapping
+            if (['name', 'player', 'player name', 'name on back', 'playername'].includes(hLower)) {
+              row.name = val;
+            } else if (hLower === 'size') {
+              row.size = val;
+            } else if (['number', '#', 'jersey', 'jersey number', 'jerseynumber'].includes(hLower)) {
+              row.number = val;
+            } else {
+              // Custom field
+              let fieldLabel = header;
+              // Try to find existing field (case insensitive)
+              const existing = (order?.data?.customFields || []).find(f => f.label.toLowerCase() === hLower);
+              if (existing) {
+                row.custom[existing.id] = val;
+              } else {
+                // New column
+                if (!newColumns.includes(fieldLabel)) newColumns.push(fieldLabel);
+                // We'll assign a temp id later during import
+                row.custom['__new__' + fieldLabel] = val;
+              }
+            }
+          });
+          return row;
+        });
+
+        resolve({
+          headers: data.headers,
+          rows: data.rows,
+          mappedRows,
+          newColumns
+        });
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = reject;
+
+    if (file.name.toLowerCase().endsWith('.csv')) {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
+  });
+}
+
+async function performImport() {
+  if (!importParsedData || !importCurrentOrderCode) return;
+
+  const select = document.getElementById('importGarmentSelect');
+  let targetGarment = select.value;
+
+  const orderIndex = allOrders.findIndex(o => o.code === importCurrentOrderCode);
+  if (orderIndex === -1) return;
+
+  const order = allOrders[orderIndex];
+  let data = { ...order.data };
+
+  // Handle new garment
+  if (targetGarment === '__new__') {
+    const newGarmentName = prompt('Enter name for the new garment:', 'Imported Players') || 'Imported Players';
+    if (!data.garments) data.garments = [];
+    data.garments.push(newGarmentName);
+    targetGarment = newGarmentName;
+    if (!data.rowsByGarment) data.rowsByGarment = {};
+    data.rowsByGarment[targetGarment] = [];
+  }
+
+  if (!data.rowsByGarment) data.rowsByGarment = {};
+  if (!data.rowsByGarment[targetGarment]) data.rowsByGarment[targetGarment] = [];
+
+  // Create any new custom fields
+  if (importParsedData.newColumns.length > 0) {
+    if (!data.customFields) data.customFields = [];
+    importParsedData.newColumns.forEach(label => {
+      const exists = data.customFields.some(f => f.label.toLowerCase() === label.toLowerCase());
+      if (!exists) {
+        data.customFields.push({ id: 'cf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8), label });
+      }
+    });
+  }
+
+  // Re-map new columns to real IDs
+  const fieldMap = {};
+  (data.customFields || []).forEach(f => {
+    fieldMap[f.label.toLowerCase()] = f.id;
+  });
+
+  const finalRows = importParsedData.mappedRows.map(mRow => {
+    const cleanCustom = {};
+    Object.keys(mRow.custom).forEach(key => {
+      if (key.startsWith('__new__')) {
+        const label = key.replace('__new__', '');
+        const realId = fieldMap[label.toLowerCase()];
+        if (realId) cleanCustom[realId] = mRow.custom[key];
+      } else {
+        cleanCustom[key] = mRow.custom[key];
+      }
+    });
+    return {
+      name: mRow.name,
+      size: mRow.size,
+      number: mRow.number,
+      custom: cleanCustom,
+      notes: '',
+      addedBy: 'Import'
+    };
+  });
+
+  // Append
+  data.rowsByGarment[targetGarment] = [...(data.rowsByGarment[targetGarment] || []), ...finalRows];
+
+  // Save to Supabase
+  try {
+    const { error } = await supabaseClient
+      .from('orders')
+      .update({ data, updated_at: new Date().toISOString() })
+      .eq('code', importCurrentOrderCode);
+    if (error) throw error;
+
+    // Update local
+    allOrders[orderIndex].data = data;
+    logActivity(importCurrentOrderCode, 'Imported from Excel/CSV', `${finalRows.length} rows added`, 'Staff');
+
+    closeImportModal();
+    renderDetail(allOrders[orderIndex]); // refresh view
+    alert(`Successfully imported ${finalRows.length} rows!`);
+  } catch (e) {
+    console.error(e);
+    alert('Import failed: ' + (e.message || e));
+  }
+}
+
+// Wire import modal buttons
+document.getElementById('closeImportBtn').addEventListener('click', closeImportModal);
+document.getElementById('cancelImportBtn').addEventListener('click', closeImportModal);
+document.getElementById('confirmImportBtn').addEventListener('click', performImport);
+document.getElementById('importOverlay').addEventListener('click', e => {
+  if (e.target.id === 'importOverlay') closeImportModal();
+});
 
 function renderDetail(order) {
   const data = order.data || {};
