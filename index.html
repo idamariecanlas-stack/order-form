@@ -3563,17 +3563,7 @@ async function generateUniqueOrderCode() {
   throw new Error('Could not generate a unique code after several attempts.');
 }
 
-function generateManagerCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return 'MG-' + code;
-}
-
 let generatedOrderCode = null;
-let generatedManagerCode = null;
 let newOrderCustomFields = [];
 
 function renderNewOrderFieldTags() {
@@ -3672,8 +3662,11 @@ async function handleGenerateOrder() {
     renderOrdersTable();
     logActivity(code, 'Order created', teamName ? ('Team: ' + teamName) : '', 'Staff');
 
-    document.getElementById('newOrderCodeValue').textContent = code;
-    document.getElementById('newOrderManagerCodeValue').textContent = mgrCode;
+    const codeEl = document.getElementById('newOrderCodeValue');
+    if (codeEl) codeEl.textContent = code;
+
+    const mgrEl = document.getElementById('newOrderManagerCodeValue');
+    if (mgrEl) mgrEl.textContent = mgrCode;
 
     const link = newOrderCustomerLink();
     const draft = buildNewOrderEmailDraft(code, mgrCode, link);
