@@ -444,11 +444,53 @@
     font-family: inherit;
   }
   .col-num { width: 28px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
-  .col-del { width: 32px; text-align: center; }
+  .col-del { width: 60px; text-align: center; white-space: nowrap; }
   .del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 17px; line-height: 1; padding: 4px; font-weight: 700; }
   .del-btn:hover { color: var(--accent); }
   .del-btn:disabled { color: #d0cfcc; cursor: not-allowed; }
+  .dup-btn { background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px; line-height: 1; vertical-align: middle; }
+  .dup-btn svg { width: 15px; height: 15px; display: block; }
+  .dup-btn:hover { color: var(--accent); }
   .lock-icon { color: var(--muted); font-size: 12px; }
+
+  tbody select.field-missing {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .find-entry-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 8px 12px;
+    margin-top: 20px;
+    position: relative;
+  }
+  .find-entry-icon { width: 16px; height: 16px; color: var(--muted); flex-shrink: 0; }
+  .find-entry-row input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    background: transparent;
+  }
+  .find-entry-row button.secondary {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--font-condensed);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .find-entry-row button.secondary:hover { color: var(--accent); }
 
   .add-row-btn {
     margin-top: 10px;
@@ -467,6 +509,53 @@
     font-family: var(--font-body);
   }
   .add-row-btn:hover { background: var(--accent); }
+
+  /* Mobile-friendly stacked rows for the roster table */
+  @media (max-width: 720px) {
+    table.row-table thead { display: none; }
+    table.row-table, table.row-table tbody, table.row-table tr, table.row-table td {
+      display: block;
+      width: 100%;
+    }
+    table.row-table tr {
+      border: 2px solid var(--line-soft);
+      border-radius: 3px;
+      margin-bottom: 12px;
+      padding: 10px 12px 6px;
+      position: relative;
+    }
+    table.row-table tr.locked-row { opacity: 0.75; }
+    table.row-table td {
+      border-bottom: none;
+      padding: 6px 0;
+    }
+    table.row-table td.col-num {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: auto;
+    }
+    table.row-table td.col-del {
+      text-align: right;
+      border-top: 1px solid var(--line-soft);
+      margin-top: 4px;
+      padding-top: 8px;
+    }
+    table.row-table td:not(.col-num):not(.col-del)::before {
+      content: attr(data-label);
+      display: block;
+      font-family: var(--font-condensed);
+      font-weight: 700;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    table.row-table tbody input, table.row-table tbody select, table.row-table tbody textarea {
+      border-color: var(--line-soft);
+    }
+  }
 
   .summary {
     margin-top: 30px;
@@ -1118,6 +1207,12 @@
     <div id="garmentPickerBody"></div>
   </div>
 
+  <div class="find-entry-row" id="findEntryRow" style="display:none;">
+    <svg class="find-entry-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="findEntrySearch" type="text" placeholder="Find your name across this order&hellip;" spellcheck="false">
+    <button id="findEntryClearBtn" type="button" class="secondary" style="display:none;">Clear</button>
+  </div>
+
   <div id="sectionsContainer"></div>
 
   <div class="summary">
@@ -1252,8 +1347,9 @@
             <input id="newOrderFieldInput" type="text" placeholder="e.g. Sleeve Name" spellcheck="false" style="flex:1;">
             <button class="btn secondary" id="addNewOrderFieldBtn" type="button" style="white-space:nowrap;">+ Add column</button>
           </div>
+          <input id="newOrderFieldOptionsInput" type="text" placeholder="Options, comma-separated (optional &mdash; leave blank for free text, e.g. Home, Away, Training)" spellcheck="false" style="margin-top:8px;">
           <div class="new-order-field-tags" id="newOrderFieldTags"></div>
-          <div class="new-order-hint">Every row in this order will get one extra text column for each of these &mdash; e.g. "Sleeve Name" for AIMS Games basketball orders.</div>
+          <div class="new-order-hint">Every row gets one extra column for each of these. Add options to make it a dropdown (fewer typos/variants) &mdash; e.g. "Sleeve Name" for AIMS Games basketball orders.</div>
         </div>
         <button class="btn" id="generateOrderBtn" type="button">Generate code</button>
         <div class="new-order-error" id="newOrderError"></div>
@@ -1422,6 +1518,8 @@ let state = {
 };
 
 let saveTimer = null;
+let searchQuery = "";
+let searchRenderTimer = null;
 
 function uid() { return Math.random().toString(36).slice(2, 10); }
 
@@ -1698,8 +1796,15 @@ function renderSections() {
     return;
   }
 
+  const query = (searchQuery || '').trim().toLowerCase();
+  let totalMatches = 0;
+
   state.garments.forEach(garment => {
-    const rows = state.rowsByGarment[garment] || [];
+    const allRows = state.rowsByGarment[garment] || [];
+    const rows = query ? allRows.filter(r => (r.name || '').toLowerCase().includes(query)) : allRows;
+    totalMatches += rows.length;
+    if (query && rows.length === 0) return; // hide sections with no matches while searching
+
     const section = document.createElement('div');
     section.className = 'garment-section';
 
@@ -1716,14 +1821,16 @@ function renderSections() {
     right.style.gap = '10px';
     const count = document.createElement('span');
     count.className = 'garment-section-count';
-    count.textContent = rows.length + (rows.length === 1 ? ' entry' : ' entries');
+    count.textContent = query
+      ? (rows.length + ' of ' + allRows.length + ' match')
+      : (allRows.length + (allRows.length === 1 ? ' entry' : ' entries'));
     right.appendChild(count);
     if (isManager) {
       const removeBtn = document.createElement('button');
       removeBtn.className = 'garment-section-remove';
       removeBtn.textContent = 'Remove garment';
       removeBtn.addEventListener('click', () => {
-        if (rows.length > 0 && !confirm('This garment has ' + rows.length + ' entries. Remove it and all its entries?')) return;
+        if (allRows.length > 0 && !confirm('This garment has ' + allRows.length + ' entries. Remove it and all its entries?')) return;
         state.garments = state.garments.filter(g => g !== garment);
         delete state.rowsByGarment[garment];
         scheduleSave();
@@ -1782,23 +1889,28 @@ function renderSections() {
 
     const customFields = state.customFields || [];
     const table = document.createElement('table');
+    table.className = 'row-table';
     const thead = document.createElement('thead');
     const customThs = customFields.map(f => '<th style="width:14%">' + escapeHtml(f.label) + '</th>').join('');
     thead.innerHTML = '<tr><th class="col-num">#</th><th style="width:24%">Name on back</th><th style="width:16%">Size</th><th style="width:12%">Number</th>' + customThs + '<th>Notes / sponsors</th><th class="col-del"></th></tr>';
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
-    rows.forEach((row, i) => {
+    rows.forEach(row => {
+      const i = allRows.indexOf(row);
       const canEditRow = isManager || !row.addedBy || row.addedBy === personalContactName;
       const tr = document.createElement('tr');
+      tr.setAttribute('data-row-id', row.id);
       if (!canEditRow) tr.className = 'locked-row';
 
       const tdNum = document.createElement('td');
       tdNum.className = 'col-num';
+      tdNum.setAttribute('data-label', '#');
       tdNum.textContent = i + 1;
       tr.appendChild(tdNum);
 
       const tdName = document.createElement('td');
+      tdName.setAttribute('data-label', 'Name on back');
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.placeholder = 'Player name (press Enter to add another)';
@@ -1808,12 +1920,18 @@ function renderSections() {
         row.name = e.target.value;
         if (!row.addedBy && personalContactName) row.addedBy = personalContactName;
         scheduleSave(); updateSummary();
+        updateRowValidation(nameInput, sizeSelectRef, row);
+      });
+      nameInput.addEventListener('blur', e => {
+        const trimmed = e.target.value.trim();
+        if (trimmed !== row.name) { row.name = trimmed; e.target.value = trimmed; scheduleSave(); }
       });
       nameInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          const isLastRow = i === rows.length - 1;
+          const isLastRow = i === allRows.length - 1;
           if (isLastRow && canEditRow) {
+            clearSearch();
             state.rowsByGarment[garment].push(newRow());
             scheduleSave();
             render();
@@ -1831,7 +1949,9 @@ function renderSections() {
       tr.appendChild(tdName);
 
       const tdSize = document.createElement('td');
+      tdSize.setAttribute('data-label', 'Size');
       const sizeSelect = document.createElement('select');
+      const sizeSelectRef = sizeSelect;
       sizeSelect.disabled = !canEditRow;
       [""].concat(SIZE_CHARTS[garment] || []).forEach(s => {
         const opt = document.createElement('option');
@@ -1840,11 +1960,17 @@ function renderSections() {
         if (s === row.size) opt.selected = true;
         sizeSelect.appendChild(opt);
       });
-      sizeSelect.addEventListener('change', e => { row.size = e.target.value; scheduleSave(); updateSummary(); });
+      sizeSelect.addEventListener('change', e => {
+        row.size = e.target.value;
+        scheduleSave(); updateSummary();
+        updateRowValidation(nameInput, sizeSelectRef, row);
+      });
       tdSize.appendChild(sizeSelect);
       tr.appendChild(tdSize);
+      updateRowValidation(nameInput, sizeSelect, row);
 
       const tdNumber = document.createElement('td');
+      tdNumber.setAttribute('data-label', 'Number');
       const numberInput = document.createElement('input');
       numberInput.type = 'text';
       numberInput.placeholder = '-';
@@ -1857,20 +1983,36 @@ function renderSections() {
       if (!row.custom) row.custom = {};
       customFields.forEach(field => {
         const tdCustom = document.createElement('td');
-        const customInput = document.createElement('input');
-        customInput.type = 'text';
-        customInput.placeholder = field.label;
-        customInput.value = row.custom[field.id] || '';
-        customInput.disabled = !canEditRow;
-        customInput.addEventListener('input', e => {
-          row.custom[field.id] = e.target.value;
-          scheduleSave();
-        });
-        tdCustom.appendChild(customInput);
+        tdCustom.setAttribute('data-label', field.label);
+        let customField;
+        if (field.options && field.options.length) {
+          customField = document.createElement('select');
+          const blankOpt = document.createElement('option');
+          blankOpt.value = '';
+          blankOpt.textContent = 'Select ' + field.label;
+          customField.appendChild(blankOpt);
+          field.options.forEach(optVal => {
+            const opt = document.createElement('option');
+            opt.value = optVal;
+            opt.textContent = optVal;
+            if (optVal === row.custom[field.id]) opt.selected = true;
+            customField.appendChild(opt);
+          });
+          customField.addEventListener('change', e => { row.custom[field.id] = e.target.value; scheduleSave(); });
+        } else {
+          customField = document.createElement('input');
+          customField.type = 'text';
+          customField.placeholder = field.label;
+          customField.value = row.custom[field.id] || '';
+          customField.addEventListener('input', e => { row.custom[field.id] = e.target.value; scheduleSave(); });
+        }
+        customField.disabled = !canEditRow;
+        tdCustom.appendChild(customField);
         tr.appendChild(tdCustom);
       });
 
       const tdNotes = document.createElement('td');
+      tdNotes.setAttribute('data-label', 'Notes / sponsors');
       const notesInput = document.createElement('textarea');
       notesInput.rows = 1;
       notesInput.placeholder = 'Sponsors, tall fit, etc. (one per line)';
@@ -1887,14 +2029,37 @@ function renderSections() {
 
       const tdDel = document.createElement('td');
       tdDel.className = 'col-del';
+      const canDelete = isManager || (row.addedBy && row.addedBy === personalContactName);
+      if (canEditRow) {
+        const dupBtn = document.createElement('button');
+        dupBtn.className = 'dup-btn';
+        dupBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
+        dupBtn.title = 'Duplicate this row';
+        dupBtn.type = 'button';
+        dupBtn.addEventListener('click', () => {
+          const copy = { id: uid(), name: row.name, size: row.size, number: row.number, notes: row.notes, addedBy: personalContactName || row.addedBy || "", custom: Object.assign({}, row.custom) };
+          const idx = state.rowsByGarment[garment].findIndex(r => r.id === row.id);
+          state.rowsByGarment[garment].splice(idx + 1, 0, copy);
+          clearSearch();
+          scheduleSave();
+          render();
+          requestAnimationFrame(() => {
+            const newTr = document.querySelector('tr[data-row-id="' + copy.id + '"]');
+            const nameField = newTr && newTr.querySelector('input');
+            if (nameField) { nameField.focus(); nameField.select(); }
+          });
+        });
+        tdDel.appendChild(dupBtn);
+      }
       const delBtn = document.createElement('button');
       delBtn.className = 'del-btn';
       delBtn.textContent = '\u00d7';
-      const canDelete = isManager || (row.addedBy && row.addedBy === personalContactName);
+      delBtn.type = 'button';
       delBtn.disabled = !canDelete;
       delBtn.title = canDelete ? 'Remove this person' : 'Only the manager or the person who added this row can remove it';
       delBtn.addEventListener('click', () => {
         if (!canDelete) return;
+        if (!confirm('Remove ' + (row.name ? '"' + row.name + '"' : 'this entry') + ' from the order?')) return;
         state.rowsByGarment[garment] = state.rowsByGarment[garment].filter(r => r.id !== row.id);
         scheduleSave();
         render();
@@ -1907,21 +2072,48 @@ function renderSections() {
     table.appendChild(tbody);
     bodyDiv.appendChild(table);
 
-    const addBtn = document.createElement('button');
-    addBtn.className = 'add-row-btn';
-    addBtn.textContent = '+ Add a person';
-    addBtn.addEventListener('click', () => {
-      state.rowsByGarment[garment].push(newRow());
-      scheduleSave();
-      render();
-      focusNewRowInGarment(garment);
-    });
-    bodyDiv.appendChild(addBtn);
+    if (!query) {
+      const addBtn = document.createElement('button');
+      addBtn.className = 'add-row-btn';
+      addBtn.textContent = '+ Add a person';
+      addBtn.addEventListener('click', () => {
+        state.rowsByGarment[garment].push(newRow());
+        scheduleSave();
+        render();
+        focusNewRowInGarment(garment);
+      });
+      bodyDiv.appendChild(addBtn);
+    }
 
     section.appendChild(bodyDiv);
     container.appendChild(section);
   });
+
+  if (query && totalMatches === 0) {
+    const noMatch = document.createElement('div');
+    noMatch.className = 'empty-state';
+    noMatch.textContent = 'No one found matching "' + searchQuery.trim() + '".';
+    container.appendChild(noMatch);
+  }
 }
+
+function updateRowValidation(nameInput, sizeSelect, row) {
+  if (row.name && row.name.trim() && !row.size) {
+    sizeSelect.classList.add('field-missing');
+  } else {
+    sizeSelect.classList.remove('field-missing');
+  }
+}
+
+function clearSearch() {
+  if (!searchQuery) return;
+  searchQuery = '';
+  const box = document.getElementById('findEntrySearch');
+  if (box) box.value = '';
+  const clearBtn = document.getElementById('findEntryClearBtn');
+  if (clearBtn) clearBtn.style.display = 'none';
+}
+
 
 function focusNewRowInGarment(garment) {
   requestAnimationFrame(() => {
@@ -1984,7 +2176,30 @@ function render() {
   renderGarmentPicker();
   renderSections();
   updateSummary();
+  updateFindEntryVisibility();
 }
+
+function totalEntryCount() {
+  return state.garments.reduce((sum, g) => sum + ((state.rowsByGarment[g] || []).length), 0);
+}
+
+function updateFindEntryVisibility() {
+  const row = document.getElementById('findEntryRow');
+  row.style.display = totalEntryCount() > 6 ? 'flex' : 'none';
+}
+
+document.getElementById('findEntrySearch').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  document.getElementById('findEntryClearBtn').style.display = searchQuery ? 'inline-block' : 'none';
+  clearTimeout(searchRenderTimer);
+  searchRenderTimer = setTimeout(renderSections, 120);
+});
+document.getElementById('findEntryClearBtn').addEventListener('click', () => {
+  searchQuery = '';
+  document.getElementById('findEntrySearch').value = '';
+  document.getElementById('findEntryClearBtn').style.display = 'none';
+  renderSections();
+});
 
 document.getElementById('teamName').addEventListener('input', e => { state.teamName = e.target.value; scheduleSave(); });
 document.getElementById('contactName').addEventListener('input', e => { personalContactName = e.target.value; });
@@ -2747,7 +2962,7 @@ function renderNewOrderFieldTags() {
     const tag = document.createElement('span');
     tag.className = 'new-order-field-tag';
     const label = document.createElement('span');
-    label.textContent = field.label;
+    label.textContent = field.label + (field.options && field.options.length ? ' (dropdown \u00b7 ' + field.options.length + ')' : ' (text)');
     tag.appendChild(label);
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
@@ -2764,6 +2979,7 @@ function renderNewOrderFieldTags() {
 
 function addNewOrderField() {
   const input = document.getElementById('newOrderFieldInput');
+  const optionsInput = document.getElementById('newOrderFieldOptionsInput');
   const label = input.value.trim();
   if (!label) { input.focus(); return; }
   if (newOrderCustomFields.some(f => f.label.toLowerCase() === label.toLowerCase())) {
@@ -2771,8 +2987,12 @@ function addNewOrderField() {
     input.focus();
     return;
   }
-  newOrderCustomFields.push({ id: uid(), label: label });
+  const options = optionsInput.value.split(',').map(s => s.trim()).filter(Boolean);
+  const field = { id: uid(), label: label };
+  if (options.length) field.options = options;
+  newOrderCustomFields.push(field);
   input.value = '';
+  optionsInput.value = '';
   renderNewOrderFieldTags();
   input.focus();
 }
@@ -2780,6 +3000,7 @@ function addNewOrderField() {
 function resetNewOrderModal() {
   document.getElementById('newOrderTeamName').value = '';
   document.getElementById('newOrderFieldInput').value = '';
+  document.getElementById('newOrderFieldOptionsInput').value = '';
   newOrderCustomFields = [];
   renderNewOrderFieldTags();
   document.getElementById('newOrderForm').classList.remove('hidden');
@@ -2861,6 +3082,12 @@ document.getElementById('newOrderOverlay').addEventListener('click', e => {
 document.getElementById('generateOrderBtn').addEventListener('click', handleGenerateOrder);
 document.getElementById('addNewOrderFieldBtn').addEventListener('click', addNewOrderField);
 document.getElementById('newOrderFieldInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    addNewOrderField();
+  }
+});
+document.getElementById('newOrderFieldOptionsInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     e.preventDefault();
     addNewOrderField();
