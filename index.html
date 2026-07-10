@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Beast Mode - Team Order Form</title>
+<style>
+  :root {
+    --ink: #111214;
+    --paper: #f5f4f2;
+    --panel: #ffffff;
+    --line: #26282c;
+    --line-soft: #dcdad6;
+    --accent: #d81e2c;
+    --accent-dark: #a1141f;
+    --accent-soft: #fbe2e3;
+    --muted: #6b6c70;
+    --ok: #2f6b3a;
+    --font-display: 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    --font-body: 'Helvetica Neue', Arial, -apple-system, sans-serif;
+    --font-mono: 'SF Mono', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    padding: 0 0 80px;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+  .topbar {
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .brand-logo { display: flex; align-items: center; }
+  .brand-logo img { display: block; }
+  .topbar .tagline {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #b8b8ba;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 4px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 32px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .role-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+  .role-badge.manager { background: var(--accent); color: #fff; }
+  .role-badge.viewer { background: var(--line-soft); color: var(--ink); }
+
+  .save-status {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .save-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); transition: background 0.2s; }
+  .save-dot.saving { background: var(--accent); }
+
+  .share-banner {
+    background: var(--ink);
+    color: #fff;
+    padding: 16px 18px;
+    border-radius: 3px;
+    margin-top: 20px;
+  }
+  .share-banner-text { font-size: 12.5px; line-height: 1.5; color: #d6d6d8; margin-bottom: 10px; }
+  .share-banner-text strong { color: #fff; }
+  .share-code-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .share-code-row input {
+    flex: 1;
+    min-width: 140px;
+    padding: 9px 11px;
+    border: 2px solid #3a3c40;
+    background: #1c1e21;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .share-code-row input::placeholder { color: #6b6c70; text-transform: none; }
+  .share-code-row input:focus { outline: none; border-color: var(--accent); }
+  .share-code-row button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0 18px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: var(--font-body);
+  }
+  .share-code-row button:hover { background: var(--accent-dark); }
+  .share-code-row button.secondary { background: #3a3c40; }
+  .share-code-row button.secondary:hover { background: #4a4c50; }
+  .share-copied { display: none; font-size: 12px; color: #7ed19a; margin-top: 8px; font-weight: 600; }
+  .share-copied.visible { display: block; }
+  .manager-note { font-size: 11px; color: #9a9a9c; margin-top: 10px; line-height: 1.5; }
+
+  .row-author { font-size: 10px; color: var(--muted); display: block; margin-top: 2px; padding-left: 8px; }
+
+  .meta-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 22px 0 20px;
+  }
+  .field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 5px;
+    font-weight: 700;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 2px solid var(--line-soft);
+    background: var(--panel);
+    font-family: var(--font-body);
+    font-size: 14px;
+    border-radius: 2px;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--accent); }
+  .field input:disabled, .field select:disabled { background: #eeece9; color: var(--muted); cursor: not-allowed; }
+
+  .garment-picker {
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 16px;
+    margin-bottom: 28px;
+  }
+  .garment-picker-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .garment-picker-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--muted); }
+  .garment-picker-hint { font-size: 11.5px; color: var(--muted); }
+  .garment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 4px;
+  }
+  .garment-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    font-size: 13px;
+    border-radius: 2px;
+  }
+  .garment-check:hover { background: var(--accent-soft); }
+  .garment-check input { accent-color: var(--accent); width: 15px; height: 15px; }
+  .garment-check label { cursor: pointer; flex: 1; }
+  .garment-locked-note {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    padding: 6px 2px;
+  }
+
+  .garment-section {
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+  .garment-section-head {
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .garment-section-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .garment-section-count { font-family: var(--font-mono); font-size: 12px; color: #cfcfd1; }
+  .garment-section-remove {
+    background: none;
+    border: 1px solid #4a4c50;
+    color: #cfcfd1;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .garment-section-remove:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .garment-section-body { padding: 14px 16px 16px; }
+
+  .size-reference {
+    background: var(--paper);
+    border: 1px solid var(--line-soft);
+    border-left: 4px solid var(--accent);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    border-radius: 2px;
+  }
+  .size-reference-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+  .size-reference-codes { font-family: var(--font-mono); font-size: 12px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .size-reference-codes span { background: #fff; border: 1px solid var(--line-soft); padding: 2px 7px; border-radius: 2px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  thead th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 2px solid var(--line-soft);
+    padding: 7px 6px;
+  }
+  tbody td { padding: 4px 6px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+  tbody tr:hover td { background: var(--accent-soft); }
+  tbody tr.locked-row:hover td { background: transparent; }
+  tbody input, tbody select {
+    width: 100%;
+    padding: 7px 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    border-radius: 2px;
+  }
+  tbody input:hover, tbody select:hover { border-color: var(--line-soft); }
+  tbody input:focus, tbody select:focus { background: #fff; border-color: var(--accent); outline: none; }
+  tbody input:disabled, tbody select:disabled { background: #f2f1ee; color: var(--muted); cursor: not-allowed; }
+  .col-num { width: 28px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+  .col-del { width: 32px; text-align: center; }
+  .del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 17px; line-height: 1; padding: 4px; font-weight: 700; }
+  .del-btn:hover { color: var(--accent); }
+  .del-btn:disabled { color: #d0cfcc; cursor: not-allowed; }
+  .lock-icon { color: var(--muted); font-size: 12px; }
+
+  .add-row-btn {
+    margin-top: 10px;
+    background: var(--ink);
+    border: none;
+    color: #fff;
+    padding: 10px 14px;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    cursor: pointer;
+    border-radius: 2px;
+    font-family: var(--font-body);
+  }
+  .add-row-btn:hover { background: var(--accent); }
+
+  .summary {
+    margin-top: 30px;
+    border-top: 4px solid var(--ink);
+    padding-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .summary-by-garment { display: flex; flex-direction: column; gap: 8px; }
+  .summary-garment-row { display: flex; align-items: baseline; gap: 10px; font-size: 12.5px; }
+  .summary-garment-name { font-weight: 700; min-width: 200px; }
+  .size-breakdown { font-family: var(--font-mono); font-size: 12px; color: var(--ink); display: flex; flex-wrap: wrap; gap: 5px; }
+  .size-chip { background: var(--ink); color: #fff; padding: 3px 8px; border-radius: 2px; font-weight: 600; }
+  .grand-total { font-family: var(--font-display); font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
+  .grand-total b { font-size: 30px; color: var(--accent); display: block; letter-spacing: normal; }
+
+  .empty-state { color: var(--muted); font-size: 13px; padding: 20px 8px; text-align: center; font-style: italic; }
+
+  footer.note { margin-top: 30px; font-size: 12px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--line-soft); padding-top: 14px; }
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(17,18,20,0.72);
+    z-index: 100;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    overflow-y: auto;
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal {
+    background: var(--panel);
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .modal-head {
+    background: var(--ink);
+    color: #fff;
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .modal-title { font-family: var(--font-display); font-weight: 900; font-size: 19px; text-transform: uppercase; }
+  .modal-subtitle { font-size: 12px; color: #c8c8ca; margin-top: 4px; }
+  .modal-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .modal-btn:hover { background: var(--accent-dark); }
+  .modal-close {
+    background: none;
+    border: 1px solid #4a4c50;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .modal-close:hover { background: #3a3c40; }
+  .modal-body { padding: 22px; max-height: 72vh; overflow-y: auto; }
+  .review-garment-block { margin-bottom: 26px; }
+  .review-garment-block:last-child { margin-bottom: 0; }
+  .review-garment-heading {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 15px;
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .review-garment-heading small { font-family: var(--font-mono); font-weight: 400; color: var(--muted); font-size: 12px; text-transform: none; }
+  table.review-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.review-table th {
+    text-align: left;
+    background: var(--paper);
+    border-bottom: 2px solid var(--line-soft);
+    padding: 7px 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  table.review-table td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); }
+  table.review-table tr:nth-child(even) td { background: #fafaf9; }
+  .review-missing { color: var(--accent); font-style: italic; }
+  .review-grand-total {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 4px solid var(--ink);
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 16px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .review-grand-total b { font-size: 32px; color: var(--accent); }
+
+  @media print {
+    body * { visibility: hidden; }
+    .modal-overlay, .modal-overlay * { visibility: visible; }
+    .modal-overlay { position: absolute; inset: auto; padding: 0; background: #fff; }
+    .modal { max-width: 100%; }
+    .modal-head button { display: none; }
+    .modal-head { background: #fff !important; color: #000 !important; border-bottom: 4px solid #000; }
+    .modal-subtitle { color: #333 !important; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand-logo"><img src="data:image/png;base64,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" alt="Beast Mode" height="48"></div>
+  <div class="tagline">Your Gear, Your Way</div>
+</div>
+
+<div class="wrap">
+  <header>
+    <h1>Team Order Form</h1>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="role-badge viewer" id="roleBadge">Viewer</span>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">All changes saved</span></div>
+    </div>
+  </header>
+
+  <div class="share-banner" id="shareBanner">
+    <div class="share-banner-text">
+      <strong>Filling this in with your team?</strong> Share this order's code with parents, coaches, or teammates. Anyone with the code can add players and edit their own rows, live. Only the manager can pick which garments are on the order, or remove someone else's row.
+    </div>
+    <div class="share-code-row">
+      <input id="teamCode" type="text" placeholder="Order code, e.g. MANAIA-U11" spellcheck="false">
+      <button id="loadCodeBtn" type="button">Load order</button>
+      <button id="shareBtn" type="button">Copy link to share</button>
+      <button id="managerBtn" type="button" class="secondary">Manager login</button>
+      <button id="exportBtn" type="button" class="secondary" style="display:none;">Download full list</button>
+    </div>
+    <div class="share-copied" id="shareCopied">Link copied. Send it to your team.</div>
+    <div class="manager-note" id="managerNote"></div>
+  </div>
+
+  <div class="meta-row">
+    <div class="field">
+      <label for="teamName">Team / Order name</label>
+      <input id="teamName" type="text" placeholder="e.g. Manaia U11s Rugby">
+    </div>
+    <div class="field">
+      <label for="contactName">Your name</label>
+      <input id="contactName" type="text" placeholder="So we know who added what">
+    </div>
+  </div>
+
+  <div class="garment-picker" id="garmentPicker">
+    <div class="garment-picker-head">
+      <span class="garment-picker-title">Garments on this order</span>
+      <span class="garment-picker-hint" id="garmentPickerHint">Only the manager can change this list</span>
+    </div>
+    <div id="garmentPickerBody"></div>
+  </div>
+
+  <div id="sectionsContainer"></div>
+
+  <div class="summary">
+    <div class="summary-by-garment" id="summaryByGarment"></div>
+    <div class="grand-total">Total pieces<b id="grandTotal">0</b></div>
+  </div>
+
+  <footer class="note">
+    Your progress saves automatically, even if you close this tab, refresh, or log out. Anyone with the order code can add players and edit their own entries. Only the manager (logged in with the manager code) can choose which garments are ordered or remove another person's row. Use the size dropdowns to keep everything consistent with our official size charts. Because this list is shared by code, avoid using anything private or sensitive in the order code itself.
+  </footer>
+</div>
+
+<div class="modal-overlay" id="reviewOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="reviewModalTitle">Full order review</div>
+        <div class="modal-subtitle" id="reviewModalSubtitle"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-btn" id="printReviewBtn">Print</button>
+        <button class="modal-btn" id="csvReviewBtn">Download CSV</button>
+        <button class="modal-close" id="closeReviewBtn">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body" id="reviewModalBody"></div>
+  </div>
+</div>
+
+<script>
+// --- Supabase setup ---
+// Fill these in from your Supabase project: Settings -> API
+const SUPABASE_URL = "https://rwlcetkcvsturthbxhaq.supabase.co"; // e.g. https://abcxyz.supabase.co
+const SUPABASE_ANON_KEY = "YeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3bGNldGtjdnN0dXJ0aGJ4aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NjQ3NzksImV4cCI6MjA5OTI0MDc3OX0.TK07VDFh1cJmHl8wWMmbk1dmjM4cWspPCSsC8lqaXtQ";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const SIZE_CHARTS = {
+  "T-Shirt (Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
+  "T-Shirt (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL","W6XL","W7XL","W8XL","W9XL","W10XL","W11XL","W12XL"],
+  "Long Sleeve T-Shirt (Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Long Sleeve T-Shirt (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Fitted Volleyball T-Shirt": ["Y6","Y8","Y10","Y12","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Polo Shirt (Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
+  "Polo Shirt (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL","W6XL","W7XL","W8XL","W9XL","W10XL","W11XL","W12XL"],
+  "Hoodie (Youth/Adult Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Hoodie (Womens)": ["W3XS","WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL"],
+  "Quarter Zip Jumper (Unisex)": ["XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Quarter Zip Jumper (Youth)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16"],
+  "Quarter Zip Jumper (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Singlet (Unisex)": ["Y2","Y3","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
+  "Singlet (Womens)": ["W8","W10","W12","W14","W16","W18","W20","W22","W24","W26","W28","W30","W32","W34","W36","W38"],
+  "Cycling Shirt (Unisex)": ["XS","S","M","L","XL","2XL","3XL"],
+  "Cycling Shirt (Womens)": ["W3XS","W2XS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Goalie Smock": ["3XS","2XS","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Puffer Jacket (Youth/Adult Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","S","M","L","XL","2XL","3XL","4XL"],
+  "Puffer Jacket (Womens)": ["W3XS","WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL"],
+  "Tracksuit Jacket (Youth/Adult Unisex)": ["4","6","8","10","12","14","S","M","L","XL","2XL","3XL","4XL"],
+  "Tracksuit Jacket (Womens)": ["W3XS","WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL"],
+  "Rain Jacket (Youth/Adult Unisex)": ["YXS","YS","YM","YL","YXL","XS","S","M","L","XL","2XL","3XL","4XL"],
+  "Rain Jacket (Womens)": ["12/W3XS","WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL"],
+  "Rugby Jersey (Youth & Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","Y16/XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL"],
+  "Rugby Jersey (Womens)": ["WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL","W5XL","W6XL","W7XL"],
+  "Rugby Shorts (Youth Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","Y16/XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL"],
+  "Rugby Shorts (Womens)": ["W6","W8","W10","W12","W14","W16","W18","W20","W22","W24","W26"],
+  "Rugby Training Jacket": ["Y6","Y8","Y10","Y12","Y14","XS","S","M","L","XL","2XL","3XL","4XL"],
+  "Baseball Jersey (Youth/Adult Unisex)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
+  "Baseball Jersey (Womens)": ["WXXS","WXS","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Baseball Pants": ["YXS","YS","YM","YL","YXL","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Baseball Cage Jacket (Unisex)": ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL","12XL"],
+  "Baseball Cage Jacket (Youth)": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16"],
+  "Trackpants (Youth/Adult Unisex)": ["Y4","Y6","Y8","Y10","Y12","Y14","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Trackpants (Womens)": ["XXS","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Football Shorts (Unisex)": ["K2","K4","K6","K8","K10","K12","K14","K16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Basketball Shorts (Unisex)": ["K2","K4","K6","K8","K10","K12","K14","K16","XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL"],
+  "Muay Thai Shorts": ["XXS","XS","S","M","L","XL","2XL"],
+  "MMA Shorts": ["K6","K8","K10","K12","K14","K16","XS","S","M","L","XL","XXL"],
+  "Compression Shorts": ["Y10","Y12","Y14","Y16","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Compression Leggings": ["Y10","Y12","Y14","Y16","WS","WM","WL","WXL","W2XL","W3XL","W4XL"],
+  "Skirt/Skort": ["Y4","Y6","Y8","W6/W2XS","W8/WXS","W10/WS","W12/WM","W14/WL","W16/WXL","W18/W2XL","W20/W3XL","W22/W4XL","W24/W5XL","W26/W6XL","W28/W7XL","W30/W7XL"],
+  "School Skirt": ["Y2","Y4","Y6","Y8","Y10","Y12","Y14","Y16","S","M","L","XL","2XL","3XL","4XL"],
+  "Netball Dress": ["K6","K8","K10","K12","K14","W6","W8","W10","W12","W14","W16","W18","W20","W22","W24"],
+  "Swim Cap": ["50g","55g","60g","65g"],
+  "Rugby/Football Socks": ["XXS","XS","S","M","L","XL","XXL"],
+  "Waka Ama Rash Shirt (Short Sleeve)": ["YXS","YS","YM","YL","YXL","XS","S","M","L","XL","2XL","3XL","4XL"],
+  "Waka Ama Rash Shirt (Long Sleeve)": ["YXS","YS","YM","YL","YXL","XS","S","M","L","XL","2XL","3XL","4XL"]
+};
+const GARMENT_LIST = Object.keys(SIZE_CHARTS);
+
+let teamCode = "";
+let managerCode = "";
+let personalContactName = "";
+let isManager = false;
+
+let state = {
+  teamName: "",
+  garments: [],
+  rowsByGarment: {},
+  managerCode: ""
+};
+
+let saveTimer = null;
+
+function uid() { return Math.random().toString(36).slice(2, 10); }
+
+function newRow() {
+  return { id: uid(), name: "", size: "", number: "", notes: "", addedBy: personalContactName || "" };
+}
+
+function storageKeyForCode(code) {
+  return 'order-' + code.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '-');
+}
+
+function getParamsFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return { order: params.get('order') || "", mgr: params.get('mgr') || "" };
+}
+
+function setURLParams(code, mgr) {
+  const url = new URL(window.location.href);
+  if (code) url.searchParams.set('order', code); else url.searchParams.delete('order');
+  if (mgr) url.searchParams.set('mgr', mgr); else url.searchParams.delete('mgr');
+  window.history.replaceState({}, '', url);
+}
+
+async function loadState(showSpinner) {
+  if (!teamCode) return;
+  if (showSpinner) document.getElementById('saveText').textContent = 'Loading shared list...';
+  try {
+    const { data, error } = await supabaseClient
+      .from('orders')
+      .select('data')
+      .eq('code', storageKeyForCode(teamCode))
+      .maybeSingle();
+    if (error) throw error;
+    if (data && data.data) {
+      state = { ...state, ...data.data };
+    }
+  } catch (e) {
+    console.warn('No existing data for this order code yet, or read failed:', e);
+  }
+  if (!state.garments) state.garments = [];
+  if (!state.rowsByGarment) state.rowsByGarment = {};
+  state.garments.forEach(g => { if (!state.rowsByGarment[g]) state.rowsByGarment[g] = []; });
+
+  checkManagerStatus();
+  render();
+  document.getElementById('saveText').textContent = 'All changes saved';
+}
+
+async function saveState() {
+  if (!teamCode) return;
+  const dot = document.getElementById('saveDot');
+  const text = document.getElementById('saveText');
+  dot.classList.add('saving');
+  text.textContent = 'Saving...';
+  try {
+    const { error } = await supabaseClient
+      .from('orders')
+      .upsert({ code: storageKeyForCode(teamCode), data: state, updated_at: new Date().toISOString() });
+    if (error) throw error;
+    dot.classList.remove('saving');
+    text.textContent = 'All changes saved';
+  } catch (e) {
+    console.error('Save failed:', e);
+    text.textContent = 'Save failed, will retry';
+  }
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveState, 500);
+}
+
+let realtimeChannel = null;
+
+function startPolling() {
+  if (realtimeChannel) {
+    supabaseClient.removeChannel(realtimeChannel);
+  }
+  realtimeChannel = supabaseClient
+    .channel('order-' + storageKeyForCode(teamCode))
+    .on('postgres_changes',
+      { event: '*', schema: 'public', table: 'orders', filter: `code=eq.${storageKeyForCode(teamCode)}` },
+      payload => {
+        const active = document.activeElement.tagName;
+        if (active === 'INPUT' || active === 'SELECT') return; // avoid clobbering someone mid-type
+        if (payload.new && payload.new.data) {
+          state = { ...state, ...payload.new.data };
+          checkManagerStatus();
+          render();
+        }
+      }
+    )
+    .subscribe();
+}
+
+function checkManagerStatus() {
+  if (!state.managerCode) {
+    isManager = false;
+  } else {
+    isManager = managerCode && managerCode === state.managerCode;
+  }
+  const badge = document.getElementById('roleBadge');
+  badge.textContent = isManager ? 'Manager' : 'Viewer';
+  badge.className = 'role-badge ' + (isManager ? 'manager' : 'viewer');
+
+  document.getElementById('garmentPickerHint').textContent = isManager
+    ? 'Tick the garments included in this order'
+    : 'Only the manager can change this list';
+
+  const note = document.getElementById('managerNote');
+  if (!state.managerCode) {
+    note.textContent = 'No manager code set yet for this order. Set one with "Manager login" to control which garments are included.';
+  } else if (isManager) {
+    note.textContent = 'You are signed in as manager for this order.';
+  } else {
+    note.textContent = 'Viewing as a team member. Ask your manager for the manager code to unlock garment selection and full editing.';
+  }
+
+  document.getElementById('exportBtn').style.display = isManager ? 'inline-block' : 'none';
+}
+
+function updateMetaFields() {
+  document.getElementById('teamName').value = state.teamName || "";
+  document.getElementById('contactName').value = personalContactName;
+  document.getElementById('teamCode').value = teamCode;
+  document.getElementById('teamName').disabled = !isManager && !!state.managerCode;
+}
+
+function renderGarmentPicker() {
+  const body = document.getElementById('garmentPickerBody');
+  body.innerHTML = "";
+
+  if (!isManager && state.managerCode) {
+    if (state.garments.length === 0) {
+      body.innerHTML = '<div class="garment-locked-note">The manager has not added any garments to this order yet.</div>';
+    } else {
+      const grid = document.createElement('div');
+      grid.className = 'garment-grid';
+      state.garments.forEach(g => {
+        const row = document.createElement('div');
+        row.className = 'garment-check';
+        row.innerHTML = '<span class="lock-icon">&#128274;</span><label>' + g + '</label>';
+        grid.appendChild(row);
+      });
+      body.appendChild(grid);
+    }
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'garment-grid';
+  GARMENT_LIST.forEach(g => {
+    const row = document.createElement('div');
+    row.className = 'garment-check';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id = 'g-' + g.replace(/[^a-zA-Z0-9]/g, '');
+    cb.checked = state.garments.includes(g);
+    cb.disabled = !isManager && !!state.managerCode;
+    cb.addEventListener('change', () => {
+      if (cb.checked) {
+        if (!state.garments.includes(g)) state.garments.push(g);
+        if (!state.rowsByGarment[g]) state.rowsByGarment[g] = [];
+      } else {
+        state.garments = state.garments.filter(x => x !== g);
+      }
+      scheduleSave();
+      render();
+    });
+    const label = document.createElement('label');
+    label.htmlFor = cb.id;
+    label.textContent = g;
+    row.appendChild(cb);
+    row.appendChild(label);
+    grid.appendChild(row);
+  });
+  body.appendChild(grid);
+}
+
+function renderSections() {
+  const container = document.getElementById('sectionsContainer');
+  container.innerHTML = "";
+
+  if (state.garments.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = isManager
+      ? 'Tick at least one garment above to start adding people.'
+      : 'Waiting for the manager to add garments to this order.';
+    container.appendChild(empty);
+    return;
+  }
+
+  state.garments.forEach(garment => {
+    const rows = state.rowsByGarment[garment] || [];
+    const section = document.createElement('div');
+    section.className = 'garment-section';
+
+    const head = document.createElement('div');
+    head.className = 'garment-section-head';
+    const title = document.createElement('div');
+    title.className = 'garment-section-title';
+    title.textContent = garment;
+    head.appendChild(title);
+
+    const right = document.createElement('div');
+    right.style.display = 'flex';
+    right.style.alignItems = 'center';
+    right.style.gap = '10px';
+    const count = document.createElement('span');
+    count.className = 'garment-section-count';
+    count.textContent = rows.length + (rows.length === 1 ? ' entry' : ' entries');
+    right.appendChild(count);
+    if (isManager) {
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'garment-section-remove';
+      removeBtn.textContent = 'Remove garment';
+      removeBtn.addEventListener('click', () => {
+        if (rows.length > 0 && !confirm('This garment has ' + rows.length + ' entries. Remove it and all its entries?')) return;
+        state.garments = state.garments.filter(g => g !== garment);
+        delete state.rowsByGarment[garment];
+        scheduleSave();
+        render();
+      });
+      right.appendChild(removeBtn);
+    }
+    head.appendChild(right);
+    section.appendChild(head);
+
+    const bodyDiv = document.createElement('div');
+    bodyDiv.className = 'garment-section-body';
+
+    const ref = document.createElement('div');
+    ref.className = 'size-reference';
+    const refLabel = document.createElement('div');
+    refLabel.className = 'size-reference-label';
+    refLabel.textContent = 'Available sizes';
+    ref.appendChild(refLabel);
+    const refCodes = document.createElement('div');
+    refCodes.className = 'size-reference-codes';
+    (SIZE_CHARTS[garment] || []).forEach(s => {
+      const span = document.createElement('span');
+      span.textContent = s;
+      refCodes.appendChild(span);
+    });
+    ref.appendChild(refCodes);
+    bodyDiv.appendChild(ref);
+
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    thead.innerHTML = '<tr><th class="col-num">#</th><th style="width:24%">Name on back</th><th style="width:16%">Size</th><th style="width:12%">Number</th><th>Notes / sponsors</th><th class="col-del"></th></tr>';
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    rows.forEach((row, i) => {
+      const canEditRow = isManager || !row.addedBy || row.addedBy === personalContactName;
+      const tr = document.createElement('tr');
+      if (!canEditRow) tr.className = 'locked-row';
+
+      const tdNum = document.createElement('td');
+      tdNum.className = 'col-num';
+      tdNum.textContent = i + 1;
+      tr.appendChild(tdNum);
+
+      const tdName = document.createElement('td');
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.placeholder = 'Player name (press Enter to add another)';
+      nameInput.value = row.name;
+      nameInput.disabled = !canEditRow;
+      nameInput.addEventListener('input', e => {
+        row.name = e.target.value;
+        if (!row.addedBy && personalContactName) row.addedBy = personalContactName;
+        scheduleSave(); updateSummary();
+      });
+      nameInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const isLastRow = i === rows.length - 1;
+          if (isLastRow && canEditRow) {
+            state.rowsByGarment[garment].push(newRow());
+            scheduleSave();
+            render();
+            focusNewRowInGarment(garment);
+          }
+        }
+      });
+      tdName.appendChild(nameInput);
+      if (row.addedBy) {
+        const author = document.createElement('span');
+        author.className = 'row-author';
+        author.textContent = 'added by ' + row.addedBy;
+        tdName.appendChild(author);
+      }
+      tr.appendChild(tdName);
+
+      const tdSize = document.createElement('td');
+      const sizeSelect = document.createElement('select');
+      sizeSelect.disabled = !canEditRow;
+      [""].concat(SIZE_CHARTS[garment] || []).forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s === "" ? "Select size" : s;
+        if (s === row.size) opt.selected = true;
+        sizeSelect.appendChild(opt);
+      });
+      sizeSelect.addEventListener('change', e => { row.size = e.target.value; scheduleSave(); updateSummary(); });
+      tdSize.appendChild(sizeSelect);
+      tr.appendChild(tdSize);
+
+      const tdNumber = document.createElement('td');
+      const numberInput = document.createElement('input');
+      numberInput.type = 'text';
+      numberInput.placeholder = '-';
+      numberInput.value = row.number;
+      numberInput.disabled = !canEditRow;
+      numberInput.addEventListener('input', e => { row.number = e.target.value; scheduleSave(); });
+      tdNumber.appendChild(numberInput);
+      tr.appendChild(tdNumber);
+
+      const tdNotes = document.createElement('td');
+      const notesInput = document.createElement('input');
+      notesInput.type = 'text';
+      notesInput.placeholder = 'Sponsors, tall fit, etc.';
+      notesInput.value = row.notes;
+      notesInput.disabled = !canEditRow;
+      notesInput.addEventListener('input', e => { row.notes = e.target.value; scheduleSave(); });
+      tdNotes.appendChild(notesInput);
+      tr.appendChild(tdNotes);
+
+      const tdDel = document.createElement('td');
+      tdDel.className = 'col-del';
+      const delBtn = document.createElement('button');
+      delBtn.className = 'del-btn';
+      delBtn.textContent = '\u00d7';
+      const canDelete = isManager || (row.addedBy && row.addedBy === personalContactName);
+      delBtn.disabled = !canDelete;
+      delBtn.title = canDelete ? 'Remove this person' : 'Only the manager or the person who added this row can remove it';
+      delBtn.addEventListener('click', () => {
+        if (!canDelete) return;
+        state.rowsByGarment[garment] = state.rowsByGarment[garment].filter(r => r.id !== row.id);
+        scheduleSave();
+        render();
+      });
+      tdDel.appendChild(delBtn);
+      tr.appendChild(tdDel);
+
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    bodyDiv.appendChild(table);
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-row-btn';
+    addBtn.textContent = '+ Add a person';
+    addBtn.addEventListener('click', () => {
+      state.rowsByGarment[garment].push(newRow());
+      scheduleSave();
+      render();
+      focusNewRowInGarment(garment);
+    });
+    bodyDiv.appendChild(addBtn);
+
+    section.appendChild(bodyDiv);
+    container.appendChild(section);
+  });
+}
+
+function focusNewRowInGarment(garment) {
+  requestAnimationFrame(() => {
+    const sections = document.querySelectorAll('.garment-section');
+    sections.forEach(sec => {
+      const titleEl = sec.querySelector('.garment-section-title');
+      if (titleEl && titleEl.textContent === garment) {
+        const inputs = sec.querySelectorAll('tbody tr:last-child input');
+        if (inputs[0]) inputs[0].focus();
+      }
+    });
+  });
+}
+
+function updateSummary() {
+  const summaryEl = document.getElementById('summaryByGarment');
+  summaryEl.innerHTML = "";
+  let grandTotal = 0;
+
+  if (state.garments.length === 0) {
+    summaryEl.innerHTML = '<span class="empty-state" style="padding:0;">No garments added yet</span>';
+  }
+
+  state.garments.forEach(garment => {
+    const rows = state.rowsByGarment[garment] || [];
+    const counts = {};
+    rows.forEach(row => {
+      if (row.size) {
+        counts[row.size] = (counts[row.size] || 0) + 1;
+        grandTotal += 1;
+      }
+    });
+    const sizesUsed = Object.keys(counts);
+    if (sizesUsed.length === 0) return;
+
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'summary-garment-row';
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'summary-garment-name';
+    nameSpan.textContent = garment;
+    rowDiv.appendChild(nameSpan);
+
+    const chips = document.createElement('div');
+    chips.className = 'size-breakdown';
+    (SIZE_CHARTS[garment] || []).filter(s => counts[s]).forEach(s => {
+      const chip = document.createElement('span');
+      chip.className = 'size-chip';
+      chip.textContent = s + ' x' + counts[s];
+      chips.appendChild(chip);
+    });
+    rowDiv.appendChild(chips);
+    summaryEl.appendChild(rowDiv);
+  });
+
+  document.getElementById('grandTotal').textContent = grandTotal;
+}
+
+function render() {
+  updateMetaFields();
+  renderGarmentPicker();
+  renderSections();
+  updateSummary();
+}
+
+document.getElementById('teamName').addEventListener('input', e => { state.teamName = e.target.value; scheduleSave(); });
+document.getElementById('contactName').addEventListener('input', e => { personalContactName = e.target.value; });
+
+async function loadOrderByCode() {
+  const newCode = document.getElementById('teamCode').value.trim();
+  if (!newCode) {
+    document.getElementById('teamCode').focus();
+    return;
+  }
+  if (newCode === teamCode && state.garments && state.garments.length >= 0 && document.getElementById('sectionsContainer').children.length > 0) {
+    return; // already loaded, avoid wiping in-progress edits
+  }
+  teamCode = newCode;
+  setURLParams(teamCode, managerCode);
+  state = { teamName: "", garments: [], rowsByGarment: {}, managerCode: "" };
+  await loadState(true);
+  startPolling();
+}
+
+document.getElementById('loadCodeBtn').addEventListener('click', loadOrderByCode);
+document.getElementById('teamCode').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    loadOrderByCode();
+  }
+});
+document.getElementById('teamCode').addEventListener('blur', () => {
+  if (document.getElementById('teamCode').value.trim() && !teamCode) {
+    loadOrderByCode();
+  }
+});
+
+document.getElementById('shareBtn').addEventListener('click', () => {
+  const code = document.getElementById('teamCode').value.trim();
+  if (!code) { document.getElementById('teamCode').focus(); return; }
+  teamCode = code;
+  setURLParams(teamCode, "");
+  const url = window.location.href;
+  const copiedEl = document.getElementById('shareCopied');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      copiedEl.classList.add('visible');
+      setTimeout(() => copiedEl.classList.remove('visible'), 3000);
+    });
+  } else {
+    copiedEl.textContent = url;
+    copiedEl.classList.add('visible');
+  }
+});
+
+document.getElementById('managerBtn').addEventListener('click', async () => {
+  if (!teamCode) {
+    alert('Enter or share an order code first.');
+    return;
+  }
+  if (!state.managerCode) {
+    const newMgrCode = prompt('No manager code is set for this order yet. Create one now (keep it private, share only with other managers/coaches):');
+    if (!newMgrCode) return;
+    state.managerCode = newMgrCode.trim();
+    managerCode = state.managerCode;
+    scheduleSave();
+    checkManagerStatus();
+    setURLParams(teamCode, managerCode);
+    render();
+    return;
+  }
+  const entered = prompt('Enter the manager code for this order:');
+  if (!entered) return;
+  if (entered.trim() === state.managerCode) {
+    managerCode = entered.trim();
+    setURLParams(teamCode, managerCode);
+    checkManagerStatus();
+    render();
+  } else {
+    alert('That code does not match. Ask your manager for the correct code.');
+  }
+});
+
+function buildReviewData() {
+  const rows = [];
+  state.garments.forEach(garment => {
+    (state.rowsByGarment[garment] || []).forEach(row => {
+      rows.push({
+        garment,
+        name: row.name || "",
+        size: row.size || "",
+        number: row.number || "",
+        notes: row.notes || "",
+        addedBy: row.addedBy || ""
+      });
+    });
+  });
+  return rows;
+}
+
+function openReviewModal() {
+  const overlay = document.getElementById('reviewOverlay');
+  const body = document.getElementById('reviewModalBody');
+  const subtitle = document.getElementById('reviewModalSubtitle');
+  body.innerHTML = "";
+
+  const teamLabel = state.teamName ? state.teamName : 'Untitled order';
+  subtitle.textContent = teamLabel + ' - Order code: ' + teamCode;
+
+  let grandTotal = 0;
+  let missingCount = 0;
+
+  if (state.garments.length === 0) {
+    body.innerHTML = '<div class="empty-state">No garments have been added to this order yet.</div>';
+  }
+
+  state.garments.forEach(garment => {
+    const rows = state.rowsByGarment[garment] || [];
+    if (rows.length === 0) return;
+
+    const block = document.createElement('div');
+    block.className = 'review-garment-block';
+
+    const heading = document.createElement('div');
+    heading.className = 'review-garment-heading';
+    heading.innerHTML = '<span>' + garment + '</span><small>' + rows.length + (rows.length === 1 ? ' entry' : ' entries') + '</small>';
+    block.appendChild(heading);
+
+    const table = document.createElement('table');
+    table.className = 'review-table';
+    table.innerHTML = '<thead><tr><th>#</th><th>Name on back</th><th>Size</th><th>Number</th><th>Notes / sponsors</th><th>Added by</th></tr></thead>';
+    const tbody = document.createElement('tbody');
+    rows.forEach((row, i) => {
+      grandTotal += row.size ? 1 : 0;
+      if (!row.size || !row.name) missingCount += 1;
+      const tr = document.createElement('tr');
+      const sizeCell = row.size ? row.size : '<span class="review-missing">missing</span>';
+      const nameCell = row.name ? row.name : '<span class="review-missing">missing</span>';
+      tr.innerHTML = '<td>' + (i + 1) + '</td><td>' + nameCell + '</td><td>' + sizeCell + '</td><td>' +
+        (row.number || '') + '</td><td>' + (row.notes || '') + '</td><td>' + (row.addedBy || '') + '</td>';
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    block.appendChild(table);
+    body.appendChild(block);
+  });
+
+  if (state.garments.length > 0) {
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'review-grand-total';
+    const warn = missingCount > 0 ? ' (' + missingCount + ' entries missing a name or size)' : '';
+    totalDiv.innerHTML = '<span>Total pieces' + warn + '</span><b>' + grandTotal + '</b>';
+    body.appendChild(totalDiv);
+  }
+
+  overlay.classList.add('visible');
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewOverlay').classList.remove('visible');
+}
+
+function downloadCSV() {
+  const rows = buildReviewData();
+  const header = ['Garment', 'Name on back', 'Size', 'Number', 'Notes / sponsors', 'Added by'];
+  const lines = [header.join(',')];
+  rows.forEach(r => {
+    const line = [r.garment, r.name, r.size, r.number, r.notes, r.addedBy]
+      .map(v => '"' + String(v).replace(/"/g, '""') + '"')
+      .join(',');
+    lines.push(line);
+  });
+  const csvContent = lines.join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  const fileName = (state.teamName || teamCode || 'order').replace(/[^a-zA-Z0-9-]/g, '-') + '-order.csv';
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('exportBtn').addEventListener('click', openReviewModal);
+document.getElementById('closeReviewBtn').addEventListener('click', closeReviewModal);
+document.getElementById('reviewOverlay').addEventListener('click', e => {
+  if (e.target.id === 'reviewOverlay') closeReviewModal();
+});
+document.getElementById('csvReviewBtn').addEventListener('click', downloadCSV);
+document.getElementById('printReviewBtn').addEventListener('click', () => window.print());
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeReviewModal();
+});
+
+const DEMO_ORDER_CODE = "HC-SUPPORTERS-2026";
+const DEMO_SEED_DATA = {"teamName": "Hastings College Sports Supporters 2026", "garments": ["Long Sleeve T-Shirt (Unisex)", "Long Sleeve T-Shirt (Womens)"], "rowsByGarment": {"Long Sleeve T-Shirt (Unisex)": [{"id": "poqkchix", "name": "OLIVER", "size": "Y12", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: AQUAMAN & WHĀNAU, MUM, ATTICUS, NANA, AUNTIE KERRI, NANA CHERYL, AUNTIE MAG, NANA DI, AUNTIE SHARNE, NANA MARIE, AUNTIE SOPHIE, NATHONABILE, AUNTIE VICKY, NICHOLLS WHANAU, BEAU, ODIN, BOBCAT, OUTDOORSY NZ, BOOTH WHANAU, PERTH WHANAU, DAD, POPPA FRANK, DAVIS KAIHANA, POPPA KEVIN, GEORGIE, PRICKLES WHANAU, GRANDAD BOBO, SHAN & GWEN RIP, HUNNIIZ, SHAZ, INDIE, SID, JACKSON 5, SIEBREN, KAIA, SYMFEE, LIL SIS GWEN, TEAM RAS, LYRIK, THE DUFFS, MARINGI, THE LAUMEMEA'S, MARY BRO, TOTO, MATTHEW, UNCLE FRED, MAX, ZEE STOWERS, MEARES WHANAU, ZENI", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "3i5e5sns", "name": "LOUIE", "size": "S", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: DAD, GREENIE, MUM, JED, FNR LTD, ELLA, PANELLOCK HOMES, ARLIE-ROSE, NANA THERESA, KEVIN, NANA BARB, ANTALYA, POPPA GREG, MIA, KORO, OLIVIA, SEZZY & MARK, POPPY, LEO, KATIE, FNR QUARRIES, LACEY, FNR CIVIL, TUPURIA, COASTAL VALET, HINE, ARAHIA, NIWHAI, SYLVIE, HARRISON, SILAS, JB, LUCY, IZZY, ANDRE, MARAMA, LOUIS, ILIL, CARLEY, MADDIE, RICHARD, MILLIE, TAYLA, DOVEY, JAMES, CASSIDY, WILLOW, HANNAH, ANNA, JAMES", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "uwe7mqxm", "name": "ASHER", "size": "Y12", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "u0bi3v21", "name": "OLLIE", "size": "L", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: NANNIE, ENERGIZED LIMITED, POPPA, THE RUDOLPHS, UNCLE GRAE, MUM, AUNTY LOU, DAD, JS BUILD, THE TIPENE/GOINGS, GRANDAD, THE BARRYMUNDYS, MACS AND MINIS, THE SHEARERS, WILLA, JAN WHITTAKER, ELLE AND ALAIN, SARAH WILLIAMSON, MAC, TIM WILLIAMSON, UNCLE KORI, STEVIE GLAVISH, AUNTY TASH, CAM GLAVISH, MUM, LAKE FARMS, DAD, DOROTHY, BUTCH, HARRY WILLIAMSON, BRIDIE, JENNY COUCHMAN, MASON, SAM WILLIAMSON, NANA OLIVE, FLO, SAM AND MANDY, WINNY, THE OGLES, NUGGET, RAEWYN GAMBLE, JENNY COUCHMAN, LET’S MOVE, TILLY, BAZ AND SHAN, LLOYDY, SCANDO AND PAIGE, ZARI, THE SMALES FAMILY, JAI", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "jmqbd27v", "name": "MATTHEW", "size": "Y16", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: LASTLUCKYNINJA, DANIEL SUNDANCE BROTHER, FORMANS CORNER, NANA, PRESENCE WITH AROHA, GRANDAD, MITÁKUYE OYÁS’IŊ, SUJO, SSONZ, THE ADAMS FAMILY, BUDDHA, PATIENCE, KEVIN AND DIANNA, NEW ZEALAND JUGGER LEAGUE, LIGHTING MAN STANDING, ME, TOM, 12 STEPS AND BEYOND, SHIELD, SMART HOLDINGS, BEN & MIA, TRUST, BEAR & RUBY, OLIVER, ECHO, BABA, NANA AND GRANDAD, LEA-ARAHIA, IT'S A DENNIS THING, BLACK FOOT BOY, MAHI TRIBE, CAMOZZI CLAN, FLAME, HUMMINGBIRDS SPOT, CHIEF WHITE CLOUD, ODAT, ASTRA, BUFFALO WATER WOMEN, NINJA, SHACKLES, WHANGAREI HEALERS CIRCLE, ZEE, PETERS FARM, SI, PHOENIX, PHOENIX, AUNTIE SELENA, THE FARM, SOLOMAN, NOONESPECIAL", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "xv5g7hra", "name": "RIVAS", "size": "Y10", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "0t61qpbw", "name": "NIKO", "size": "Y16", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: TEXTURECLAD, POPPA, KATE ZEUS, COASTAL CONSTRUCTION, STOREYS, BULLS & CHINA, MUM & DAD, GRANDMA BATT, TAILOR & CURATE, SIMEONIDES, CHRIS MANSFIELD, PAPOU, KOUZINA APPLIANCES, AUNTY TASH, NANA, GRANDMA BATT, MODERN EARTH HOMES, HELENA, TOM, ROSS & CHARISE, KITO, LOUIE & MIKEY, RUBY, ALESSANDRA, CROSS FAMILY, JAMES, SIX SEVEN, LUIS, THE GREEKS, TANYA STONE, KATE , GRANDMA BATT, NIKE, MAX MCG, BATMAN, SAM, ERIC, RENNER, ALLEN FAMILY, AUNTY TASH, PAPOU, MILLA MCG, THE FINISHERS, SAMMY, LEBRON, SANDI, LEO, TEXTURECLAD, ARIS, KATE ZEUS", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "zgzwskrg", "name": "LUKEY", "size": "Y16", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: TEXTURECLAD, POPPA, KATE ZEUS, COASTAL CONSTRUCTION, MUM & DAD, AUNTY TASH, BULLS & CHINA, GRANDMA BATT, TAILOR & CURATE, SIMEONIDES FAMILY, KOUZINA APPLIANCES, PAPOU, SPEED, TANYA STONE, NANA, TEXTURECLAD, MODERN EARTH HOMES, HELENA, TOM, ROSS & CHARISE, KITO, LOUIE & MIKEY, RUBY, LULU, CROSS FAMILY, JAMES, SIX SEVEN, LUIS, KATE, ALESSANDRA, ROX & STEVE, GRANDMA BATT, NIKE, MAX MCG, BATMAN, EMMA THE BEST COUSIN!, ERIC, RENNER, ALLEN FAMILY, THE GREEKS, PAPOU, MILLA MCG, THE FINISHERS, SAMMY, LEBRON, SANDI, LEO, AUNTY TASH, ARIS, KATE ZEUS", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "dh6d6y8y", "name": "BEN JONES", "size": "L", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: TRILLIAN, TAIMER, SYD, SOPHIE, SIRI, SBJFC, SAMMY CAT, ROS, PHIL, PARAGON, NOAH, MUM, MATON, UNCLE MARTY, MABEL, AUNTY KRISTEN, JOHN, JANINE, HAYDEN, GREG FOSTER, GRANDMA, GRANDAD, FERN, EMMA, ELLA, CONNOR, BUDDY, BRIG", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "8b6nfxno", "name": "DANIEL", "size": "Y16", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: KEN AND BEC COUPER, HARRY TRUBSHAW, KEN AND BEC COUPER, LILY MONKS, KEN AND BEC COUPER, CHARLOTTE MONKS, KEN AND BEC COUPER, TOWNSHEND FAMILY, KEN AND BEC COUPER, ANDREW’S FAMILY, KEN AND BEC COUPER, ROCK THE RULES, LIN NORRIS BAYLEYS COUNTRY, WAIPU STARS IN YOUR EYES, LIN NORRIS BAYLEYS COUNTRY, TE KORIHI O TE TUI, LIN NORRIS BAYLEYS COUNTRY, COUPER FARMS, LIN NORRIS BAYLEYS COUNTRY, COUPER FARMS, LIN NORRIS BAYLEYS COUNTRY, COUPER FARMS, BRITT AND RYAN, COUPER FARMS, ELLIOT AND NAT, COUPER FARMS, PETA AND RICH, COUPER FARMS, JILL AND MATT, COUPER FARMS, KEVIN AND ANNE, COUPER FARMS, GEORGIA COUPER, ED COUPER, EMILY COUPER, FLYNN TROOST, MATT COUPER, APERAHAMA FAMILY, ROB COUPER, LACHLAN SCOWN, BEN COUPER, RILEY MCLEAN, SHELLEY COUPER, LOUIS, PAT COUPER, MUM, APRIL TRUBSHAW, DAD, WILL TRUBSHAW, ARI", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "8pgghsii", "name": "ZAC", "size": "Y12", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | Supporters: SHARKTOOTH LTD, SHARKTOOTH LTD, DAD, MUM, MUM, DAD, JAY, RUM, MADDY, MADDY, RUM, JAY, GRANDMA, OUMA, OUPA, OUPA, OUMA, GRANDMA, GERARD, AMY, AMY, GERARD, DANIEL, PETRA, PETRA, DANIEL, DAWIE, YOULANDE, YOULANDE, DAWIE, CLARA, ANNABELL, ANNABELL, CLARA, ANNE, MARK, MARK, ANNE, CLIFFORD, ELSA, ELSA, CLFFORD, ANTON, GRAHAM, LITTLE DAWIE, LITTLE DAWIE, GRAHAM, ANTON, JONO, JONO", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "t4qd9b4v", "name": "CALEB", "size": "Y12", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "wbueztgy", "name": "MATUA HENRY", "size": "3XL", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "zhl8acql", "name": "ZADE", "size": "S", "number": "", "notes": "Sleeve: SENIOR BASKETBALL | Supporters: COACH RANGI, DYLZ H, PADDY H, NANA MALI & PAPA TERRY, RIKKI KELLY, ALAKASK, NORRIS WHANAU, HIMIONA KELLY, CHURCHWARD-KELLY, CUZZY SHAI, KK & IWI, DYLAN KING, RUKA KELLY, ALEX CAMPBELL LEWIS, MAMA BEAR, TYLER, THE GOAT AZARIAH, KELLYS, UNCLE WILL, WHANAU KAUWHATA, AUNTY JESS, ROBSONS, KOWHAI H, KIHI, COACH RANGI", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "t3c1fef2", "name": "KEVIN", "size": "S", "number": "", "notes": "Sleeve: SENIOR BASKETBALL | [TALL] | Supporters: CUZZIES, GOOSE, DAD AND JAZ, PIPIWAI, HUANUI, OLSEN WHĀNAU, HURUPAKI, UNCLE BRAD, AUNTY KIRI, SHANNY AND POPS, POPATA WHANAU, NANA KASE & PAPA MU, TYS AND THE NEHOS, AUCKLAND DAWSONS, EVA, CHLOE & KAHU, PAPARORE, NGAWHITU ROAD, KAITAIA INTERMEDIATE, HYLAND WHĀNAU, HOUHORA, MUM AND JORDS, RANGAUNU, SMITHVILLE, JAI JAI, TE PAA A PARORE", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "hmjfkae1", "name": "HARRISON", "size": "S", "number": "", "notes": "Sleeve: SENIOR BASKETBALL | Supporters: DAD, AUNTY JODI, NANNY MELLISA, JETT RATAHI, JAMIE KELLY, UNCLE DAVID, COURTNEY, FREDDIE KELLY, AUNTY RACHEL, CAROL THOMPSON, LILY RATAHI, STAN, ANNETTE YOUNGER, THE ROBERTS, DYLAN RATAHI, MUM, TAMARA KELLY, POPPA, KHLOE, DEANNE HARDING, KATIE YES, BEVERLY, BEN THOMPSON, UNCLE ROB, TIANA", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "42tfxmkw", "name": "DANIEL", "size": "S", "number": "", "notes": "Sleeve: SENIOR BASKETBALL | Supporters: UNCLE JOHN, RUTHIE, ELDAD, FAIRY G-MA’S, AUNTY DEE, AUNTY JO, KALEM TANA, JOSH PORT, TAYLOR GREEN, GLENDA DONOVAN, MAPUA WHANAU, MILES ASHBY, JAKE ASHBY, BRYN ASHBY, BRIDGET ASHBY, SCOTT CARDWELL, H. CAMPS, ASHBY WHANAU, THE GREEN TEAM, AUNTY ANNE, KUMARA KID, GRAN, NANA, DAD, YOUR MOTHER!", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "5al1xz2s", "name": "NIWHAI", "size": "M", "number": "", "notes": "Sleeve: SENIOR BASKETBALL | Supporters: MAMA DUCK, DIDIDAH, I LOVE, BOOTZ, TAHA, AUNTY ASTRAL, EMMA WILSON, NANA PAULINE, NAN, NIKAUGIN, UNCLE JAMES, WATENE, SCOTT CUZZIES, FA’ATAU MANGU, NANA KAKE, AUNTY PARNS, POO BEAR, AUNTY TUBS, UNCLE BARNOR, WILSON WRIGHTS, NANA KATH, KWELI JAMES, AUNTY ROSE, LIJ BIG MUSCLES, WHAEA TONI", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "rj4otamr", "name": "JACOB", "size": "XL", "number": "", "notes": "Sleeve: SENIOR BASKETBALL | Supporters: MAMA DUCK, DIDIDAH, I LOVE, BOOTZ, TAHA, AUNTY ASTRAL, EMMA WILSON, NANA PAULINE, NAN, TEATA, AUNTY HEATHER, WATENE, SCOTT CUZZIES, FA’ATAU MANGU, NANA KAKE, AUNTY PARNS, POO BEAR, UNCLE GLEN, AUNTY BEV, WILSON WRIGHTS, NANA KATH, KWELI JAMES, AUNTY ROSE, LIJ BIG MUSCLES, WHAEA TONI", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "9ppon0hp", "name": "CAMPBELL", "size": "M", "number": "", "notes": "Sleeve: SENIOR BASKETBALL | Supporters: AUNTY CATHY, AARON & JAN, STEVEN ADAMS, IVY & SILVIA, ANDO'S, UNCLE AWON, AUNTY SANDRA, HARVS, AUNTY GLENIS, UNCLE ARTHUR, LEBRON, EVERS FAMILY, MANDA, SCOOTER, COOPS, POPPA J, NANNY DAWN, UNCLE BRETT, DAD, ISSY, SAM, NANNA SIGLEY, AUNTY ROSE, KING KAMAKA, MY NANNA", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "56lnldx8", "name": "WILLEM", "size": "L", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "u226nn63", "name": "JAY", "size": "S", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "b17ujwud", "name": "NOAH", "size": "M", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "4jt8r88e", "name": "CAMERON", "size": "L", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "1te0ulmf", "name": "RAYHAN", "size": "S", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "dwtii6cd", "name": "OLLIE", "size": "S", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "yujjf4bn", "name": "MANU", "size": "XL", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "0cqtbsri", "name": "STAFF LOUIS", "size": "M", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "xxms5azx", "name": " MALIA", "size": "S", "number": "", "notes": "Sleeve: UNISS NETBALL | [TALL]", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "rkjh8vqg", "name": "HANNAH", "size": "S", "number": "", "notes": "Sleeve: UNISS NETBALL | [TALL] | Supporters: MUM, DAD, JAMES, BOOKIE, EMILY, RORY, AMBER, NARLA, OMI, ZOLA, RUBY, SAMMI, LIV, NAT, IVY, RUBY, MYA, ANNA, EMMA, ATHALIA, CLARE, JADE", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "fkfglr9a", "name": "KATH", "size": "L", "number": "", "notes": "Sleeve: UNISS NETBALL", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "8a4hgail", "name": "COACH", "size": "", "number": "", "notes": "[SIZE NOT PROVIDED - confirm with customer] | Sleeve: UNISS NETBALL | [size missing]", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "d9kqatzn", "name": "DUSTY", "size": "Y16", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: TULSI PARENTING HUB , KORU PARENTING HUB , BOUNDARY LINE SURVEYS QLD , ANITA ARMSTRONG , DAVEY WHĀNAU , WEATHERUP FAMILY , GRAMSNDA , WHITE WHĀNAU , AUNTY DEBBIE , ERIN TATTERSALL , WENLIN , JT ELECTRICAL WHG , GRANDAD GREG & GRANDMA JAYNE , AUNTY SASKIA de VILLIERS , DAD, AMOS-STACEY WHĀNAU , MUM, AUNTY JILL , MINNOW , THE MILLERS , ISAAC WATTS , TEGAN COSTELLO , OLIVIA , CLEGHORNS , ELSIE , ROSS MALLETT , MILA , TURNER FAMILY , EMILY , KERRY MALLETT , NANNY EMY , JACKSON ENGINEERING , AVA , ERIN TATTERSALL , KEIRA , TURNER FAMILY , ZOEY , JUNIPER , CLEGHORNS , BROTHER, COSTELLOS , CHEESALYN , KATRYN , EVALULU , OCCY , LORD SUMICH OF THE GLENN , QUINCY , AMOS-STACEY WHĀNAU , KONRAD , INDIRELLA ", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "g60bkcre", "name": "MADDIE", "size": "2XL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: NORTHLAND FARM WATER SOLUTIONS, THE DUFFS, THE LATTIMERS, THE VINSONS, THE ERCEG-GREYS, NANA, AUNT SUSIE, DUNBAR, COUNTRY TO COAST LANSCAPE, DAD, GRANDPA AND JANIE, THE WEATHERUPS, GRANDPA AND JANIE, BIG DUNKZ, GRANDPA AND JANIE, ANITA, GRANDPA AND JANIE, THE TRUMPERS, KYM, RECOVERY WORKS, THE RAMSAY-LINES, WHANGAREI MOXY HIRE, THE IRVINGS, THE FORDS, THE IRVINGS, RITA GIBSON, THE IRVINGS, SHAAAAAZZZAAAAA, THE IRVINGS, BAHN MI HOUSE, AF BUILD CO, THE IOSEFOS, NAN-NAN, THE MERCERS, THE RYBURNS, NAN-NAN, POPPA, POPS, THE TAYLORS, JADE, DANSKA CABINETMAKING, JT ELECTRICAL, HAIR BY SUE, JARRAD, MUM, AMY, PAULA WEBB, GR, THE DELACEY WHANAU, KANE", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "9yfi9zpr", "name": "LOLLY", "size": "4XL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [REMOVE 3CM FROM SLEEVES]", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "mh9h1rr1", "name": "CRAIG", "size": "L", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "5562uw84", "name": "KAKE", "size": "2XL", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL", "addedBy": "Import (White AIMS GAMES NETBALL)"}], "Long Sleeve T-Shirt (Womens)": [{"id": "k4mwlnow", "name": "TANYA", "size": "WM", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "e448x8eu", "name": "STACIE", "size": "WXL", "number": "", "notes": "Sleeve: AIMS GAMES BASKETBALL | [TALL]", "addedBy": "Import (AIMZ BASKETBALL)"}, {"id": "x0rbexdz", "name": "KAKE", "size": "W2XL", "number": "", "notes": "Sleeve: SENIOR BASKETBALL", "addedBy": "Import (Senior Boys BASKETBALL)"}, {"id": "9e7eor5t", "name": "LEXIS", "size": "WS", "number": "", "notes": "Sleeve: UNISS NETBALL | [TALL] | Supporters: TARA, PHILL, AUNTY ROSE, UNCLE HUBERT, MARCUS, NANA DEB, GRANDAD GAZ, MARK, JULIE, DEBRA, GARRY, JASON, SHELLEY , TYLAR, CRAIG, KIM, TRISHA RYAN, ZOE, DAVID, MAUREEN , ANNA, LAURA , DEBBIE, JEREMY, ASHLEY, BRUCE , SONIA, SHELLZ, KONRAD AND TASHA, INDIE, AMELIA , TYLAR, DONALD", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "7un8c5m1", "name": "HINE", "size": "WXL", "number": "", "notes": "Sleeve: UNISS NETBALL | [TALL]", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "geir22tr", "name": "OLIVIA", "size": "WS", "number": "", "notes": "Sleeve: UNISS NETBALL | Supporters: MUM, DAD, CODY, GRANDAD, NAN, POPPA, NANNY SUE, GRANDMA, PAPA GEORGE, SHANE, FIONA, LANI, ZAK, ALEXA, DEAN, CHRISTINA, SAM, SARAH, MARK, MATTHEW, BENJAMIN, CHELSEA, CALEB, DANIEL, MARLEE, DENVER", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "ahdbh5aa", "name": "LAURA", "size": "WS", "number": "", "notes": "Sleeve: UNISS NETBALL | Supporters: NA TE WHANAU, CLAIRE & DAVID, KATH, TIM, LUCY, TAYLOR, PIPER, GO LAURA, TURN HARD, TURN FAST, LOOK DOWN, QIUJING, G&G, THE SHED SHOP, UP THE WAHS, H&R, MARISSA, JOHNNY, BILLIE, GEORGE, ANNA, LEXIS, SAMMY T, AWA, STEPHANIE, JED, DEAN, MAIA, CAROLINE, LISA , GRETTA, HENRY, RACH; MAID IN NZ", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "ii9s93ia", "name": "GRACIE", "size": "WL", "number": "", "notes": "Sleeve: UNISS NETBALL | [TALL] | Supporters: DAD, MUM, AMBER SILK, OGs, AUNTY KATE, NANNY, JAYDEN , RYAN AND CATHY, FLORENCE , ALFRED SHEARS, JOSEPH, NANA , MAX AND SERENE , POP, AUNTY MARIA, EMILY C-S, FUNCLE JACK, UNCLE LUKE, SIENNA RENWICK, MATTHEW, GRANDAD GEORGE, GRANPA GEORGE, AUNTY LAURA, UNCLE RAWIRI , MAIA, BROOKLYN , # No.1 LITTLE SIS", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "d2usi862", "name": "DOVEY", "size": "WS", "number": "", "notes": "Sleeve: UNISS NETBALL | [TALL] | Supporters: MUM, DAD, WILLEM, ESME, GRANDAD, OMA, QUEENIE, RICKIE, CAMMY, JONI, ZADE, ALMA", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "tcd7bynt", "name": "LILY", "size": "WS", "number": "", "notes": "Sleeve: UNISS NETBALL | [TALL] | Supporters: JASON, DANIEL, JUDY, AVA, LET'S, STAN STILL, GO, ALL BLACKS, SILVER, NETBALL, BEN, SILVER FERNS, DANIEL, ASTON, LEFT RIGHT OUT, CLARE, BUSTER, JAKE, BROCK LANCASTER, ED, BARRY CADE, STEVE DOG, WADE BRADLEY, KLARE, EMMA, CALLUM RONG, ELLA VATION, HUGO, LOTTIE, OSCAR, MAX, TILLY, STEVE PONCH ISLAND, FINTAN, RUBY, TEIRNAN, TIM PAYNE, ISAAC, BOLT, AZELIA, BEN CHWARMER, ETHAN, JUDY, CATHAL, DEE FENTS, MARK, JASON, TOM , BEN , HARRY", "addedBy": "Import (Silver UNISS NETBALL)"}, {"id": "lqktq1fe", "name": "EMILY M", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: AUNTY CAROL, GRANT (DAD), KAU FU, MANDY PYE, HANNAH WHITE, KEREWARO WHĀNAU, YIYI, KEREWARO WHĀNAU, THE ANG FAMILY, AUNTY AI WAIA, GONG GONG & POPO, ROLAND STARK, AUNTY RUTH, RACHEL VAN DER HURST, ZHUZHU, RYAN FAMILY, AVERY (MEI MEI), MILLY RYAN, ZOEY", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "lhe6nee9", "name": "INDIGO", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: MUM, DAD, JANDY, PAPA, AUNTY HANNAH, RICHIE, JENSEN & LEXI, GRANDAD, AUNTY RACHEL, GODFREY, JOSH & EDEN, TEGAN, DUSTY, CHEESALYN, MADELINE, EVALULU, LORD SUMMICH OF THE GLENN, QUINCY, JACKSON ENGINEERING, GARY, SPECIAL PARTICLE OF DUST, MADDIE, JACKO, BRIAN, SANDY, SALEM", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "ilooleh0", "name": "MILA", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL]", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "v405wfkj", "name": "OLIVIA", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL]", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "8fhvfvue", "name": "ZOEY", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: DES RYAN, TEDDY, TROY, UNCLE SEAN, ANGUS, THE LITTLES, SARA, DAD, THE HUNGRY RUSH, KIRAN, PRIM, KATIE, WHĀNAU, ASH, AUNTY CLAIR, TOBIAS, TEAM RYAN, MISHA, GRANDY, LIL SWIFTIE, ZOEY, ELITE TRAINING, YEOZ! , THE DELEMARES, MATT, EMILY, LIZ, HUDSON, AUNTY JACKIE, TESSA, THE MONTGOMERYS, THE LANGS, NANA KAREN, ADELINE, NORTHCLOUD, KEZIA, TEAM TIEKE, MUM, NANA APRILL, AUBREY, THE HERMANSENS, LEO, INKY, KYLA", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "tbxqu1n5", "name": "KATRYN", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: NOËL, DANIEL CAMPI, JANCKE, JAI, JAMES, MS PRIDHAM, ROLO, MS EDWARDS, CLARA, AVA, DONNCKA, MILA, QUEEN, MASON LASH, RAGEL, HONOR, TEDDY, NIAMH, TACO, OLIVIA, STELLA, CIARA, SECRET, RONING, ZEE, LEXIS, ANCKE, ANNA, OUPA JAMES, OUMA ANITA, OUPA JEMIMA, ELLA, CAMREN, ELIJAH, AMELIA, PIPPA, HARPER, EMILY, KEIRA, ELSIE, DUSTY, INDIGO, RUBY, AVA, GRACE, HANNAH, MEGAN, TYLER, CALEB, TANNIE SHELLY", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "8vogan16", "name": "KEIRA", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: NANNY & PA, CITY CRICKET CLUB, GRANDAD, LEATHEM FAMILY, GRANDMA, THE PAGES, THE MALANS, GENE NGAMU, MUM AND DAD, SUTTLING, DURACRETE, ZOEY RYAN, REDI ROCK, DAVID HEPBURN, YOUR DAD KNOWS, RILEY FAMILY, 360 ELECTRICAL, MICHAEL STAR, THE HOWELLS, STEEL FAMILY, AUNTY DONNA, JAN WHITTAKER, WONG FAMILY, CHARLOTTE BELL, YOSHI, ALEX BELL, YOVICH FAMILY, LACHIE BELL, VAUGHAN WITTEN, FROMONT, MITCHELL STARC, PAYTEN WEBB, ANDREW FRASER, ALEX MALAN, SWEATER, OLI MALAN, CLEANSTREAM, DIGS, JIM, MOHAMMED, OFFICE CHICKS, *****BLAKE*****, MANLY CRICKET CLUB, SWEET, UP THE WAHS, RYAN FAMILY, THE PAGES, MILLY RYAN, LEATHEM FAMILY, WONG FAMILY", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "3n71waqn", "name": "CASS", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL]", "addedBy": "Import (Navy KURANGAITUKU)"}, {"id": "3adzae31", "name": "OLIVIA", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: BIG SIS, EMILY, MILO, BRIAR, LOUIS, TAYLOR, MARGAUX, AUNTIE LUCY, HAYLEY, UNCLE ANDREW, ANNIE, UNCLE LIAM, BRAMWELL, AUNTIE KATIE, DIDA, FLORENCE, GIGI, GOLDIE, NANA, FRANCO, POPPA, THE LUMS, SARAH, KATIE, MUMMA DUCK, GOODINS, DAD, IRWINS, MOLLY, CAITLIN, PIPPA G, ALEX, BELLA, JOY, RIA, GEOFF, MILLER, FRANCO, ISABELLA, RACHEL, PIPPA G, ZOE, IMOGEN, WITTY, LILLY, FERN, CHLOE", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "xzeqoxdp", "name": "BELLA", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: TEAM PROCTER, TIKIPUNGA DENTAL CENTRE, UNCLE MATTY, DOLLY, NANNY & POPPY, NIRVANA, FINCH FAMILY, WITHERS FAMILY, RED CARPET, TEAM McGREGOR, MUM & DAD, ROCKSTAR, AUNTY MICHY, ONE DAY AG, NATURAL TIMBER CO., HEWITT FAMILY, LUMS ON THE MOOSE, DREW, McCULLY'S, BABY BRIAN, BAYLEYS, G - BEAR, TRACEY BARBER, LIV, GOODIN'S, PIPPA, GRANNY, LILLY, REESEY, CHLOE, JENNIE DEAN, EMILY, MUMMA JANICE, ISABELLA, AUNTY MUSI, IMOGEN, TEAM TAYLOR, RIA, DWAYNE R.J., MILLER", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "ynuasi20", "name": "                              PIPPA", "size": "WXXS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: RAY SYMMANS, KATE, NORA SYMMANS, TIM, CAT SYMMANS, JAMIE, NADIA, THE PRICES, JANET COLLIER, PHIL, BRUCE SYMMANS, RICHARD SWIFT, G & T MARIE, SARAH M, LUCA, KATIE B, CATHERINE COOGAN, JO SWIFT, DISHPOD, THE SNITHS, BERYL SWEETING, JACK & BELLE, GEORGE, HEIDI , GRACE, NEVE , RY & REBECCA, SAM, GRANT & TRACY, JESSICA, CATHY GUBB, BELLA, PAUL & JORDAN, OLIVIA, LUCY & DUNCAN, IMOGEN , EMMA SYMMANS, RIA, COURTNEY & SHAE, MILLER, ROSIE TAYLOR, EMILY, ADIE COLLIER, LILLY, KAYLA & BEN, CHLOE, THE ASHWORTHS, ISABELLA, POP", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "me3i1pcq", "name": "RIA", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: MILL ROAD VETS, CONNOR, DIDI, JANELLE, MUM, CLARKY, DAD, WESTERN, CARLA, ELAINE, POPPA ROD, SELWYN, NANA DI, KINGS CONCRETE, ENERGIZE ELECTRICAL, MICHELLE, MACY, AUNTY LEESH, UNCLE KURT & AUNTIE CASEY, THE COWLEYS, IRENE MCPHERSON, JETTSA, LEXI, COOPER. OLIVER & IMOGEN, HUBANDS ENERGY, WHAEA SHAWNEE, NANA NELLIE, KATE, BRIDIE, THE MANGUS, THE FOWLERS, MADDOG, CLAIRE, MAC MCPHERSON, MCKENZIE, HOLLY & JAKE, POPPA MURPHY, LARISSA, NADIA, MABLE, NGAIRE, LEWIE, ELLA, ARCHIE, SHELLY, SHAZ, GRACE, OPI, ALICE, PIP THE RIZZLER, UNCLE EVO", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "ygz0hcy4", "name": " ISABELLA", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: VANESSA, BRENDON, AARIA, CALEB, OLIVIA, JACK, IVY, WILLIAM, JACINTA, STEPHANIE, AMELIE, MILLER, TAYLA, JASPER, GORDON, BELLA, OLIVIA, IMOGEN, RIA, MILLER, EMILY, LILLY, CHLOE, BELLA, PIPPA", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "5noutz3e", "name": " LILLY", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: MUM & DAD, LITTLE SIS, HANNAH BANANA, DOUG THE DOG, GRAN & FULLA, JOYBELLS, GO LILLY!, THE HEWITT FAMILY, ONE DAY AG, THE WRIGHT STUFF, THE FERGISSONGS, GRANNY M, UNCLE PHIL & AUNTY NIK, UNCLE PAUL & AUNTY AILEEN, GRANDAD & GRANNY BABS, VIKKI & MANNY, 10 IN THE VAN, THE FRASERS, THE LANGLEYS, BELLA, IMOGEN, ISABELLA, MILLER, PIPPA, EMILY, CHLOE, RIA, OLIVIA", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "5rl4mxm2", "name": " EMILY", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: DAD, #NO. 1 BIG SIS, MUM, AUNTY KATE, OG'S, MATTHEW, NANNY, AUNTY LAURA, AMBER, UNCLE RAWIRI, RYAN & CATHY, MAIA, FLORENCE, BROKKLYN, GRANDAD GEORGE, UNCLE LUKE, ALFRED SHEARS, BELLA, JOE JOE, OLIVIA, NANA, PIPPA, MAX & SERENE, LILLY, POP, CHLOE, AUNTY MARIIA, ISABELLA, JAYDEN, IMOGEN, UNCLE JACK, RIA, GRANDPA ARTHUR, MILLER", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "h1hgvhc1", "name": "CHLOE", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: JJ FENG, CINDY CHEN, SODA CAFE, RYAN & VICKY, ZHU XIONG, DANPING C, XIU CHEN, CHEN XIANG Z, MILLY C, MEILLIAN Z, ZENGFU F, VIVIENNE B, SHIWEI F, ARIAH P, LI JUAN H, REBECCA R, IVY L, KE LAI, OLIVIA L, ASCOT MOTOR INN, JOHNNIE Z, SHUBIN H, MOUNTAINVIEW HOTEL, SHUYUN B, SASHA W, CHIPPY F, WEIYING S, ELIANA F, GRACE L, MADELEINE L, LISA & JERRY, MATUA HENRY, BELLA VISTA MOTEL, MADDY Y, BELLA VISTA MOTEL, MIANEY V, BELLA VISTA WHANGĀREI, SENDONG F, BELLA VISTA WHANGĀREI, ABIGALE T, MCKENZIE H, MIKAYLA J, KRISHNA P, ISABELLE M, ERIC Q, INDIE B, BUMBEE & TAOMI, MILLER D, ZOE Z, NOAH H", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "iifxk095", "name": "Renee", "size": "W2XL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL]", "addedBy": "Import (Black KURANGAITUKU)"}, {"id": "ro9hv91q", "name": "KUSHA", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: OM, JAY, ROSHINI MASI, BOA, ESHA DIDI, RAVI MAMA, MITUMAMI, DADDY, KEISHA & KESHVI (SHANVI), CHRISTINE (AUNTY CHRIS), ISABELLE, ISHAN BHAI, UNCLE MIKE, KEIRA, WILL, ANJNA (BEST MUM EVA), AARYA, MIKAYLA, MCKENZIE, INDIE (RUMPLE TEASER), ABIGAIL, ISLA (SLOTH LOVER)", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "me4uvp5d", "name": "MAKAYLA", "size": "WXXS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: TWADDLE WHĀNAU, LUCY & NINA, BROWN WHĀNAU, GEBBETT KANE WHĀNAU, FINN & JACK, MORGAN WHĀNAU, AMY'S FLOWERS, LEAH, TAUWHARE TURNBULL'S, ZARA, ALI, HEATHER, WE KNOW MUM, REWICK WHĀNAU, MUM & DAD, NANA & GRANDAD, QA VUVALE, NANA & POP", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "a6l25h9r", "name": "ABISAIL", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: KIWI GRANDPA, THE OSBORNES, LARA & FAMILY, BETH & HAYDEN, MARSHALL & PEPA, MCKENZIE, BROWN FAMILY, THE MCHENRYS, THE DICKSONS, ANCKE, RILEY BELL BLACK, TEAM BLACK, MACASEYS, TEAM PIRIE, JESS & KILO, SIMM-JONES WHĀNAU, CHARLOTTE RUSSELL, KRISHNA, BAILEE PIRIE, ISABELLE, TRISH GRAHAM, SOPHIE, THOMSON FAMILY, MIKAYLA, SANDY, AVA & CARTER, CHLOE, KYLIE BANKS-LANGLEY, GRANNY & GRANDPA, THE TYLER-WHITEMANS, SPLASHY & TOBY, BARBARA WOOLHOUSE, MUM AND DAD", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "c2fsiv1o", "name": "ANCKIE", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: PIPPA, ESMEE, AMELIA, LOFTIE, ELLA, BRENDA, JAI , CHAMELIO, LAUREN, TEDDY, SOPHIE WALTER, CLARA, TANNIE TARYN, DONNCKA, OOM BRANDON, ROLO, TANNIE MEGAN, NOËL, TANNIE CARMEN, SUKI, OOM WESSEL, MILO, EVA, STELLA, LEA, ZEE, ELIJAH, SECRET, CAMREN, SOPHIE, OOM MARIUS, ABIGAIL, TANNIE SHELLEY, VIVIENNE, TYLER, OUPA JAMES, CALEB, OUMA JEMIMA, NIKA, OUMA ANITA, FRIKKIE, GRACIE, BARAC, KATRYN, ANNA, JAMES, NIBBLE, JANCKE, NUGGET, TACO", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "bqhkcyzd", "name": "MADELEINE", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: CARIN, ANNIE, JENNY, AUDREY, LINDA, SAM, TED, GEOFF, SASKIA, MARK, LEX, MAXINE, TOBY, MILLIE, SOPHIE, BEN, HARBOR, CHARLI, WREN, FRANK, HUNTER, FRED, KATIE, ROY, ELLIS, ANGELA, NEIL, JACK - THE DOG, LUCY, JACK, RUFUS, GRANDAD, MARTHA, GRANDMA, HUGO, VAUGHAN, JANE, PAMELA", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "267dcxvu", "name": "SOPHIE", "size": "WXS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: **LIST NOT , REQUIRED**", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "ge2g9idn", "name": "CHARLOTTE", "size": "WXS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: **LIST NOT , REQUIRED**", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "xe528hi8", "name": "AMELIE", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "idirrwuk", "name": "PAMELA", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "fxgifx1c", "name": "JANCKE", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL", "addedBy": "Import (Tui KURANGAITUKU)"}, {"id": "87z58xs9", "name": "TAYLOR", "size": "W3XL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: ELVIS PRESLEY, GRETTA, NA TE WHANAU, HENRY, CLAIRE & DAVID, CAROLINE, KATH, LISA, TIM, LILY WILLY, LUCY, SAMMY, LAURA, OLIVIA, PIPER, GRACIE, GO TAYLOR, RYLEY, QIUJING, BRIAR, THE SHED SHOP, ELLA, G&G, SIENNA, H&R, BRIANNA, UP THE WAHS, EMMA, FAIRY GODMOTHER, JUMP HIGH, BILLIE, REBOUND STRONG, GEORGE, READ THE INTERCEPT, STEPHANIE, RACH; MAID IN NZ, JED, HOANI, EMSIE WEMSIE, RUSSELL TURNER ACCOUNTANTS, TAYLA, CUTFORTHS, EMSIE WEMSIE, MIKE PROCTER-BAYLEYS, TAYLA, DEAN, MAIA", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "mny1rwjx", "name": "ELLA", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: TAYLOR AND LONG CONSTRUCTION, BRAD, LISA , JESS, LINDA , ALAN, LAUREL, ROGER , TAYLOR, BRIAR, RYLEY, GRACIE, SAMMI, SIENNA, OLIVIA, EMMA, BRIANNA", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "b0aqjm50", "name": " BRIAR", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: DAD, AUNTY DANIELLE, MUM, UNCLE CRAIG, NORTHLAND KIA, CHLOE BANANA, BABA BRIANNA, EVELYNEY, GRANDAD, LIL SIS, GRANDMA, CONNER, NANNY PLUM, FERGUS GIBBS, UNCLE BJ, LEVI GIBBS, NOAH, REID GIBBS, NANNA, TAYLOR, CHARZ, ELLA, SARAH GIBBS, BRIANNA, HENRY, GRACIE, DAMIAN GIBBS, OLIVIA, EBOY, SAMMIE, TAYLOR HAILEY, EMMA, OSCARISWOW, SIENNA, EMMAAA, OLIVIA, JESSYKAKA, POPPY, GRACIE, AUNTY JESS, UNCLE ROSS, LOGAN, LIL BRO", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "c5hva52l", "name": "RYLEY", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: THE BRAVE TATTOO, UNCLE CODIE, ALLEY CAT, OLD NANA, MUM, SOPH, ELITE WINDOWS AND DOORS, EUROPEAN MOTOR HOMES, AUNTY SANDY, HUNTER, GRANDMA, TUK TUK RUSSELL, NANNY AND GRANDAD, JANICE, JACKSON, UNCLE REECE, LEAH, DARREN, MAUNU GOLD, AUNTY JEANETTE, DAD, AUNTY AMBER, BEN, BRETT, KENNY, AUNTY JADE, GRIFF, AVORA GRACE, LAURIE, AUNTY MOMO, KENZIE, AUNTY CARINA, NASH FAMILY, GRANDAD, HOLL RACING, UNCLE MARCUS, UNCLE RYAN & AUNTY SHONA, TILLY, UNCLE MARK, HAYES, DANIELLE, MILLER, EMZ, LEXI PUPPY, JONO, NANA, ANDY AND KATIE, KENNEDY, NUGGET, NELLIE & REMY", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "4lep13r9", "name": "GRACIE", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: TEAM PROCTER, ROCKSTAR, UNCLE MATTY, JADS, NANNY AND POPPY, BOONOOSHKI, FINCH FAMILY, DOLLY, RED CARPET, BABY BRIAN, MUM & DAD, KHLOE McCULLY, AUNTY MICHY, RYLEY, NATURAL TIMBER CO., SIENNA, McCULLY’S, OLIVIA, BAYLEYS, TAYLOR, TRACEY BARBER, BRIAR, LUMS ON THE MOOSE, BRIANNA, GOODIN’S, ELLA, GRANNY, EMMA, MUMMA JANICE, SAMMI, AUNTY MUSI, RUSSELL TURNER ACCOUNTANTS, TEAM TAYLOR, CUTFORTHS, ZOE, CHIEF PHOTOGRAPHER, HAYDEE, JUNO JUDY, TIKIPUNGA DENTAL CENTRE, AVA, NIRVANA, WITHERS FAMILY, TEAM McGREGOR", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "jpqtu9ig", "name": "SAMMI", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: KAMO VETS, ELLA, MUM, THE MCASEY, DAD, FIONA, HAMISH, IMMY, GRANNY, MICHAYLA, GRANDPA, ABBEY, NESS, NICK, KLAUS, BRIAR, THE O’GRADY FAMILY, THE WILLIS FAMILY, LIAM & RORY, PIPPA G, GRANDDAD, JOYCE, GINA, BRIANNA, KATHARINA, BILLIE, GRANDMA , KATE, LURCH, GRACIE, LEANNE, SIENNA M, SANDRA, TIM, LIV, VIV, THE GOODINS, SAM, EMMA D, MONI, THE OSCROFTS, JET, SARAH, HANNAH , TAYLOR, RYLEY, MICHELLE, RUBY, GREG, SIENNA", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "38v8be8x", "name": "SIENNA", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: LIL’ SIS, BRIANNA, MILO, OLIVIA, LOUIS, AUNTIE LUCY , MARGAUX, UNCLE ANDREW, HAYLEY, UNCLE LIAM , ANNIE, AUNTIE KATIE, BRAMWELL, FLORENCE, DIDA , GOLDIE , GIGI, FRANCO, NANA, THE LUMS, POPPA, PROCTERS, SARAH, GOODINS, MUMMA DUCK , PROCTORS , DAD, TAYLORS , MOLLY, MCGREGORS , PIPPA G, IRWINS, NIAMH, CAITLIN, ELLA, ALEX, EMMA, JOY , SAMMI, GEOFF, BRIAR, FRAN, TAYLOR, RACHEL, ELLA, SADIE, GRACIE, WITTY WOO, RYLEY, FERN", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "lcpty3hw", "name": "LIVY", "size": "WXL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: WOODNOK LTD, WALKERS, MUZ, ANNA, MURRAY, NAN, DAD, BRIANNA, JODZ, EMMA, AWHI, SIENNA, HILLS, HANNAH, CHIEF PHOTOGRAPHER, HAPPY, MIKE PROCTER-BAYLEYS, TC, RUSSELL TURNER ACCOUNTANTS, RUBES, BRIAR, ISLA, GRACIE, AUNTY RISA, RYLEY, TAYLOR, THE FRANKS, ELLA, GRUMPY, CUZ N CRIME, AUNTY SANDY, SAMMI, ADY, HOPE, POP, SUMMER, JOSH", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "tux3aacv", "name": "DONALDSON", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: POSSUM, UNCLE TIM, MUM, RAE C, MR. P, BRIAR, DAD, DOUG & KIRSTY, TINA & MATUA, MYRISA, PULLMAN WHANAU, THE HAMITONS, BRIANNA, TANZ, PIVOT, LOU H, PIIVOT, NANA, PIIIVOT!, LISA R, CRAZY COOL AUNT HAYLEY, AUNTY WENDY, TAYLOR, CUZ CLODAGH, MR. D, MRS. C, SAMMI, DELEMARE FAMILY, LILY, CHUBZ, RYLEY, UNCLE JASON, BEN, THE LANGLEYS, POPPA, THORNES, OLIVIA, GEMMA, GRACIE, MILA, FARMABULL, AIDEN, AUNTY EDEL, B/BALL 4 LIFE, ELLA, SIENNA, ANGE, ROOM 9, SMART TRADE SOLUTIONS, PIPPA", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "dhs8v14f", "name": "BRIANNA", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: RUSSELL TURNER ACCOUNTANTS, MUM & DAD, SAMMIE, ALEX SMITS, MAGGIE, JACKSON FINLAYSON, SHADDOW, CUTFORTHS, BOBBY, MIKE PROCTER-BAYLEYS, HAYDEN, CHIEF PHOTOGRAPHER, BRIAN, GRANDMA, MADDY.J, GRANDPA, LORDSUMICH, EMMA MILLER, FLEUR, OLIVIA, INDIRELLA, SIENNA, SHADOW, RYLEY, CHARLOTTE, GRACIE, TERESA, ELLA, ZARA, BRIAR, DUSTY, TAYLOR, QUINCY, EMMA, TEGAN", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "fbz68ux6", "name": "TINA", "size": "W2XL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "qafxh7jz", "name": "URSULA", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL", "addedBy": "Import (Blue KURANGAITUKU)"}, {"id": "3y2e9k01", "name": "KENZIE", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: ADDI NASH, ANGEL, REED NASH, MOUSE, SPARKLINGPOOPONY, ROCKET, JOSH CHURCHES, SUSHI, TYRONE BIG XU ZION, SARA CHURCHES, CHLOE, CHARLIE MAYO, RYLEY, MATILDA MAYO, MUM, LACHIE MAYO, NANA, GEORGE MAYO, POPPA, NATHAN MAYO, DAD, AUNTY MICHELLE, UNCLE MUZZ, UNCLE BRENDON, GEMMA KIIHFUSS, HARRY, WILLIAM KIIHFUSS, CAMELIA, TAYLA KIIHFUSS, DAN, AUNTY ROSEY, BIG DOG MASON, UNCLE DANIEL, JANICE MANDER, AUNTY RACHAEL, UNCLE ADAM, BEAU KENNEDY, TED CHURCHES, OMA, POPS, KING SHOE", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "340pfwp4", "name": "MILLA", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: AMELIA, JACKSON, KIEDIS, BECKHAM, LOU-DOGG, THE PROCTERS, RUBY & INDY, THE GOODINS, SCARLETT, THE PROCTORS, MOOKI, UNCLE JACK, BEAU, AUNTY J, MOTHER JANICE, AUNTY RINE, JED, UNCLE DON, FERGUS, AUNTY KATIE, LEVI, UNCLE JAMES, DUSTY, AUNTY PAM, UNCLE NATHAN, NANNY, STEAK, POPPY, LOGAN, THEO, GRACIE, NENNA, RYLEY, GRANDAD BILL, KENZIE, NANA HEATHER, BROOKE, AUNTY MICHELLE, CHLOE, DAD, THE TAYLORS, UNCLE NICK, THE MCPHERSONS, ROCKY & OSCAR, AUNTY LOU, MUM, UNCLE DOUG, AUNTY KARYN IS..., GRANDMA, MY FAVOURITE AUNTY", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "eiyu85zz", "name": "OCEANA", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: BLAIR JONES, KIM JONES, LIBBY AND PAUL, MELISSA MAE, HAYLEY BARLOW, CAMPBELL AND KATHIE JONES, OCEANDIVERSITY SEA ADVENTURES, PATUMAHOE JONES, THERESA JONES, ORERE JONESES, OLIVIA MOORE, CATHERINE PARKER, THE FARM JONES’, SOPHIE MCGARVEY, WILLIAM BOYLE, ANGELA JONES, PAM BOYLE, KELBY MOORE, LUCIA AND DEBBIE, KYLIE NACEY, TAMMY JENSEN, TRACEY PHILLIP, SAMARA NICHOLAS, AMY JONES, LUKA NACEY, XAVIER NACEY, BOSTON NACEY", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "ycci1t9l", "name": "CHLOE", "size": "WXS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: THE DELEMARE FAMILY, TIKIPUNGA DENTAL CENTRE, G L ACCOUNTING, RUBY, NAN NAN AND POP, KIRI, DEBBIE, NOMI, UNCLE CRAIG, THE OSBORNE FAMILY, YVENNA, THE RUSSELL FAMILY, AB THINKS, THE MANDER FAMILY, CHLOE IS, BIG SEXY DORITO, AWESOME, GO BEAR XO MUMMA XO DAD, THE REEVES FAMILY, MANAVAI, THE BURKE FAMILY, HJAA YOUR BABY BRO LOVES YOU SO, THE YOUNG FAMILY, MAXIMUS (MJA), TEAMWORK, FRANK, MAKES THE, KING XU, DREAM WORK, THE MABBETT FAMILY, GO GIRL (PJ), BIG DADDY ALPHA, MANAWATU WHĀNAU, MY LIFEGUARD, ELEANOR AND BRENT, MOM IS KINDA HOMELESS AH BOY 67, SISTER SONJAH, RABBIT SACK, HARRY THE NIGHT TURTLE, RUBY, GG, MILA, AUNTIE REE AND UNCLE ANDREW, NANNIE ANNIE, POPPA MAN, THE JONGEJANS FAMILY", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "fj1asogq", "name": "RUBY", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: AUTOMOTIVE SOLUTIONS KAURI, WILLIAMS JERSEYS, CRV NORTHLAND, MUM, UNCLE AL AND BRIDGET, HEWETT FAMILY, ANNA-MARIE, CHLOE MACKLE, GRANDMA, CORINNE- FIT FIX, WILLIAMS JERSEYS, AUTOMOTIVE SOLUTIONS KAURI, DONOVANS TRADE SUPPLIES, FIONA, MAISY, CHARLIE, MUM, ANNA-MARIE, XAVIER, CAROLEIN, HIKURANGI PERSONAL TRAINING, GRANT AND HEATHER, GEORGE, KENT, MILLY, JANET, CHARLIE, ANNA, TOTARA DAIRY, JANET, DREAMY, HIKURANGI PERSONAL TRAINING, NGAWAI, BRIDGET, WILL, SOPHIE, JACK, RUDDELL FAMILY, ROBERTS FAMILY, EMMA, THE WAINWRIGHTS, CAROLEIN, TOTARA DAIRY, GEORGE, GRANDMA, RUDDELL FAMILY, CHRIS AND AMY, HEWETT FAMILY, TONI AND JOEL, JACK", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "wthswi7b", "name": "SIENNA", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: BE STRONG & COURAGEOUS, WILLIAMS JERSEYS, DAD, THE HAPPY BODY COACH, MUMMA DUCK, FIT FIX, NANA VIKKI & POPPA BRENT, PIPER MOSLEY, NANA CAROL, FINN MOSLEY, ELI SHARPLIN, PONY PALS, ANNA BIRKENHEAD, HEIDI, IRWIN FAMILY, SUGAR, BENJAMIN JAMES, SPICE, MARY WILLIAMS, POP, RUBY WILLIAMS, BUMBLE, MUZZA CUTFORTH, DELTA, JORDAN FAMILY, TOMMY, SERGEANT FAMILY, MARLEY, EWING FAMILY, BROWNIE, OAKDEN FAMILY, SCAMPI, RUDDELL FAMILY, TOBY, WATTS FAMILY, SIMON, GURNELL FAMILY, JETT, THE DURHAMS, TED, NORTHLAND TREE CARE", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "8rz14gg4", "name": "ELYSSE", "size": "WM", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL]", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "yn25gq19", "name": "MARY", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL", "addedBy": "Import (Puriri KURANGAITUKU)"}, {"id": "bbcbl2mz", "name": "FRANCHI SPARKLE", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: HILLCON GROUP, N & G, CORESTEEL BUILDINGS NORTHLAND, CHLOE, TEAM TAYLOR, AUNTY LANI, PARSONSON WHĀNAU, JUNO, MISS TUTU, POPPA STEVE, NZ ADVICE GROUP, AUNTY ESTEE, MR PERCY, THE HARRY'S, MAMA ZAIR, C.A & LILLY, RACEY RACH, PEGGY, HEMI, PHOEBE, CAM & VICKY BELL, ZOE, KATE ROBERTS, AMY, LUMS ON THE MOOSE, MARK, SUZ & MITCH, HAYLEY, BESTIES, MADI, TEAM PROCTER, AVA, ROWDY & CHRISSY, CHARLIE, JADS ON THE DUICE, REEVE, FOX, MISS PIATA, NONNA PEG, BOSTON, DALE, WAFFLES, HANNAH, MILLY, AUNTY LAURA, BAXTER-MACKAY'S, JULES, FRANK THE TANK, SIMON SOCKMONKEY, DAD", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "tm56untg", "name": "ELIZABETH", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: JUDITH BAMETTE, MUM & DAD, GOOD BOY BILLY CAFE, SARAH S, SIR TONY ASTLE, NORTH SHORE DEMO, CAPTAIN, TRACEY, JIMMY, CHERIE & SKYLAR HEMARA, DULCIE T, PAM CURREN, FIONA A, D. RIVERS, RICK CATER FRESH, KAMO BAPTIST, RICKY & DONNA, AUNTY DEE, COOK FAMILY, D & G, KAZYLIA, GEEZA, SARAH, LINDA VDB, PIPER, MIKE O, AUNTY DENNA, GAELA NIXON, NATALIE, GEORGE MMJ, S SAMUELS, MARK & LISA MAUER, TINA B, CARL MM, MIA, TRACEY LOVELOCK-BUTLER, NICOLA TANA, ELLIE B, MARU TANA, PETER C, UNCLE STEVE, DEBBIE F, KEVIN JOBE, PRIYA D'MELLO, HOLLY CHAPMAN, WENDY A, DONNA, NORTH SHORE DEMO, MA, BRONWYN, YVETTE", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "515etbfx", "name": "AVA-JOY", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: LARISSA, MICHELLE WILKINS, AUNTY IRITANA, JODI, JONO ANDERTON, KRISTIE, SOPHIA, SARAH, MUM, JO, REGINA, BEX, DAD, ANGIE, TESSA, RUDI, JERLINE, RUBY, ESTHER, MANDY, THULI, ANA, BREAM BAY CONCRETE LTD, LISA, ZUKI, SAM, KAREN, ALEXSIA, CAROL, MARY MCADAMS, KIM, TIPENE TANA, SOPHIE, MIRA GREY, RIPEKA, HEATHER CAMPBELL, ESTHER, KATE BURSON, EVAN, VIV LAMB, MAXINE, FRANKIE, ROMELA, KAREN, KATHLEEN, TRACY, KITKAT, PHAYME, EMMANUEL, CALEB", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "q2455yvh", "name": "JENNA", "size": "W2XL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: ZAPPELLI, BRIAN & MERYL DIXON, MACSCOTT KENNELS, COOPER CAMERON, MACPHERSON, HEATHER ADAMS, MAKSOR FARMS, GRANT ADAMS, ROSKAM, BODHI CAMERON, UNCLE CURTIS, GEORGIE, LITTLE BRIAR, QUENTIN CHERRINGTON, MUM & DAD, MURRAY ROYCROFT, SARAH CHERRINGTON, NANA ROBBIE, HANNAH CLARIJS, JASON CHUBB, AUNTY CORKY, TOBY ROYCROFT, AUNTY MOLLY, BRAXTON SCHNELLER, PAULA RYBUM, LISA CORSTON, BIG BRIAR, AMELIA & ELLIE, JENNY & IAN B, FELIX ROYCROFT, REGAN & LISA, MITSY CHUBB, THE ANDERSONS, REBECCA ROYCROFT", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "zinye52q", "name": "RAINY", "size": "W2XL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: MUM, KADEN, AUNTY CRYSTAL, AUNTY GRACE, LEWIS, NAN & PAPA, MAKONI AIGA, KRUGER AIGA, DONALDSON AIGA, WHITTAKER AIGA, MANGU AIGA, BROWN AIGA", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "pcobbjvl", "name": "HOLLY", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: LIZ HODGSON, SADIE DOOLAN, LIZ HODGSON, JESSICA DOOLAN, ROD HODGSON, LYDIA HODGSON, ROD HODGSON, JASON HODGSON, LIZ HODGSON, HODGSON AGRI LTD, SUSAN POLLAND, LIBBY HODGSON, LISA DOOLAN, ARCHWAY GROUP, RACHEL HODGSON, ANNABEL HODGSON, SANDY HODGSON, JASPER HODGSON, FINLAY HODGSON, AMANDA HODGSON, TIN TANK LTD, MATT HODGSON, HAMISH HODGSON, CAM HODGSON, RACHEL HODGSON, TESSA HODGSON, HUNTER HODGSON, NATALIE LE GAL, NATHAN POLLAND, HUGO HODGSON, JAMES POLLAND, ALBI HODGSON, LIAM DOOLAN, KATIE MCINNES", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "xywvm1jb", "name": "PIPPA", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: NACHO, PAWS FOR A MOMENT PHOTOGRAPHY, TWIGGY, DATAMARS LIVESTOCK, LIZZIE, PGG WRIGHTSONS, RALPH, PROCT  ERS, JOHNNY, TREE TENDERS NORTHLAND, KIKI, GIVEN GIFTBOX, FEM, THE BRYANTS, PERDIE, FERG-ISSONGS, DONUT, PROCT  ERS, THEO, WILLCOCK CLAN, IRWIN FAMILY, MUM & DAD, UNCLE ROO & AUNTY RENA, LITTLE BROS, CHIEF, KAMO VETS, MANU GARDENS, MATARAU SURVEYING, POOL FAMILY, NANA & POPPOP, DISCO & TEX, PRINCE WHĀNAU, JUST SO CLEANING, NICCI GOODIN DESIGNER FLORIST, PRINT PRESS WEAR, GOODINS TARANAKI", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "bqbsj41x", "name": "KATIE", "size": "WL", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | [TALL] | Supporters: IAN P, LINDA MANDER & MATTHEW, KSH, MAH, DES, AUDREY, HEMPHILL FAMILY, ZAZA, PERONI, JACK, DUKE, PEARL, JAN JAN, PETER BARLOW, WHANANAKI FM 88.2, SOPHIE, LOGANG, TEAM PROCTER, KENZIE, DIANNE & TIM WITHERIA, MOTHER SANDI, THE CHURCHES, RABBIT, BROTHER MAX, SADIE HEMPHILL, AMY COLLECUTT, WHANANAKI HOLIDAY PARK, WHANANAKI GENERAL STORE, LINDA MANDER & MATTHEW", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "bbo25i36", "name": "ZAIR", "size": "", "number": "", "notes": "[SIZE EXCEEDS CHART - customer wrote W/5XL, but Long Sleeve Tee max is W4XL - confirm with customer] | Sleeve: KURANGAITUKU NETBALL", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "qgx5pxak", "name": "MARAMA", "size": "WS", "number": "", "notes": "Sleeve: KURANGAITUKU NETBALL | Supporters: **LIST NOT , REQUIRED**", "addedBy": "Import (Grey KURANGAITUKU)"}, {"id": "1dvwydw1", "name": "DREW", "size": "WS", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | [TALL] | Supporters: GUNSON MCLEAN ACCOUNTANTS, DRUNO, GUNSON MCLEAN ACCOUNTANTS, NONNA, RUSTY, RYLEY & REEF, MIKE & VICKI RUSSELL, MACARTHY FAMILY, MUM, WHITELAW’S, BERNIE, GRANDAD, DAD, AUNTY JANE, NORTHLAND TURF SPECIALIST, GRAN, TUI, SPEEDGOLF NORTH, K&M ELECTRICAL, GENERATION HOMES NORTHLAND, NANA CAROLINE, GENERATION HOMES NORTHLAND, SPEEDGOLF NORTH, HARPER & ELLA, SHEEP, EJ, KRISHNA, RILEY ANTONIEVIC, MARK AND JASMIN RUSSELL, DAMIAN & NADINE MILLS, NANA & POPPA, MARK MITCHELL CERAMICS, JILL NORTHCOTT, HATTIE, MIKE NYSSEN, ALEX RUSSELL, M M M M M WILLIAMS, NOVA, GAZ, BELLA PROCTER, MIKE DREW, JUDE ADAMS, SAGE RUSSELL, LOLA PORTARARO", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "e1z4fj7g", "name": "EMMA", "size": "WL", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | [TALL] | Supporters: MUM & DAD, CHERYL BAKER, THE FINISHERS, SAM, NANNA & POPPA, BRYONY, HELEN & CHRIS, LILY W, GRANNY & GRAMPY, MEEEE, HUNTER FAMILY, LUKEY IS EMMA’S FAVOURITE, HEDLEY WHANAU, MAL, ABZ & MIKE, TALLULAH B, THAX WHANAU, CAMERON FAMILY, TONZ & SHERIDAN, ORANGUTAN, MARK & SHAE, JIMMY, WILSON FAMILY, WILLA, JAMIE & JACK, GUS, JADE & DAVE, OLIVIA R, LEAH, LEVI & EMMA, TERI & WAZZA", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "tt7wymjf", "name": "AARIA-JANE", "size": "WL", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | [TALL] | Supporters: UNCLE BEN PEREIRA, AUNTY GENAE, UNCLE LEN REED, NANA MOKO, NANA, TAUAROA O'BRIEN, POP, AUNTY ANA, UNCLE OTENE REWETI, AUNTY SELE & UNCLE LOGO, ALIPATE WHANAU, TAUHARA CUZZIES, UNCLE OTENE REWETI, GENT WHANAU, BABY, LINTER-COLE WHANAU, PEPI, AUNTY SARA, PENIAMINA, IUSITINI AIGA, AUNTY MUNZ, IUSITINI AIGA, JANICE MANDER, MARUATA CUZZIES, MAMA & PAPA, AUNTY LULU-BELL, ORA, BUBBA, MIHIORA, NANA LIZ, AUNTY WHITNEY BUCHAN, KAROHA, MAMA & PAPA, MEA-ALOHA, AUNTY ANGEL, NANA MOKO, SCHUSTER-MCDONALD WHANAU, AUNTY MUNZ, MICHEL RANKIN, AUNTY PEPE, LEVI-REIGN IUSITINI, ISABELLA LIANG, AUNTY SELE & UNCLE LOGO, PEREIRA WHANAU, MERINA MILLS, KAHARAU, PAPA GARY, PUNA, DALTON WHANAU, AUNTY PEPE", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "x56t47y2", "name": "  JUNO", "size": "WM", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | [TALL] | Supporters: HILLCON GROUP, N & G, CORESTEEL BUILDINGS NORTHLAND, CHLOE, TEAM TAYLOR, AUNTY LANI, PARSONSON WHĀNAU, JUNE BUG, MISS TUTU, POPPA STEVE, ROWDY & CHRISSY, SUZ & MITCH, MR PERCY, THE HARRY'S, MAMA ZAIR, AUNTY LAURA, TEDDY, PEGGY, ROSY & RICH, PHOEBE, MISS PIATA, MARK, BUCHANAN'S, AMY, LUMS ON THE MOOSE, DRUNO, SUZ & MITCH, HAYLEY, BESTIES, MADI, WAFFLES, AVA, THE CREW CAMP, CHARLIE, JADS ON THE DUICE, REEVE, FOX, JUICY LUCY, NONNA PEG, BOSTON, DALE, CAM & VICKY BELL, HANNAH, MILLY, UNCLE DARCY, BAXTER-MACKAY'S, JULES, FRANK THE TANK, AUNTY ROSIE, DAD", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "w4wr4j2k", "name": " AARYA", "size": "WM", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | [TALL] | Supporters: SERENE NAIDU, NELIESH, RYAN NAIDU, KENZIE NELSON, ELLA WATTS, MADI NELSON, ISABELLE MARTIN, EMMA NELSON, MCKRIPZE, KAYLAJ, KRISHNA PATEL, ANJU PATEL, JENA NAIDU, UGEN IYER, QUAN NAICKER, DARCY BAKER, TATUM NAICKER, JENA NAIDU, DARREN NAICKER, KRISHNA PATEL, ELLA WATTS, CHLOE FENG, OLIVIA F, KEISHA PATEL, KANIN F, JENA NAIDU, RUELLA F, ELLA WATTS, PRESTON F, KESHVI PATEL, KEIRA M, SHELDON, MIKAYLA NAIDOO, DARREN NAICKER, RANI NAIDU, ELLA WATTS, POPS, JENA NAIDU, SHAKS, ZOEY ORBELL, ONE TREE POINT DAIRY, ISABELLE MARTIN, KAYLAJ, KESHVI PATEL, LEXI ORBELL, RUBBY, RUBBY, MCKRIPZE, LISA ORBELL, RYAN NAIDU", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "p9b83rgz", "name": "SOPHIE", "size": "WL", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | [TALL] | Supporters: ROSEMARY, JANCKE, LISA, JAMES W, MARTIN, ANCKE, JAMES M-H, KATRYN, KEVIN, SOPHIA, BRYAN, JASON, LONI, LAURA, KONNIE, AMY, UTE, RYAN, HAMISH T, DEBBIE, BETH, BEN, ELLA, HAMISH I, COEN, SAMMI, INDY, FELICITY, JACKIE, FERGUS, CLAUDIA, HAMISH D, ANTON, JULIA, DANNY, BECKY, CARMEN, GEORGE, MATT, NICO, MEGHAN, LORRIANE, JAMES G, ANA LENA, TRENISE, URSULA, KEIRA, HANS, DEVON, JOHANNES", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "hsnukim9", "name": " TAYLOR-ROSE", "size": "WL", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | [TALL] | Supporters: TAIO, UNCLE SUNNY, CLL, UNCLE SUNNY, ANTARES CIVIL SUPPLIES, NANA ANNE, ANTARES HIRE, KORU KNIT WEAR, ANTARES MECHANICAL, HĀNGI HOOK UPZ, NANU, AUNTY PAM, ANTARES ENGINEERING, TE ARAI BUILDERS, ANTARES TRANSPORT, UNCLE SUNNY, MUM, CASTLE PANEL BEATERS KUMEŪ, MO’Z CUTZ, NANA ANNE, ELITE WINDOWS & DOORS WHANGAREI, DAD, R&S AUTOMOTIVE KUMEŪ, XS CUTS, AVALON NAILS AND BEAUTY, HĀNGI HOOK UPZ, UNCLE SUNNY, WARKWORTH ENGRAVING, UNCLE SUNNY, CARTER, NANU, KOA, UNCLE SUNNY, DAD, UNCLE SUNNY, UNCLE SUNNY, UNCLE SUNNY, NICKI, TYRE GARAGE KUMEŪ, UNCLE SUNNY, PAIGE, ISABELLA, UNCLE SUNNY, KOHIPO, UNCLE SUNNY, LEVI, BOSTON, ARIA, XS CUTS, HIWA-I-TE- RANGI", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "g86fzjsy", "name": " ISABELLE", "size": "WXXS", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | Supporters: MOOSEY (GRANDAD), ALISTAIR, THE KNUSSENS, A J, NGAIRE, FALCON MORTGAGES, JIM’S MOWING RIVERHEAD, FAITH COELHO, AARYA, NIKISHA, THE CHANDRAS, ANJI, CHRISTENSEN WHANAU, RON, MUM AND DAD, TORRES COELHO, TANIA, ABIGAIL, SHELLEY & DAVE, NANA KERRY, RUBY GRACE, MARCUS HOMEN, ELLIE EDEN, KIRSTEN, ANNE, JUNIPER MATTHEWS DIDN’T MAKE IT, PEREIRA AUNTIES, BAXTER MATTHEWS, MADDISON ARIA, CASEY MATTHEWS, ASPEN, KYRA MATTHEWS, LUPIN, NICK MATTHEWS, CROOKSHANKS, JESS MATTHEWS, BRIANNA AMAIA, CASHEW, MARGARET, JACK MOORE, PEREIRA AUNTIES, OLLIE THE EXOTIC, NORTHLAND SHEETMETAL, LUCY MOORE, EDEE, JIM’S MOWING HUAPAI / KUMEU, MCKRIZPIE, MOOSEY (GRANDAD), PANIORA WHANAU, BEST BROTHER EVER!, PANIORA WHANAU", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "0bo3hxjo", "name": " MCKENZIE", "size": "WL", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL | [TALL] | Supporters: J & M, AUSSIE CUZZY ASHA, ACTIV8 HEALTH & FITNESS, CHARLOTTE, AUSSIE CUZZY STELLA, NANNY WAL, BEAN WHANAU, DAD, MA & PA, KP, CLASSIC BUILDERS, THACHER’S, TOUGH SHELTERS, BAY STORAGE, MADDY, LEATHEM’S, OLIVE, RIA, HUDSON, MACY, HEIDI, KAYLA J, TESSA, DAVE & SHELLY, SOPHIA, LOLLIE, ZARA, ALEX, BABY BOY, MOO MOO’S, THE PALMERS, JESSIE & LAUREN, INDIE, ABISAIL, JACK, HOLLY, LEATHEM’S, ARI NAIDU, MUM & DAD, SOULSBY’S, GLASS BUTTON TAILOR, ISABELLY, HATTIE, LACHIE, BUTTS FAM, BEAN WHANAU, DAVE & SHELLY, JAKEY BOY, CRONS, N1G", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "n780poun", "name": "JANIQ-WAH", "size": "W2XL", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL", "addedBy": "Import (White AIMS GAMES NETBALL)"}, {"id": "rvm9id41", "name": "WHAEA - T", "size": "W2XL", "number": "", "notes": "Sleeve: AIMS GAMES NETBALL", "addedBy": "Import (White AIMS GAMES NETBALL)"}]}, "managerCode": "HCBOSS2026"};
+
+async function seedDemoIfNeeded() {
+  try {
+    const { data } = await supabaseClient
+      .from('orders')
+      .select('code')
+      .eq('code', storageKeyForCode(DEMO_ORDER_CODE))
+      .maybeSingle();
+    if (data) return; // already seeded
+  } catch (e) {
+    // not seeded yet, continue
+  }
+  try {
+    await supabaseClient
+      .from('orders')
+      .upsert({ code: storageKeyForCode(DEMO_ORDER_CODE), data: DEMO_SEED_DATA, updated_at: new Date().toISOString() });
+  } catch (e) {
+    console.error('Failed to seed demo data', e);
+  }
+}
+
+async function init() {
+  await seedDemoIfNeeded();
+  const { order, mgr } = getParamsFromURL();
+  if (order) {
+    teamCode = order;
+    managerCode = mgr;
+    document.getElementById('teamCode').value = teamCode;
+    await loadState(true);
+    startPolling();
+  } else {
+    document.getElementById('saveText').textContent = 'Enter an order code above to begin (try HC-SUPPORTERS-2026 for a demo)';
+    checkManagerStatus();
+    render();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
