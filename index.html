@@ -1545,19 +1545,41 @@
         <div class="new-order-error" id="newOrderError"></div>
       </div>
       <div class="new-order-result" id="newOrderResult">
+        <!-- Order Code -->
         <div class="new-order-code-box">
-          <div class="new-order-code-label">Order code</div>
+          <div class="new-order-code-label">ORDER CODE</div>
           <div class="new-order-code-value" id="newOrderCodeValue"></div>
         </div>
-        <div class="new-order-actions">
-          <button class="btn" id="copyNewOrderLinkBtn" type="button">Copy customer link</button>
-          <button class="btn secondary" id="copyNewOrderCodeBtn" type="button">Copy code only</button>
-          <button class="btn secondary" id="openNewOrderBtn" type="button">Open order</button>
+
+        <!-- Manager Code -->
+        <div class="new-order-code-box" style="margin-top:12px; background:#2a2c30;">
+          <div class="new-order-code-label" style="color:#b8b8ba;">MANAGER CODE (keep private)</div>
+          <div class="new-order-code-value" id="newOrderManagerCodeValue" style="color:#f7caca;"></div>
         </div>
+
+        <!-- Action buttons -->
+        <div class="new-order-actions" style="margin-top:12px;">
+          <button class="btn" id="copyNewOrderLinkBtn" type="button">COPY CUSTOMER LINK</button>
+          <button class="btn secondary" id="copyNewOrderCodeBtn" type="button">COPY ORDER CODE</button>
+          <button class="btn secondary" id="copyManagerCodeBtn" type="button">COPY MANAGER CODE</button>
+          <button class="btn secondary" id="openNewOrderBtn" type="button">OPEN ORDER</button>
+        </div>
+
         <div class="new-order-copied" id="newOrderCopied">Copied.</div>
-        <div class="new-order-hint">Send this to the team manager. They'll load it with the code, and can set up their own manager login from there.</div>
+
+        <!-- Email Draft -->
+        <div style="margin-top:20px; border-top:1px solid #3a3c40; padding-top:16px;">
+          <div class="new-order-code-label" style="margin-bottom:6px;">Quick email draft</div>
+          <textarea id="newOrderEmailDraft" readonly rows="6" style="width:100%; font-family:var(--font-body); font-size:13px; background:#1c1e21; color:#d6d6d8; border:1px solid #3a3c40; border-radius:2px; padding:10px; resize:vertical; line-height:1.45;"></textarea>
+          <button class="btn secondary" id="copyEmailDraftBtn" type="button" style="margin-top:8px;">COPY EMAIL DRAFT</button>
+        </div>
+
+        <div class="new-order-hint" style="margin-top:16px;">
+          Give the <strong>Order Code</strong> + <strong>Manager Code</strong> to the person managing the order.
+        </div>
+
         <div style="margin-top:16px;">
-          <button class="btn secondary" id="newOrderDoneBtn" type="button">Done</button>
+          <button class="btn secondary" id="newOrderDoneBtn" type="button">DONE</button>
         </div>
       </div>
     </div>
@@ -3563,18 +3585,7 @@ async function generateUniqueOrderCode() {
   throw new Error('Could not generate a unique code after several attempts.');
 }
 
-function generateManagerCode() {
-  // Avoid confusing characters (0/O, 1/I, etc.)
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return 'MG-' + code;
-}
-
 let generatedOrderCode = null;
-let generatedManagerCode = null;
 let newOrderCustomFields = [];
 
 function renderNewOrderFieldTags() {
