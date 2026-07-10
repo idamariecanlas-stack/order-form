@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Beast Mode - Team Order Form</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beast Mode - Team Orders</title>
 <style>
+
   :root {
     --ink: #111214;
     --paper: #f5f4f2;
@@ -321,6 +323,42 @@
   .size-reference-codes { font-family: var(--font-mono); font-size: 12px; display: flex; flex-wrap: wrap; gap: 5px; }
   .size-reference-codes span { background: #fff; border: 1px solid var(--line-soft); padding: 2px 7px; border-radius: 2px; }
 
+  .size-chart-link {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--paper);
+    border: 1px solid var(--line-soft);
+    border-left: 4px solid var(--info);
+    padding: 8px 14px;
+    border-radius: 2px;
+  }
+  .size-chart-link .size-chart-hint { font-size: 11.5px; color: var(--muted); }
+  .size-chart-link a {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--info);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--info);
+    white-space: nowrap;
+  }
+  .size-chart-link a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .size-chart-index { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 18px; }
+  .size-chart-index a {
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--line-soft);
+    padding: 3px 9px;
+    border-radius: 2px;
+  }
+  .size-chart-index a:hover { color: var(--accent); border-color: var(--accent); }
+  .size-chart-block { scroll-margin-top: 12px; }
+  .size-chart-block.size-chart-highlight .review-garment-heading { color: var(--accent); }
+
   table { width: 100%; border-collapse: collapse; margin-top: 4px; }
   thead th {
     text-align: left;
@@ -512,16 +550,326 @@
     .modal-head { background: #fff !important; color: #000 !important; border-bottom: 4px solid #000; }
     .modal-subtitle { color: #333 !important; }
   }
+
+  :root {
+    --ink: #111214;
+    --paper: #f5f4f2;
+    --panel: #ffffff;
+    --line: #26282c;
+    --line-soft: #dcdad6;
+    --accent: #d81e2c;
+    --accent-dark: #a1141f;
+    --accent-soft: #fbe2e3;
+    --muted: #6b6c70;
+    --ok: #2f6b3a;
+    --ok-soft: #e3f0e4;
+    --warn: #9a6b0f;
+    --warn-soft: #fbf0d9;
+    --info: #1f5f8b;
+    --info-soft: #dcedf7;
+    --font-display: 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    --font-body: 'Helvetica Neue', Arial, -apple-system, sans-serif;
+    --font-mono: 'SF Mono', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    padding: 0 0 80px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+
+  .topbar {
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .brand-logo { display: flex; align-items: center; }
+  .brand-logo img { display: block; }
+  .topbar .tagline {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #b8b8ba;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .staff-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #cfcfd1;
+    border: 1px solid #3a3c40;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 4px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 30px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  header .subtitle { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .toolbar input[type="text"] {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 12px;
+    border: 2px solid var(--line-soft);
+    background: var(--panel);
+    font-family: var(--font-body);
+    font-size: 14px;
+    border-radius: 2px;
+  }
+  .toolbar input[type="text"]:focus { outline: none; border-color: var(--accent); }
+  .toolbar select {
+    padding: 10px 12px;
+    border: 2px solid var(--line-soft);
+    background: var(--panel);
+    font-family: var(--font-body);
+    font-size: 13px;
+    border-radius: 2px;
+  }
+  .btn {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    border-radius: 2px;
+    font-family: var(--font-body);
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--accent); }
+  .btn.secondary { background: #fff; color: var(--ink); border: 2px solid var(--line-soft); }
+  .btn.secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 12px 14px;
+  }
+  .stat-card .stat-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+  .stat-card .stat-value { font-family: var(--font-display); font-size: 24px; margin-top: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .orders-table thead th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 2px solid var(--ink);
+    padding: 9px 8px;
+    background: var(--panel);
+    position: sticky;
+    top: 0;
+  }
+  .orders-table tbody td { padding: 10px 8px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; font-size: 13.5px; }
+  .orders-table tbody tr:hover td { background: var(--accent-soft); }
+  .orders-table .code-cell { font-family: var(--font-mono); font-size: 12.5px; }
+  .orders-table-wrap { background: var(--panel); border: 2px solid var(--line-soft); border-radius: 2px; overflow: hidden; }
+  .orders-table-wrap .orders-table { margin: 0; }
+  .orders-table-wrap thead th:first-child { padding-left: 14px; }
+  .orders-table-wrap tbody td:first-child { padding-left: 14px; }
+
+  select.status-select {
+    padding: 6px 8px;
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .status-new { background: var(--info-soft); color: var(--info); border-color: var(--info); }
+  .status-in_production { background: var(--warn-soft); color: var(--warn); border-color: var(--warn); }
+  .status-ready { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+  .status-completed { background: #ececec; color: var(--muted); border-color: var(--line-soft); }
+  .status-cancelled { background: var(--accent-soft); color: var(--accent-dark); border-color: var(--accent); }
+
+  .empty-state { color: var(--muted); font-size: 13px; padding: 40px 8px; text-align: center; font-style: italic; }
+
+  /* Detail view */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 12.5px;
+    text-decoration: none;
+    cursor: pointer;
+    margin-bottom: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 4px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .detail-head h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 24px;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+  }
+  .detail-meta { font-size: 12.5px; color: var(--muted); line-height: 1.7; }
+  .detail-meta code { font-family: var(--font-mono); background: var(--paper); padding: 1px 6px; border-radius: 2px; }
+  .detail-actions { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .info-card {
+    background: var(--panel);
+    border: 2px solid var(--line-soft);
+    border-radius: 2px;
+    padding: 12px 14px;
+  }
+  .info-card .info-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+  .info-card .info-value { font-size: 14px; font-weight: 600; }
+  .info-card .info-value.mono { font-family: var(--font-mono); font-size: 13px; }
+
+  .review-garment-block { margin-bottom: 26px; }
+  .review-garment-block:last-child { margin-bottom: 0; }
+  .review-garment-heading {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 15px;
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .review-garment-heading small { font-family: var(--font-mono); font-weight: 400; font-size: 11.5px; color: var(--muted); text-transform: none; }
+  table.review-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.review-table th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 2px solid var(--line-soft);
+    padding: 7px 8px;
+  }
+  table.review-table td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); }
+  table.review-table td.notes-cell { white-space: pre-wrap; }
+  table.review-table tr:nth-child(even) td { background: #fafaf9; }
+  .review-missing { color: var(--accent); font-style: italic; }
+
+  .summary {
+    margin-top: 30px;
+    border-top: 4px solid var(--ink);
+    padding-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .summary-by-garment { display: flex; flex-direction: column; gap: 8px; }
+  .summary-garment-row { display: flex; align-items: baseline; gap: 10px; font-size: 12.5px; }
+  .summary-garment-name { font-weight: 700; min-width: 200px; }
+  .size-breakdown { font-family: var(--font-mono); font-size: 12px; color: var(--ink); display: flex; flex-wrap: wrap; gap: 5px; }
+  .size-chip { background: var(--ink); color: #fff; padding: 3px 8px; border-radius: 2px; font-weight: 600; }
+  .grand-total { font-family: var(--font-display); font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
+  .grand-total b { font-size: 30px; color: var(--accent); display: block; letter-spacing: normal; }
+
+  .loading-note { color: var(--muted); font-size: 13px; padding: 30px 8px; text-align: center; }
+
+  @media print {
+    .topbar, .toolbar, .back-link, .detail-actions, .btn { display: none !important; }
+  }
+
+
+  /* --- merged-view extras --- */
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  #backToOrderFormLink {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #cfcfd1;
+    text-decoration: none;
+    border: 1px solid #3a3c40;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  #backToOrderFormLink:hover { color: #fff; border-color: #fff; }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="topbar">
   <div class="brand-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApYAAACiCAYAAAD7ho2YAAAMTWlDQ1BJQ0MgUHJvZmlsZQAASImVVwdYU8kWnltSIQQIREBK6E0QkRJASggtgPQuKiEJEEqMCUHFjiy7gmsXEazoKoiCqysgiw11bSyKvS8WVJR1cV3sypsQQJd95XvzfXPnv/+c+eecc+feOwMAvYsvleaimgDkSfJlMcH+rKTkFBbpGcCACUABGTjzBXIpJyoqHMAy3P69vL4GEGV72UGp9c/+/1q0hCK5AAAkCuJ0oVyQB/FPAOCtAqksHwCiFPLms/KlSrwWYh0ZdBDiGiXOVOFWJU5X4YuDNnExXIgfAUBW5/NlmQBo9EGeVSDIhDp0GC1wkgjFEoj9IPbJy5shhHgRxDbQBs5JV+qz07/SyfybZvqIJp+fOYJVsQwWcoBYLs3lz/k/0/G/S16uYngOa1jVs2QhMcqYYd4e5cwIU2J1iN9K0iMiIdYGAMXFwkF7JWZmKULiVfaojUDOhTkDTIgnyXNjeUN8jJAfEAaxIcQZktyI8CGbogxxkNIG5g+tEOfz4iDWg7hGJA+MHbI5JpsRMzzvtQwZlzPEP+XLBn1Q6n9W5MRzVPqYdpaIN6SPORZmxSVCTIU4oECcEAGxBsQR8pzYsCGb1MIsbsSwjUwRo4zFAmKZSBLsr9LHyjNkQTFD9rvz5MOxY8eyxLyIIXwpPysuRJUr7JGAP+g/jAXrE0k48cM6InlS+HAsQlFAoCp2nCySxMeqeFxPmu8foxqL20lzo4bscX9RbrCSN4M4Tl4QOzy2IB8uTpU+XiLNj4pT+YlXZvNDo1T+4PtAOOCCAMACCljTwQyQDcQdvU298E7VEwT4QAYygQg4DDHDIxIHeyTwGgsKwe8QiYB8ZJz/YK8IFED+0yhWyYlHONXVAWQM9SlVcsBjiPNAGMiF94pBJcmIBwngEWTE//CID6sAxpALq7L/3/PD7BeGA5nwIUYxPCOLPmxJDCQGEEOIQURb3AD3wb3wcHj1g9UZZ+Mew3F8sSc8JnQSHhCuEroIN6eLi2SjvJwMuqB+0FB+0r/OD24FNV1xf9wbqkNlnIkbAAfcBc7DwX3hzK6Q5Q75rcwKa5T23yL46gkN2VGcKChlDMWPYjN6pIadhuuIijLXX+dH5Wv6SL65Iz2j5+d+lX0hbMNGW2LfYQew09hx7CzWijUBFnYUa8bascNKPLLiHg2uuOHZYgb9yYE6o9fMlyerzKTcqc6px+mjqi9fNDtf+TJyZ0jnyMSZWfksDvxjiFg8icBxHMvZydkNAOX/R/V5exU9+F9BmO1fuCW/AeB9dGBg4OcvXOhRAH50h5+EQ184Gzb8tagBcOaQQCErUHG48kKAXw46fPv0gTEwBzYwHmfgBryAHwgEoSASxIFkMA16nwXXuQzMAvPAYlACysBKsA5Ugi1gO6gBe8F+0ARawXHwCzgPLoKr4DZcPd3gOegDr8EHBEFICA1hIPqICWKJ2CPOCBvxQQKRcCQGSUbSkExEgiiQecgSpAxZjVQi25Ba5EfkEHIcOYt0IjeR+0gP8ifyHsVQdVQHNUKt0PEoG+WgYWgcOhXNRGeihWgxuhytQKvRPWgjehw9j15Fu9DnaD8GMDWMiZliDhgb42KRWAqWgcmwBVgpVo5VY/VYC3zOl7EurBd7hxNxBs7CHeAKDsHjcQE+E1+AL8Mr8Rq8ET+JX8bv4334ZwKNYEiwJ3gSeIQkQiZhFqGEUE7YSThIOAXfpW7CayKRyCRaE93hu5hMzCbOJS4jbiI2EI8RO4kPif0kEkmfZE/yJkWS+KR8UglpA2kP6SjpEqmb9JasRjYhO5ODyClkCbmIXE7eTT5CvkR+Qv5A0aRYUjwpkRQhZQ5lBWUHpYVygdJN+UDVolpTvalx1GzqYmoFtZ56inqH+kpNTc1MzUMtWk2stkitQm2f2hm1+2rv1LXV7dS56qnqCvXl6rvUj6nfVH9Fo9GsaH60FFo+bTmtlnaCdo/2VoOh4ajB0xBqLNSo0mjUuKTxgk6hW9I59Gn0Qno5/QD9Ar1Xk6JppcnV5Gsu0KzSPKR5XbNfi6E1QStSK09rmdZurbNaT7VJ2lbagdpC7WLt7dontB8yMIY5g8sQMJYwdjBOMbp1iDrWOjydbJ0ynb06HTp9utq6LroJurN1q3QP63YxMaYVk8fMZa5g7mdeY74fYzSGM0Y0ZumY+jGXxrzRG6vnpyfSK9Vr0Luq916fpR+on6O/Sr9J/64BbmBnEG0wy2CzwSmD3rE6Y73GCsaWjt0/9pYhamhnGGM413C7Ybthv5GxUbCR1GiD0QmjXmOmsZ9xtvFa4yPGPSYMEx8Tsclak6Mmz1i6LA4rl1XBOsnqMzU0DTFVmG4z7TD9YGZtFm9WZNZgdtecas42zzBfa95m3mdhYjHZYp5FncUtS4ol2zLLcr3lacs3VtZWiVbfWjVZPbXWs+ZZF1rXWd+xodn42sy0qba5Yku0Zdvm2G6yvWiH2rnaZdlV2V2wR+3d7MX2m+w7xxHGeYyTjKsed91B3YHjUOBQ53DfkekY7ljk2OT4YrzF+JTxq8afHv/ZydUp12mH0+0J2hNCJxRNaJnwp7Ods8C5yvnKRNrEoIkLJzZPfOli7yJy2exyw5XhOtn1W9c2109u7m4yt3q3HncL9zT3je7X2TrsKPYy9hkPgoe/x0KPVo93nm6e+Z77Pf/wcvDK8drt9XSS9STRpB2THnqbefO9t3l3+bB80ny2+nT5mvryfat9H/iZ+wn9dvo94dhysjl7OC/8nfxl/gf933A9ufO5xwKwgOCA0oCOQO3A+MDKwHtBZkGZQXVBfcGuwXODj4UQQsJCVoVc5xnxBLxaXl+oe+j80JNh6mGxYZVhD8LtwmXhLZPRyaGT10y+E2EZIYloigSRvMg1kXejrKNmRv0cTYyOiq6KfhwzIWZezOlYRuz02N2xr+P841bE3Y63iVfEtyXQE1ITahPeJAYkrk7sShqfND/pfLJBsji5OYWUkpCyM6V/SuCUdVO6U11TS1KvTbWeOnvq2WkG03KnHZ5On86ffiCNkJaYtjvtIz+SX83vT+elb0zvE3AF6wXPhX7CtcIekbdotehJhnfG6oynmd6ZazJ7snyzyrN6xVxxpfhldkj2luw3OZE5u3IGchNzG/LIeWl5hyTakhzJyRnGM2bP6JTaS0ukXTM9Z66b2ScLk+2UI/Kp8uZ8HbjRb1fYKL5R3C/wKagqeDsrYdaB2VqzJbPb59jNWTrnSWFQ4Q9z8bmCuW3zTOctnnd/Pmf+tgXIgvQFbQvNFxYv7F4UvKhmMXVxzuJfi5yKVhf9tSRxSUuxUfGi4offBH9TV6JRIiu5/q3Xt1u+w78Tf9exdOLSDUs/lwpLz5U5lZWXfVwmWHbu+wnfV3w/sDxjeccKtxWbVxJXSlZeW+W7qma11urC1Q/XTF7TuJa1tnTtX+umrztb7lK+ZT11vWJ9V0V4RfMGiw0rN3yszKq8WuVf1bDRcOPSjW82CTdd2uy3uX6L0ZayLe+3irfe2Ba8rbHaqrp8O3F7wfbHOxJ2nP6B/UPtToOdZTs/7ZLs6qqJqTlZ615bu9tw94o6tE5R17Mndc/FvQF7m+sd6rc1MBvK9oF9in3Pfkz78dr+sP1tB9gH6n+y/GnjQcbB0kakcU5jX1NWU1dzcnPnodBDbS1eLQd/dvx5V6tpa9Vh3cMrjlCPFB8ZOFp4tP+Y9Fjv8czjD9umt90+kXTiysnokx2nwk6d+SXolxOnOaePnvE+03rW8+yhc+xzTefdzje2u7Yf/NX114Mdbh2NF9wvNF/0uNjSOanzyCXfS8cvB1z+5QrvyvmrEVc7r8Vfu3E99XrXDeGNpzdzb768VXDrw+1Fdwh3Su9q3i2/Z3iv+jfb3xq63LoO3w+43/4g9sHth4KHzx/JH33sLn5Me1z+xORJ7VPnp609QT0Xn0151v1c+vxDb8nvWr9vfGHz4qc//P5o70vq634peznw57JX+q92/eXyV1t/VP+913mvP7wpfav/tuYd+93p94nvn3yY9ZH0seKT7aeWz2Gf7wzkDQxI+TL+4FYAA8qjTQYAf+4CgJYMAAOeG6lTVOfDwYKozrSDCPwnrDpDDha4c6mHe/roXri7uQ7Avh0AWEF9eioAUTQA4jwAOnHiSB0+yw2eO5WFCM8GW4M/peelg39TVGfSr/we3QKlqgsY3f4LieCDC4KV0N4AAAAEY0lDUAwNAAFuA+PvAAAAimVYSWZNTQAqAAAACAAEARoABQAAAAEAAAA+ARsABQAAAAEAAABGASgAAwAAAAEAAgAAh2kABAAAAAEAAABOAAAAAAAAAJAAAAABAAAAkAAAAAEAA5KGAAcAAAASAAAAeKACAAQAAAABAAAClqADAAQAAAABAAAAogAAAABBU0NJSQAAAFNjcmVlbnNob3RZdYxrAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB1mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4xNjI8L2V4aWY6UGl4ZWxZRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+NjYyPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6VXNlckNvbW1lbnQ+U2NyZWVuc2hvdDwvZXhpZjpVc2VyQ29tbWVudD4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CqztizMAAAAcaURPVAAAAAIAAAAAAAAAUQAAACgAAABRAAAAUQAAIHK9aQcjAAAgPklEQVR4Aexdu45tt5FtfcB1pouB/QGyAYWDCaRA0h+0MgMzv6FMgCRAmeDJ5w8cDHDvH0g3kALDoQCPZmI7UGh9gEbrWKtdqlskq7i5z2OfRaCb3GSxqrj4Wk3uc/qNN99888cHBSEgBITAFSHw7rvvnrx55513nrz65ptvTumvv/76Ka+aePny5QN1fvjhhw/UBXsvXrx4Uvf8+fOntBJCQAgIASGQR+ANEcs8WJIUAkJgXwQ++uijB5A8kr+WtS+++OIBRJPEsCXn87///vunLOjADwLs4ofBkk7mKRYCQkAICIExAiKWY4wkIQSEwM4IgEyC2I0IZeSGJYhRuc2zxBLE9PHx8VTsiaUts/WVFgJCQAgIgT4CIpZ9fFQqBITAGRCwhA/mPvjggyerX3311cP7779/ekb83nvvPT0/Cf2UGBFMf91tyaO3D726DrfoKi0EhIAQyCEgYpnDSVJCQAjsiIB995FmQC5BKlvh008/ffjkk09+UczrcV5x20J/KokykkcSS0tidR1u0VNaCAgBIZBDQMQyh5OkhIAQ2AGB6Aoc5O6zzz7rkkrrSkQwo9PLiFiCPOL6HWUIILNffvnlKc0TTb7zGZHVk6B+CQEhIASEwBMCIpZPUCghBITA3giApCGAyEXvU4JQgijOhBHBjE5FPbF84403TsQSV+4kljzNjMjqjJ+qIwSEgBA4MgIilkfuXbVNCFwYAUsk4UpEJpG/hVCiPgMIIX78FTlIIU8lYYvlII/0iT5YgmrrkWjSlmIhIASEgBB4HQERy9cxUY4QEAIbEOD1NlSQtEXqqlfekY5WniWHXgYEMvoAEIkliCmvw21dEUuLhtJCQAgIgRgBEcsYF+UKASFQQACngXwXsVcN5A2EEj/nCBHBbBFLXIMjiFieo2dkQwgIgaMiIGJ51J5Vu4TAGRHge4gZkyCVJJhe/u1fPXt4+9mzUzbS3/79h1P6j3/9mxdNP/NqHDECbdtTSeSBhCK0iCXK+ClypBWEgBAQAkLgdQRELF/HRDlCQAgUEeD7i5lTS6iOvkoIRPLz377VtAxyuYVg8vSSJBLEkmSTp5UwviexBD7V/xbUBEQFQkAICIErREDE8go7RS4JgVtCoPJO5atXr55OBqM2/v43v37ATytsJZfQC+KIU1MSSBJN2mQ+nymL58yJJfBAwPulTPMZsT5dDhQUhIAQOCoCIpZH7Vm1SwjsiADJ5OjDOXABxA0BBC0TPv/dW0/X4ZH8CnJJvTjFxI8NeOanxuk7n+2XppM08rS2h4XVL2Jp0VBaCAiBoyEgYnm0HlV7hMAZEIi+E7JiFiQTp5eI8ePDOcmlt22JJa7scYJJYolPhiNkSaTVjboglboKt6goLQSEwNEQELE8Wo+qPULgTAjwpI4ndzNki67662jk40oc713awA/zIG/L+5ZWZ5QGmUQA6bVE85TpfkGG8q7o9CXrIJIglApCQAgIgXtAQMTyHnpZbRQCZ0aAZJNmPelEuc+DLD/UExG16GST+veMf/zxx1+ohx84bUWIvg8T+TqdBAoKQkAI3CMCIpb32OtqsxC4AgRILnnyCZfw6ezohBBkDqQTAaQTV9Mkn5boIY2fVYG2+K4ldUc+wqYI5SrkpUcICIFbRUDE8lZ7Tn4LgQMgAFJJYgny1joB5NcBtQidhwIEsPcOp5evPEc+gFA+Pj5W1EhWCAgBIXBIBEQsD9mtapQQuH4ELKnkSSBPIa33fP8yInRWrpemjp5MtqznB9+lZJzVKTkhIASEwFEQELE8Sk+qHULghhDANfiLFy+GHpMQ9sjcUIkR4DucJms6CZ8QolNWEEuRyxM8+iUEhMCdISBieWcdruYKgUsj0COVuFK2H+ppvXO5pQ0rySX9IMnk1xIxXwSTSCgWAkLgXhAQsbyXnlY7hcCVIND6v+I84bPvXIKw+U9lR83oXaV7ecjyg0Ass/83nJ/4hhz1Us5+/ZH96iOWi2ASCcVCQAjcKwIilvfa82q3ELgAAtEXq9tPUtvyzGll6/QRBC+6omaTbT3I+pNGyiHGdfx//+cfwv9j3vovQJF9EGe0VV+QbtFVWggIgaMhIGJ5tB5Ve4TAlSJgP6wDFy2hpMs8zeS7lb3TyujkkXoYt0ijrduzQT0tcvntDz88fPyX7yj2WhzZ1/X4azApQwgIgQMhIGJ5oM5UU4TA3gjg/UgGvAuJ5+x/loEsyCWIVevUrkIs4QcJKH2KYlxzR58256llhlhS73/9x78//Mv//S8fT/Hjn/78i2c8wJ49BY3s2/87/poCZQgBISAEbhQBEcsb7Ti5LQT2RoAkku882g/VeNsgi5RvyWWIVJVY0o8RwYzII9+ztO9XUl8vtuSydWIJIjnSixNbffdlD2mVCQEhcIsIiFjeYq/JZyGwAwI8UYTqFjncYnaGWLZOG1t+gGAi4Arahojo4TocH9SxJ4u2Ti/Nq/HoAzysZ8ksSKQNOLHV+5YWEaWFgBA4CgIilkfpSbVDCEwgQDI5IpIgYdF1rjcJOQZP2p4/f86i0+kmbOKkkwG+8LsteQJZJZbUxfp8Rhy97wi5iFiiHShDQLsjmcjGqcLPv6zvGVJt6yotBISAELhVBEQsb7Xn5LcQ2IiAJXJWFckhiRVJpb3ajWSsDqZ5amdP7CyJJeHyH+whaQOps3apNxvzPUrKW7KHPLaN5Yhp2+a1/PD6UQdthg7opu+69rZoKi0EhMCRERCxPHLvqm1CoIGAJ3IgQZZI2mo86YMMAknT6aHzq0XGbBUQS/hiyaYndhk9VqdPW30jXVbW68EzsbBlllxa/dDFrzwSsbSIKS0EhMCRERCxPHLvqm1CIEDAn1T2yBSIFMgRZEgsA5VhliVZoYDLJLmN7FR1OdWnL0Sn3ogcQr6Hg9Xn60MvPwjky2w9ns7aPKWFgBAQAkdDQMTyaD2q9giBDgIVUgk1IHQkZB213SKro0W8eqSuVadrNCi0J4tepyWHqAqfGaL2+yt1+u/1UgdinVpaNJQWAkLgqAiIWB61Z9UuIRAgYP+zDclQILZblidkIG3wIyJvIHf40IwleVscgw2eLFIPddN+jxhShnWogzH+UxDK7HuV9oofcvYDTKynWAgIASFwJARELI/Um2qLEOggYN+rvASphGsgbggkaYxPmeZXj+AZsXJy1G5+2Kis+KcKPBGlDpxQ4muFgDuDrsOJhGIhIASOioCI5VF7Vu0SAgYBSypB5vzJnRG9eNKfaq52qEUut5JZ4kr/7dU38RexXN2b0icEhMC1ISBieW09In+EwA4I8D/aQDWubK8x2Gvkc/gHgokAQgjb0XdVVv0AtiSWqKur7yqCkhcCQuDWERCxvPUelP9CYIAAT8sgRjJFEsXr24GK3YvPTSr3ahDwtCRVxHIvpKVXCAiBa0VAxPJae0Z+CYEFCFhSiZM5BBAfhgyxhDzrst7KGPr5gZeVei+hyxNLXX1fohdkUwgIgUsiIGJ5SfRlWwjsjIC9Ao9Mtd43pCzeO8T3WIIw7RGORCqBj4jlHqNEOoWAELglBEQsb6m35KsQKCBgTyttNfx/bpQh4CQyIo0gfPyqn5aM1Tmb5ieoZ+tfWz0Ry2vrEfkjBITAuREQsTw34rInBM6AQItU8mqWJ5kRafSniKNTzdnm2A+5zOq4lnrAETghtp8u1zuW19JD8kMICIFzISBieS6kZUcInBEBEkeaxFff4KQS36uIwHJPGj2phKyXQd7WYMnXVl2XrG8JJfyw7QLe+FEQAkJACNwTAiKW99TbautdIOBPKyOC0yKW0dU0rndBoFYFS75W6byEHmDCq2/Y56sD9CXCnWWKhYAQEAJHRUDE8qg9q3aVEcD/0Wbw/4oP+Tj1Q+Cp3+nhyn55Usmrb+9mRCxbhG/l9162bHj/7DNJ7atXr0KCy3JbB2mcvjLYNL9qiWVbYr6f6j/V3sJ9i62j1R3NN7SX/73oaG1Xe4TAkRG4W2KJDdgubJlOjshGq55dEG26Je/z4Rt8vEQAcVp5hTeDNdv9+PjI5C4xca70LR2xRNPjRb2UPVfs20Ef4R8JMXx78eLFySVec7cIH8ut/yBpPJ2rnmZGJ6JWN9IgirDL9Cmx+FervVUz8BUY2PdFWyeVnvTDFvsnsuv7svq+pu1nqz9rs9UOq6uS5pzw7crq4BxjnK3Xk3v58uUD/Mli0tPly6iT826F3/TX27LPtGvzMulRv+iPpQyKkgECd0ssMxN05RDBZK8QttamsNKnli74upLQ8XSsZa+Xv9diFm3yPT9GZX7Tv2T/Rb5aHK1vJIaeGPGPGntaaQklbESkM7LNvBGZI6FEfK4w8injhz+1bM2frWuO7cOMX1vH+ApiuZVMttpJksa4JTfK39onI/2+nP4y9uWj53P7a/2pjj9bV+n7QkDE8sz9jQUls6jYzf/MLp7+el9FLLdubq1NegsmeyzO104srX+2T0CKSBiBKcYmSaUljhEBs+Wj/ojqt+pYMhvJwF/84Ps1fUB+RExxjY4AP6JQ8c/Xhz17atkas1vHXXVj32ovu1Z5PPC8F6GMbG3xcytGkT+ZPIwR+M3TzEwdyFzKX9iujj/UUbhPBEQsL9DvmQl6SWK5ZaH2cG45raQuS4qYNxPvian30ZK3GV9X17H+Wd9A4iypwobHKzESR3uaSb9YxudeDLLn30Fsybf0Qgev31t1K/mRHYtDRRdkQSytf9Ec30oKqvNy69yr2gMO5ySUsMcw4yvqbu0T2p+Nq35f0t9oTM+2W/WOjYCI5YX61270kQt7kqDIns2rLna2rk1bAmPzq+lVC9rWjbbnt+/PVW3v2ayUWf/s5sSTNuhCv8NvBBAvnMS1COHoVPGk5OdfETG15UxHZG81oaQtxpHNGYIJHBGIVzSHLO60X4lbJ6GRjhXjL2pDZIt5K2xS12xcXSu29smsn7ZeBedL+mvXEOu/0kLAIyBi6RE50/NoATwCsVxF5Cobaqv79t70fH/uba/Vzla+3RTYLyCOuCKufko6ImMtuxWS5slqi5CCxIFwIlR9P1UKfvk2VfyGOmAJv/jhpGjMEvfAfDrL9mOv0goC4sd0z961jPcI957fK3Dq6c+WZcnlJf3Njr1smyV3XARELC/Ut6MF8NaJ5eqNZuuitmJT7w0Vvwmvbn/PdqbM4kcsQKaqxMwTsJFtEq2RnNUL0siTP1/PyqGsSgC9PvtMcmjzWuTWyjANYmzlLeaQIe6Un4n9OIt0rFo7MrZg/9rG+mhttZhdkqhZP5D248WX4/mS/mb8i3xW3v0hIGKZ6HMsVL2XrLGwzoTeRF21Ocz4lf3ruad7xSZq9Wc3OVuH6RUbH8YA3z2kXht7/1bYtPq3pjnWquPKt9ufKvb8ypI+TxZbZNTL0XbWDuVHsbdjyWKvrr8O92NixZzIzM1VY8/7H7V9lS2MM4bePKPMKIa+zAcQL0nUfBsyPl/SX64h3m89CwGPgIilRyR43muB7U3UGQKATWcm+IUcC1yPSI9srNpsrJ3MomvlbXrGH9gDnhEO6BtiBt0IfsOHDMsiHdY/2IIsddqyVhpjEiFbh2MjiwXbz++7hC1PuJDXCy2CaOt4nb3Tyh6pzZI/a7uXtn71fLI6PLH0Y2IFsczMgxV20K7RulddoyxWSHOMteZHdqx6vXwe+Q+5ClFDf8JnBOszcEDgXOS8P2UWf418rvgL09bnoiu/EEfbuIb8okAPQiBAQMQyAMVnjSY75auTvqe3umj7TYw+nTuubAbwGe3kgjzytYdXr261X6pYos3YcOxm0/MnKqv62PujJNLPvEz/kLxYWUu0qKsXZ04Ro6vnFokb2ff1oBuBXzOENL6eCHLZYG322gNb/K9ASJNQE0fYq87nno+9vrd91tORKevZQf1ZAjszv9CumTBqQ2XeVfye7Qc7ZqL2VvxF/VH7IxvKEwJbEbhbYllZFLOEprp59CZ9dWGqLHpbB02vfsVvtL+CWbYfvH/VxXjWjrdbea762Bs7Pbuj/uE4snIRAezZQBnJVU8uOoH0BBH1LcHr6SNpJKlsyYIkZkmmtd07FbVtsXLsp8o4b/nN/N74tP1G+dmYvkf1Z+1wfEU6e3mz+I2IWmUfqPo+i1EP93OtE72+UJkQGCEgYjlC6Kfy3kJuq1cXkt4CUtVVXfSs36vSFZ+tv9nFfbRJtNpRXYyz/d2yN5OfxYC6e2OHMlHssQCmPDFu9YklTVYniBx+QNRs6J3uUQ7XxhEBhD4QMxta9q3MTDrjJ/SSXEa+0S59hAx++KEojqUMMbJ9Qb1R3JsH1XEU6Wdeb4xV5jr12fHFvEqcwdDr62EF2Qpe7Etvo/fs51tPlmU9O1V9vT6kPcVCYDUCIpYJRHsT3VavLLajRbaiCz6M9Fk/90pXfLYLXmWxzPaFbWPFL9az/jFvz7iywY02y56f1g7HDPCBTl7lW7xIqqxOS7Ci8tFpZVSH+q1u5PVkWWdrbE8YW7pIHFtkFESZhBKEGWkEjleL6akg+IU+IMkPip+yWv2fsYE+h1wm9OaAHUcZXRxrGdmeTKaNvj77wOfjudKOnp5IN/JmyHDPTsVf2O/1IcoVhMAeCIhYJlDNTM7qAjJaaKsL6EhfopmbRCr+el8r2LU21Z7zFf3UM2OHdWfiyoYx65vHoTWurS8kVGyTJ1ae+Ply1mPs5ZnP2Nf39im3OvZ2vX57whoRZ0ssbV32VWZ+YF6gjzLkMuq7jA2QFvuBLOurT0c2IJOxk9Xl5TLPdnxm5FcRtZ6enh+VP5yhx6+PVne17a0+tDqVFgKrERCxTCDampzYBBCw0GY2A5rqLRyUqS7e0IlNbDbwtGq2fmXBi9pfqd/qj57v1cUdukgKenpXlVXaP+uXJZZRH6Atdtx5EuhP9nw56kekC/kIkfw/Sv752xK8jPw/a25PWdteG04hQR4RPA7IW0UsoQt9MAoRycmMIcydjBzst+ZZtj7b0BprLK/G1bncmy+VtkSYZ3y38y4jv8pf6AH2swF72pb6s3ZV7/YRELG8QB+2Fmzrit3gbf5e6dlFE/5UfG1tMpXNYtbXig2L86w9q2OUrmxwLQxHNrjB9epbP3haiGtd/94jbHni1yNmXrblK3Vk5Vt6ZvMj0khdPTzgLwLfrWQdxJjvmTmCfgEZyJwo+j7M6kc928fWT59urVPZ+tS3ev5wHFP/KF5F1GbbcSl/R7iMynu4jeqq/L4RELE8c/9nF6fMRrHS9dYmkrFR2Wj8hkj9lcV3dsGr2KBfjFt+s3xrvALDjA/AoHc6TT8ssYtOIW057UZyKLOnfZRtxSSWJHEtub3yWyQa9ux1uCWgaB/wQF0SS4wXzGEEzK3MHzVcG9gHp8qNX34OZNaLin76HZnP+GfrbVlbrB6mq/PYY0U9iCttmW1H1V/41bJV8Rd6toS917wtvqnudSMgYnmm/qlO0sxGtNL11kI2spHZ0KhjhEFl0Zz1d2aRz/pPuZm40vYRjjP2Ucf2JUkUiZ7X6YlfSw71vKzXZZ+hB4Hx6eHMvyxptKaJCfKsDPMtBhyfJPKZ+Uzil5GFD7SBdGb8UD4j2yJj1fnT0gOft4RMG6x+tt3mVdsS6bD6eukV/kJ/VU/Pp1HZXuvMyK7Kbx8BEcud+3B2cmY3l1Xuzy6alYVuhEWlzdyEZ9pvCVS1/h4bZXWDG+FYbRPlLS4kgzyFhE2UI0SnlZZUUR9iki6b10tDD34uGVqnlrbdllgSK4uBn0+ZecI6th96OHAOZOTtmMn40hrnGVvWZ2vX5m9NZ9pgbRBbm1edd5EOq6+XvoS/PX8yZXv1Xca2ZG4bgbskltUFZUUXVydphWSt8G9m0axuMtisRiH7IajWxjfSz/ItYwC20Z+9K2XaycRVX6pjKeMDZGx/gixlCBbqZeUgOwrQhavlSwcSauuHJcksB9lE4BU45f18yhAL1smOBxFLoj2Oia2VzOLMOpEOlvXiqp3W2lbV0/MpU7bXOpOxLZnbRkDE8sz9l52s5ySWrYVsBE1msxzp2FLOjXWLji04r7AP36sbRnYMVXHxxNKewMEmyhF4Qkf9Vo559nSPebcUkzhan0m2QSJBgBHQTk8qke9JSGau2DoZeY6DjGxVd2tNsGME7RyFlp5RvV55db60fKjqsRj2/PNlVczYr15P1V9fv/rc8qOqR/L3h4CI5QX6PDNhtxCeapNaC29PT3Wx7OmaLZvxO7I125ZV9qsbxipC67GwOIBEZQlji4R5/bf0bK+64TdOUXFi6fMzxDLbv5a4ZOY/xh/WktGnyP16kyGirbGdbQv7uqWH5TOxHaeZ+i0fqm2x/ZOxS5mqv76/qKfqL+vNxnutM7P+qN7tICBimegrTPRewITPXuFSz2jSZhZ/6toatxbent5z+tfyY8bvlq7q4k89K3yobhijsUPfqrHFAMTSkyjou4fTSrTTt50nsDYfZJMnl6hjgyUh2f61dbLEEq9joN96wROVzNxtjetsW+hPSw/LZ2I7TjP1fftZp9KWLe3I9CV9QrzCX6tvNr3XOjPrj+rdDgIiloO+yi4olUUKJkd6M4s/XYeuFvltvQcIf21oyVkZpqsLO+vtEa9c/Gbb1doIsu2tjp2VbbY+Wj9wOmevfCFHcmXr+NPKSMbK30raEkj4TEJt8+1pJcYA8OMfmJYkWlxb7ffrQaYOdKEebbZ0V32h3sfHx9dUZv2yFVeP18raCD9a87My333/2PaN0lV/W3hV/GW74XdlbR+1ReVCIIPAXRLLygStLCjVRbe1gKDjKotRxcfMoBjJVHwb6dpavrrtlbFhfbebt83PpKs2e+MmY68lY8cvr32tLD9U8+rVq9M1efaq3OrYmn77V89OKt5+9uyBaa/z27//cMr69ocfHpj2MqNnTyDRVgRPpJFH4kL8/JjM9K+vQ13QvyXQN+rI6vX+sD7i6vzv6bJ6M+kMll5Pa25WdM22oWKDfq/wF7r2Wifop2Ih0EJAxLKFzM/5fmEeiJcW3d7EryzeVR9HbeiVzyyUPX0ryloL8azumTb2+nLkR9XeFlsjXzjuete8PJWMiCVP9kZ2quW//82vH/AzE/7417894KcSImIZtRc6/fgDebOnRJn+jYgL+6Lit5f1a8MKYlm92oVPq8ZsFZMIV2KU6RfK9vRQJoqr/vr+sjor/qLeKsytD0oLgQwCIpYDlHoTPapaWUh6ulfpiXyczasubLN2qvX2WECrm2evL0ftqeLqicxIf6U8026SR396R8JZsZeR/fx3bz3ghHJL+Ph/viudXpJY2jb59sKfzNjL9G80fjJ9McLEj5UssYz8oa2sDsojniVmVkcGRyuPdK8dFX0z/s/03yp/0Xbf98hTEALnQEDEcoByb6L7qtUFt6V7lR7v39bnykIMW2gfFuRqwDtjsJUNM4v+SHe1rVt8qNrac8MYjT0SLXxoBeTLBvs9jzZ/S3rLSaW1i2vxj//ync3qpkks2abotDJDKmEkQzCitWDUF90G/FS4RWdUl/Zm/erppO5WnMEwqtubK5V5V/V9D3+rOnttj7BSnhBYhYCI5QDJyoJSWahgtqW7unC39AyaViqutg3KtyxslRNb2Io2eeAIkgrSZ68mIT8K1fZu6YNr2jCisQf8+AERnlZGRItlI2yz5atIJe1VTi1BLHvvkkbjjXZ8nOnfaPxEfeF195636IzqWlvV+WHrjnRbWWAAWxx/tmyUHtnJ9AttjHRRbkufjWxU/IU/W9ZftkexEJhB4C6JZWWCjiY7QZ9ZaFubU3VxyvpIX6G/FVoErIIZdFd98v5U7UVYWhxJLhl7e/Z5pi+3tLfa1r03DE/q0TZggkDy6IklTzItjlvTq4ll5dQSxBKnlb6daFM01nptzfRva/z4vujZ8WXROLFzwsvb55Y/VmaLb9DTswE/ZwklfYzazzLEmX6hPNYN+GsDyS7XUz5bmWwa+qNP4dv6FX9Rb9R++m1t+DTb5Nvu5fQsBCwCIpYWjSDdIyKcmJx8QfVuVmvizxCbrqFCYbTYz/jTalvWFWA7+uJnqytamEc6bN9u7csq2bC+r94wrO6ZtPcHOHGMk1jyqpj69yCWL//tX6l+SVwhlvx+SrTThpl+zhCwaN7Bru8L60sv3dKXncut+tZmVpet00pjjCFwnLXksvkZ/2exzfpQkcuMq8w4qtisyG5dzyu2JHv7CIhYXqgPIyJEV1Yu2NSZjaMFrrqgZRb1jD9Vuyt8z/gVyWxZeKvt3GIr8t3nWULuN3wSS/9BFuZ7XbPP+Cqhz3/71mz1Zr3HP/25WeYLfBtnx3Wmf6OxC39myU/L1+za0qrvMcrq8/X2fM76numXPf2k7lvwd+81h1goPgYCIpYX6sfeYnLJxdpvcDO+rFqEqptqRNbPsXn0+jIzvKo+rsK35duIWPoP7vDfHbb0zeRfmlj6K/AtfZzpXz/viJntC+Zl4tYYyc7nSnuzOjN+b5Wp+J3pl63+jOrfgr/Rujpql8rvG4G7JJaXXlBGi0mVUK0cwn6Dq2I1alvF15lN1W+oVf8r/kF2RXurPvo2Vn3OyHMMon3oB15R4mTSk649rsHh4+qrcOjMnFj69m3p4+wY9vMOviJk6/9D+h+/e/5mSWBPh7XFdFYv5feIqz5X591qnyv+zoyDVf6KWK5C8n70iFieua8zk5Sb+pldO5mzG9zMZlFZLDPtqy7+1n/o3xPLTF+O2jizYVwbseRX8ozaWi1f8f2V3maGWNor8K3jOTuH/Li1flfHcM/nrD89HdY3m87qtnVWpDEP4W/rg4eRjZl5F+mZzev1d6Tzkv6uWOeiNinvuAiIWJ6xb7MTtEqmVjbBkpaqHzOb0cj36qbqMa7WH/nDcm+H+dW4umGsspvxE0QBfWoJQ3Riufr9Svq2+jo88+Edf1pZJQD0nbHFjnlR3LNTHcN2DntbWX+2zOWsDe/bzPOsn9V5N+NbVAfzFz5XSDD0XMpf2J7FGHUV7hOB/wcAAP//ai0q5QAADaNJREFU7d09bhzJGcbx4QHkTArsA2gNKDQcUIGkG1CZL6JsAUqAMl3EGXkDScEoMLwbCbD3AHZAOFodgPYz3mf4qlj9XcWZ6fo3QHVPf1R3/XooPqjqj7PHjx/fbhoanj9/vrm6unrQGn/58mXz4cOHzXa7HbXfm5ubUevVWOnJkye7Yt+8ebPRz5RBddRPyWHO+Xr9+vXe+vr6enN+fl7skKaey6EdT62f9n9xcTFUbNHl8btwdna2+fjx4+bly5e7fXz69Gnz6tWrovuLhV3/+U/x46Lpv/7r3xv99A23t3f/HZb4Pke7vv369y63zpTvyNAxj/19GCond5zpvLF1T7cb+lzid7DWsXUd+9JjfujjjfUo8V2I5TG9foEzgmXZk6z/QDzoF1LD2EDp7Q4dLOf+J9b3x9F1mzOe6hHDl+qiP8walgTMpX8Yuuo91TrWravM0vPjMSpYxvD17t27zdu3b0vvcl/e+z8+3Tx79Gj/ecnEULBUPS4vL/e7KPF9Hhvk+vZ1qsHSkPr+aFA95v4O+v9V/Z869f9TH0ccx+90nD9n2scWt9Uxev6xHW88zjHTBMsxSqwTBZoLlrHyTLcnkAuZnhc1/Meg5B+HWP4pTcc/wmmwVGulWi3nDs9+9//Q+PXXb9kitPz9D0+zy6bOvPjb33s3iYGZP6a9VIsW5gJm/B3kd28RLxsjcHABguXBTwEHgMBxC8RgqSCprnAPCppTBgXFv/zh97tN0pbIr9++bRQw0+7qEq2WKvvHf/zSeag1Wis7d8YCBBBAYMUCBMsVn1yqhkAJgRgs1fXt7mJfX6lQpp++wYEyDZO5bdIu6xKtlmmZcb9pqKS1MuowjQACCEwTIFhO82JtBJoT6AqWDpkOmH0wU2/CSYOgWjnd0tm3n65lP/7zl11raG55Giz7rnfMbc88BBBAAIE7AYLlnQVTCCCQEdD1b36SgsNkXG0oWM4NhWkYnBpO4zH2XV/JtZVRimkEEEBgmQDBcpkfWyOweoEYLHOVHQqWcwNhel3k3Gst09bPWAdaK6MG0wgggMByAYLlckNKQGDVAkPBUpXvuolnbmulQWO4nHutZdry6bI1prUyajCNAAIILBcgWC43pAQEVi0wFCz7WiyXBkvBxmA4p9Wyqxuc1spVf22pHAIIHEiAYHkgeHaLwKkIdAVLPeNTD7zuC5Zzu8FTG4fDqa2Wfd3gtFamynxGAAEElgsQLJcbUgICqxZIg6UCpR7Jo1CpO8a73r5TorXSsLFLfEqrZVew1Csp4/M442tAvU/GCCCAAALTBQiW083YAoHmBPxaTYVKv6vcryvsevtOyWApcIfEKa2WbulMTxjd4KkInxFAAIEyAgTLMo6UgsCqBdQyqZZLh0o/27KrtVIYpYOlyvT1lmO62GMrp7aNg1or1WqpgQei7xj4BwEEECgiQLAswkghCLQlkAuWCmq63tLDlC5rbzNmrFbIMWW7hTNXJtdX5lSYhwACCCwXIFguN6QEBJoSyIVKdy3HbvEx4a8mnFs3031wfWUqwmcEEECgnADBspwlJSHQhICDZXx2pYNlvEP80MGy6/rKNFjyCscmvrZUEgEEHkiAYPlA0OwGgTUIOFSm11bGaxa9bMpNNqVt+rrBCZaltSkPAQQQuBMgWN5ZMIUAAgMCDpaxtVKbxGCpz+oS/8/PP23e//BUHx98mBIsedTQg58edogAAisWIFiu+ORSNQRKCjhUqky3Srr8tBXQXeI17gz3PvvGXddXapv0WAmWfZIsQwABBKYJECynebE2As0K+FmWBog36qRhTet4ee5aSz0KyMOzR488WWzcdX2ldxDvCidYWoUxAgggsFyAYLnckBIQWL1AbK10Zd0q6c9pd7iXp9dapt3U6XKXN2WsFso4fP31LrjG+Z4mWFqCMQIIIFBWgGBZ1pPSEFilQAyWXe8Iz7Va+lpMd4mnodJYYx547nW7xn3d3+k2BMtUhM8IIIBAGQGCZRlHSkFg9QJ6846G7Xa7Ube4WyTVUqlubw0xsOmzu8M1HQc9nkg/HkoES5U11AXu/cXj5M07VmGMAAIILBcgWC43pAQEmhPw9ZYKjg6WCppd3eERyOu4NVPLSgXLrhZR7UP7/fz58y7Q+hg0n2ApBQYEEECgjADBsowjpSDQlICDpe4Ov7y83Ldept3h6d3jMdA5WJa4xtL4fcHSrZQKwzpmHasGde37Hei7GfyDAAIIIDBbgGA5m44NEWhXoCtYSiSGxxgs43ytVyNYuitcoVEtqB7SwKtlBEvrMEYAAQTKCRAsy1lSEgLNCDhYxgr7ekpdO6kWQQ0Oj3Get/GyEi2WenyRWit1N7hDpI9H+/M87zuOabGMGkwjgAACywQIlsv82BqBJgX6gqVDnFsrc6FSaA5+vmN8DmQMlN7eLaNqldQ+NHQdg7fhfeGWYIwAAggsEyBYLvNjawSaE9Dd4VdXV/fqHYOcwqU+a/C1jbsP4Z+uYOmHp6v10dNhs/1k7lmVaYB0q2g6f1/IbxMEy1SEzwgggMA8AYLlPDe2QqBZga5gKRCHReP0BTq3aKorXK2WGtyd7e09VlD14MAa58Wbcbyexj6eeBzq+tZwfn6+G+sf3r6zp2ACAQQQWCRAsFzEx8YItCfQFyxjq6Vk3C2dU0rXjesoNHaFxbje0HRXsNRd4LE7n2A5JMlyBBBAYJwAwXKcE2shgMBvAmmw9Jt4DOQwp8+xpdDL49itlp5XKlC6PJcfj8M368R6ECwtxhgBBBBYJkCwXObH1gg0JxADmSqvB4xrXuxaTsOl1vOd4ppOh1z3drrOnM99wVLl+VWVBMs5umyDAAII3BcgWN43YQ4CCPQIpMFSN76k87S5Q10sSi2S+tHw4sWL/fRuRoV/HHBzLZYVdkeRCCCAQPMCBMvmvwIAIDBNIIZIvw4xzktLywXMdB19duD0uETwJFjmpJmHAAII1BMgWNazpWQEVikQQ6SDpSp6fX39XXd4Wnl1d+td3RrrZ8qgFkcPYwNnDLTxJiJfY+nyGCOAAAIIlBMgWJazpCQEmhCIwTI+/zHOHwuhgKmwqcFh0+MxZah10y2ccX2V4XJiN7jWiWE4bsM0AggggMByAYLlckNKQKA5Ad30opa/7Xb7Xd2HWi2/W3ngg4Ohg6dW9zyPB4rYpKFS63OjzpAayxFAAIH5AgTL+XZsiQACicCcVsukiMkfHTIdQNVVriHXkqn5sZVVnxkQQAABBMoJECzLWVISAgj8T8CP8Mlh6LpHBUGHvrHXS+bKmjOPbvA5amyDAAIIjBcgWI63Yk0EEBgpMBQu4804KlJB02Gz73mXI3efXY2bdrIszEQAAQSKChAsi3JSGAIIWEDhUoPHnq9xvGM7zo/TDp+lWjW5tjLqMo0AAgjUESBY1nGlVAQQCALxph4/WzIsHj3psDm1VZMu8NHErIgAAggsEiBYLuJjYwQQGCPgrvExLZVjynPX+ZjWTELlGFHWQQABBMoIECzLOFIKAgj0CMS7xce0WMbgqGJ9/WXPLu4t0jWVCpXpI5HurcgMBBBAAIFiAgTLYpQUhAACfQKxO7yv5fL29ravmN5lCpMaCJS9TCxEAAEEqgkQLKvRUjACCKQCMVx2tVzmHmoeH8bu8OiyaZG0BGMEEEDg8AIEy8OfA44AgaYEHC67gqUw1PWt93t74KHmlmCMAAIIHLcAwfK4zw9Hh8CqBHwTjyp1dnbWWbe01ZJg2UnFAgQQQOCoBAiWR3U6OBgE1i1wc3Ozq2DfNZZpqOSu7nV/J6gdAgisS4Bgua7zSW0QOFoBt1bqlY7qBs8NaajUOrRW5qSYhwACCBynAMHyOM8LR4XAqgQcKlWp3LWVuUDJ44JW9RWgMggg0IgAwbKRE001ETiUQAyVsQtcN+joDToap4NC5cXFRTqbzwgggAACRy5AsDzyE8ThIXDKAvHB6AqV6gbX0BcoeQbljoh/EEAAgZMUIFie5GnjoBE4DQHfrONAmWudVE3o9j6N88lRIoAAAkMCBMshIZYjgMAsAT+vsmtjhUk93NzjrvWYjwACCCBwOgIEy9M5VxwpAicjEK+rjAftEOlxXMY0AggggMDpCxAsT/8cUgMEjk7AXeA6MIVIrps8ulPEASGAAAJVBAiWVVgpFAEEdOMO7/Hme4AAAgi0JUCwbOt8U1sEEEAAAQQQQKCaAMGyGi0FI4AAAggggAACbQkQLNs639QWAQQQQAABBBCoJkCwrEZLwQgggAACCCCAQFsCBMu2zje1RQABBBBAAAEEqgkQLKvRUjACCCCAAAIIINCWAMGyrfNNbRFAAAEEEEAAgWoCBMtqtBSMAAIIIIAAAgi0JUCwbOt8U1sEEEAAAQQQQKCaAMGyGi0FI4AAAggggAACbQkQLNs639QWAQQQQAABBBCoJkCwrEZLwQgggAACCCCAQFsCBMu2zje1RQABBBBAAAEEqgkQLKvRUjACCCCAAAIIINCWAMGyrfNNbRFAAAEEEEAAgWoCBMtqtBSMAAIIIIAAAgi0JUCwbOt8U1sEEEAAAQQQQKCaAMGyGi0FI4AAAggggAACbQkQLNs639QWAQQQQAABBBCoJkCwrEZLwQgggAACCCCAQFsCBMu2zje1RQABBBBAAAEEqgn8F5MZ2WUlcx/kAAAAAElFTkSuQmCC" alt="Beast Mode" height="48"></div>
-  <div class="tagline">Your Gear, Your Way</div>
+  <div class="topbar-right">
+    <div class="tagline">Your Gear, Your Way</div>
+    <div class="staff-pill" id="staffPill" style="display:none;">Staff area</div>
+    <a href="#" id="backToOrderFormLink" style="display:none;">&larr; Back to order form</a>
+  </div>
 </div>
 
 <div class="wrap">
+  <div id="customerApp">
   <header>
     <h1>Team Order Form</h1>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -539,6 +887,7 @@
       <button id="loadCodeBtn" type="button">Load order</button>
       <button id="shareBtn" type="button">Copy link to share</button>
       <button id="managerBtn" type="button" class="secondary">Manager login</button>
+      <button id="sizeChartBtn" type="button" class="secondary">Size chart</button>
       <button id="exportBtn" type="button" class="secondary" style="display:none;">Download full list</button>
     </div>
     <div class="share-copied" id="shareCopied">Link copied. Send it to your team.</div>
@@ -574,6 +923,86 @@
   <footer class="note">
     Your progress saves automatically, even if you close this tab, refresh, or log out. Anyone with the order code can add players and edit their own entries. Only the manager (logged in with the manager code) can choose which garments are ordered or remove another person's row. Use the size dropdowns to keep everything consistent with our official size charts. Because this list is shared by code, avoid using anything private or sensitive in the order code itself.
   </footer>
+  </div>
+
+  <div id="staffApp" style="display:none;">
+
+  <div id="dashboardView">
+    <header>
+      <div>
+        <h1>Staff Dashboard</h1>
+        <div class="subtitle">All team orders, live from Supabase. No login required &mdash; keep this <code>?staff=1</code> link private to staff.</div>
+      </div>
+      <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
+    </header>
+
+    <div class="stats-row" id="statsRow"></div>
+
+    <div class="toolbar">
+      <input id="searchInput" type="text" placeholder="Search by order code or team name&hellip;">
+      <select id="statusFilter">
+        <option value="">All statuses</option>
+        <option value="new">New</option>
+        <option value="in_production">In production</option>
+        <option value="ready">Ready for pickup</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+
+    <div class="orders-table-wrap">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Order code</th>
+            <th style="width:26%">Team / order name</th>
+            <th style="width:10%">Pieces</th>
+            <th style="width:16%">Status</th>
+            <th style="width:16%">Last updated</th>
+            <th style="width:10%"></th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+      <div class="empty-state" id="ordersEmptyState" style="display:none;">No orders found.</div>
+      <div class="loading-note" id="ordersLoadingNote">Loading orders&hellip;</div>
+    </div>
+  </div>
+
+  <div id="detailView" style="display:none;">
+    <a class="back-link" id="backLink">&larr; Back to all orders</a>
+
+    <div class="detail-head">
+      <div>
+        <h2 id="detailTeamName">&nbsp;</h2>
+        <div class="detail-meta">
+          Order code: <code id="detailCode"></code> &nbsp;&bull;&nbsp; Last updated: <span id="detailUpdated"></span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <select class="status-select" id="detailStatusSelect">
+          <option value="new">New</option>
+          <option value="in_production">In production</option>
+          <option value="ready">Ready for pickup</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <button class="btn secondary" id="detailCsvBtn" type="button">Download CSV</button>
+        <button class="btn secondary" id="detailPrintBtn" type="button">Print</button>
+        <button class="btn" id="detailOpenCustomerBtn" type="button">Open customer view</button>
+      </div>
+    </div>
+
+    <div class="info-grid" id="detailInfoGrid"></div>
+
+    <div id="detailBody"></div>
+
+    <div class="summary">
+      <div class="summary-by-garment" id="detailSummaryByGarment"></div>
+      <div class="grand-total">Total pieces<b id="detailGrandTotal">0</b></div>
+    </div>
+  </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="reviewOverlay">
@@ -593,7 +1022,50 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="sizeChartOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Size chart</div>
+        <div class="modal-subtitle" id="sizeChartModalSubtitle">Reference sizes for every garment</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-close" id="closeSizeChartBtn">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body" id="sizeChartModalBody"></div>
+  </div>
+</div>
+
 <script>
+// --- View bootstrap: this single file serves both the customer order form
+// and the staff dashboard. Add ?staff=1 to the URL to see the staff view. ---
+function isStaffMode() {
+  return new URLSearchParams(window.location.search).get('staff') === '1';
+}
+
+(function bootstrapView() {
+  const staffMode = isStaffMode();
+  document.getElementById('customerApp').style.display = staffMode ? 'none' : 'block';
+  document.getElementById('staffApp').style.display = staffMode ? 'block' : 'none';
+  document.getElementById('staffPill').style.display = staffMode ? 'inline-block' : 'none';
+  const backLink = document.getElementById('backToOrderFormLink');
+  if (staffMode) {
+    backLink.style.display = 'inline-block';
+    backLink.addEventListener('click', e => {
+      e.preventDefault();
+      const url = new URL(window.location.href);
+      url.searchParams.delete('staff');
+      url.searchParams.delete('code');
+      window.location.href = url.toString();
+    });
+  }
+})();
+
+// ============================================================
+// Customer order form logic
+// ============================================================
+
 // --- Supabase setup ---
 // Fill these in from your Supabase project: Settings -> API
 const SUPABASE_URL = "https://rwlcetkcvsturthbxhaq.supabase.co"; // e.g. https://abcxyz.supabase.co
@@ -985,19 +1457,19 @@ function renderSections() {
     bodyDiv.className = 'garment-section-body';
 
     const ref = document.createElement('div');
-    ref.className = 'size-reference';
-    const refLabel = document.createElement('div');
-    refLabel.className = 'size-reference-label';
-    refLabel.textContent = 'Available sizes';
-    ref.appendChild(refLabel);
-    const refCodes = document.createElement('div');
-    refCodes.className = 'size-reference-codes';
-    (SIZE_CHARTS[garment] || []).forEach(s => {
-      const span = document.createElement('span');
-      span.textContent = s;
-      refCodes.appendChild(span);
+    ref.className = 'size-chart-link';
+    const refHint = document.createElement('span');
+    refHint.className = 'size-chart-hint';
+    refHint.textContent = 'Use the size dropdowns below to keep sizing consistent.';
+    ref.appendChild(refHint);
+    const refLink = document.createElement('a');
+    refLink.href = '#';
+    refLink.textContent = 'View size chart \u2197';
+    refLink.addEventListener('click', e => {
+      e.preventDefault();
+      openSizeChartModal(garment);
     });
-    ref.appendChild(refCodes);
+    ref.appendChild(refLink);
     bodyDiv.appendChild(ref);
 
     const table = document.createElement('table');
@@ -1345,6 +1817,79 @@ function closeReviewModal() {
   document.getElementById('reviewOverlay').classList.remove('visible');
 }
 
+function sizeChartAnchorId(garment) {
+  return 'szc-' + garment.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+function openSizeChartModal(garment) {
+  const overlay = document.getElementById('sizeChartOverlay');
+  const body = document.getElementById('sizeChartModalBody');
+  const subtitle = document.getElementById('sizeChartModalSubtitle');
+  body.innerHTML = '';
+
+  // Garments on this order first (if any), then everything else, so the
+  // chart is still useful before any garments have been picked.
+  const onOrder = state.garments || [];
+  const rest = Object.keys(SIZE_CHARTS).filter(g => onOrder.indexOf(g) === -1);
+  const orderedGarments = onOrder.concat(rest);
+
+  subtitle.textContent = onOrder.length
+    ? 'Jump to a garment, or scroll through the full reference'
+    : 'Full reference for every garment we print';
+
+  if (onOrder.length > 1) {
+    const index = document.createElement('div');
+    index.className = 'size-chart-index';
+    onOrder.forEach(g => {
+      const a = document.createElement('a');
+      a.href = '#' + sizeChartAnchorId(g);
+      a.textContent = g;
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.getElementById(sizeChartAnchorId(g));
+        if (target) target.scrollIntoView({ block: 'start' });
+      });
+      index.appendChild(a);
+    });
+    body.appendChild(index);
+  }
+
+  orderedGarments.forEach(g => {
+    const block = document.createElement('div');
+    block.className = 'review-garment-block size-chart-block';
+    block.id = sizeChartAnchorId(g);
+    if (g === garment) block.classList.add('size-chart-highlight');
+
+    const heading = document.createElement('div');
+    heading.className = 'review-garment-heading';
+    heading.innerHTML = '<span>' + g + '</span>';
+    block.appendChild(heading);
+
+    const ref = document.createElement('div');
+    ref.className = 'size-reference';
+    const refCodes = document.createElement('div');
+    refCodes.className = 'size-reference-codes';
+    (SIZE_CHARTS[g] || []).forEach(s => {
+      const span = document.createElement('span');
+      span.textContent = s;
+      refCodes.appendChild(span);
+    });
+    ref.appendChild(refCodes);
+    block.appendChild(ref);
+    body.appendChild(block);
+  });
+
+  overlay.classList.add('visible');
+  if (garment) {
+    const target = document.getElementById(sizeChartAnchorId(garment));
+    if (target) target.scrollIntoView({ block: 'start' });
+  }
+}
+
+function closeSizeChartModal() {
+  document.getElementById('sizeChartOverlay').classList.remove('visible');
+}
+
 function downloadCSV() {
   const rows = buildReviewData();
   const header = ['Garment', 'Name on back', 'Size', 'Number', 'Notes / sponsors', 'Added by'];
@@ -1375,8 +1920,13 @@ document.getElementById('reviewOverlay').addEventListener('click', e => {
 });
 document.getElementById('csvReviewBtn').addEventListener('click', downloadCSV);
 document.getElementById('printReviewBtn').addEventListener('click', () => window.print());
+document.getElementById('sizeChartBtn').addEventListener('click', () => openSizeChartModal());
+document.getElementById('closeSizeChartBtn').addEventListener('click', closeSizeChartModal);
+document.getElementById('sizeChartOverlay').addEventListener('click', e => {
+  if (e.target.id === 'sizeChartOverlay') closeSizeChartModal();
+});
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeReviewModal();
+  if (e.key === 'Escape') { closeReviewModal(); closeSizeChartModal(); }
 });
 
 const DEMO_ORDER_CODE = "HC-SUPPORTERS-2026";
@@ -1402,7 +1952,7 @@ async function seedDemoIfNeeded() {
   }
 }
 
-async function init() {
+async function initCustomerApp() {
   await seedDemoIfNeeded();
   const { order, mgr } = getParamsFromURL();
   if (order) {
@@ -1418,7 +1968,357 @@ async function init() {
   }
 }
 
-init();
+// ============================================================
+// Staff dashboard logic
+// ============================================================
+
+// --- Supabase setup: reuses the same SUPABASE_URL / SUPABASE_ANON_KEY / supabaseClient declared above ---
+
+const STATUS_LABELS = {
+  new: "New",
+  in_production: "In production",
+  ready: "Ready for pickup",
+  completed: "Completed",
+  cancelled: "Cancelled"
+};
+
+let allOrders = []; // [{ code, data, updated_at }]
+let currentDetailCode = null;
+
+function uid() { return Math.random().toString(36).slice(2, 10); }
+
+function escapeHtml(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function formatDate(iso) {
+  if (!iso) return "\u2014";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "\u2014";
+  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) +
+    " \u00b7 " + d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+}
+
+function totalPiecesFor(data) {
+  let total = 0;
+  const garments = (data && data.garments) || [];
+  const rowsByGarment = (data && data.rowsByGarment) || {};
+  garments.forEach(g => {
+    (rowsByGarment[g] || []).forEach(row => {
+      if (row.size) total += 1;
+    });
+  });
+  return total;
+}
+
+// --- Load all orders ---
+async function loadOrders() {
+  document.getElementById('ordersLoadingNote').style.display = 'block';
+  document.getElementById('ordersEmptyState').style.display = 'none';
+  try {
+    const { data, error } = await supabaseClient
+      .from('orders')
+      .select('code, data, updated_at')
+      .order('updated_at', { ascending: false });
+    if (error) throw error;
+    allOrders = data || [];
+  } catch (e) {
+    console.error('Failed to load orders:', e);
+    allOrders = [];
+    document.getElementById('ordersTableBody').innerHTML = '';
+    document.getElementById('ordersEmptyState').textContent = 'Could not load orders. Check your connection and try refreshing.';
+    document.getElementById('ordersEmptyState').style.display = 'block';
+    document.getElementById('ordersLoadingNote').style.display = 'none';
+    renderStats();
+    return;
+  }
+  document.getElementById('ordersLoadingNote').style.display = 'none';
+  renderStats();
+  renderOrdersTable();
+}
+
+function renderStats() {
+  const statsRow = document.getElementById('statsRow');
+  const counts = { new: 0, in_production: 0, ready: 0, completed: 0, cancelled: 0 };
+  allOrders.forEach(o => {
+    const status = (o.data && o.data.status) || 'new';
+    if (counts[status] === undefined) counts[status] = 0;
+    counts[status] += 1;
+  });
+  const cards = [
+    { label: 'Total orders', value: allOrders.length },
+    { label: 'New', value: counts.new },
+    { label: 'In production', value: counts.in_production },
+    { label: 'Ready for pickup', value: counts.ready },
+    { label: 'Completed', value: counts.completed }
+  ];
+  statsRow.innerHTML = cards.map(c =>
+    '<div class="stat-card"><div class="stat-label">' + escapeHtml(c.label) + '</div><div class="stat-value">' + c.value + '</div></div>'
+  ).join('');
+}
+
+function getFilteredOrders() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const statusFilter = document.getElementById('statusFilter').value;
+  return allOrders.filter(o => {
+    const teamName = (o.data && o.data.teamName) || '';
+    const status = (o.data && o.data.status) || 'new';
+    if (statusFilter && status !== statusFilter) return false;
+    if (!q) return true;
+    return o.code.toLowerCase().includes(q) || teamName.toLowerCase().includes(q);
+  });
+}
+
+function renderOrdersTable() {
+  const tbody = document.getElementById('ordersTableBody');
+  const emptyState = document.getElementById('ordersEmptyState');
+  const filtered = getFilteredOrders();
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    emptyState.textContent = allOrders.length === 0 ? 'No orders yet.' : 'No orders match your search.';
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  tbody.innerHTML = filtered.map(o => {
+    const teamName = (o.data && o.data.teamName) || '<span style="color:var(--muted);font-style:italic;">Untitled order</span>';
+    const status = (o.data && o.data.status) || 'new';
+    const pieces = totalPiecesFor(o.data);
+    return '<tr data-code="' + escapeHtml(o.code) + '">' +
+      '<td class="code-cell">' + escapeHtml(o.code) + '</td>' +
+      '<td>' + teamName + '</td>' +
+      '<td>' + pieces + '</td>' +
+      '<td><select class="status-select status-' + status + '" data-code="' + escapeHtml(o.code) + '">' +
+        Object.keys(STATUS_LABELS).map(s => '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + STATUS_LABELS[s] + '</option>').join('') +
+      '</select></td>' +
+      '<td>' + formatDate(o.updated_at) + '</td>' +
+      '<td><button class="btn secondary view-btn" data-code="' + escapeHtml(o.code) + '" type="button">View</button></td>' +
+      '</tr>';
+  }).join('');
+
+  tbody.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => openDetail(btn.getAttribute('data-code')));
+  });
+  tbody.querySelectorAll('.status-select').forEach(sel => {
+    sel.addEventListener('change', e => {
+      e.stopPropagation();
+      const code = sel.getAttribute('data-code');
+      updateStatus(code, sel.value);
+      sel.className = 'status-select status-' + sel.value;
+    });
+  });
+  tbody.querySelectorAll('tr').forEach(tr => {
+    tr.addEventListener('click', e => {
+      if (e.target.closest('select') || e.target.closest('button')) return;
+      openDetail(tr.getAttribute('data-code'));
+    });
+    tr.style.cursor = 'pointer';
+  });
+}
+
+async function updateStatus(code, newStatus) {
+  const order = allOrders.find(o => o.code === code);
+  if (!order) return;
+  const newData = { ...(order.data || {}), status: newStatus };
+  order.data = newData; // optimistic local update
+  try {
+    const { error } = await supabaseClient
+      .from('orders')
+      .update({ data: newData, updated_at: new Date().toISOString() })
+      .eq('code', code);
+    if (error) throw error;
+  } catch (e) {
+    console.error('Failed to update status:', e);
+    alert('Could not save the status change. Please try again.');
+  }
+  renderStats();
+  if (currentDetailCode === code) {
+    document.getElementById('detailStatusSelect').value = newStatus;
+  }
+}
+
+// --- Detail view ---
+function openDetail(code) {
+  const order = allOrders.find(o => o.code === code);
+  if (!order) return;
+  currentDetailCode = code;
+  setURLCode(code);
+  renderDetail(order);
+  document.getElementById('dashboardView').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function closeDetail() {
+  currentDetailCode = null;
+  setURLCode(null);
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('dashboardView').style.display = 'block';
+}
+
+function setURLCode(code) {
+  const url = new URL(window.location.href);
+  if (code) url.searchParams.set('code', code); else url.searchParams.delete('code');
+  window.history.replaceState({}, '', url);
+}
+
+function renderDetail(order) {
+  const data = order.data || {};
+  const teamName = data.teamName || 'Untitled order';
+  const status = data.status || 'new';
+  const garments = data.garments || [];
+  const rowsByGarment = data.rowsByGarment || {};
+
+  document.getElementById('detailTeamName').textContent = teamName;
+  document.getElementById('detailCode').textContent = order.code;
+  document.getElementById('detailUpdated').textContent = formatDate(order.updated_at);
+  document.getElementById('detailStatusSelect').value = status;
+
+  const infoGrid = document.getElementById('detailInfoGrid');
+  const totalPieces = totalPiecesFor(data);
+  const totalEntries = garments.reduce((sum, g) => sum + (rowsByGarment[g] || []).length, 0);
+  infoGrid.innerHTML =
+    '<div class="info-card"><div class="info-label">Garments on order</div><div class="info-value">' + garments.length + '</div></div>' +
+    '<div class="info-card"><div class="info-label">Total entries</div><div class="info-value">' + totalEntries + '</div></div>' +
+    '<div class="info-card"><div class="info-label">Total pieces (sized)</div><div class="info-value">' + totalPieces + '</div></div>' +
+    '<div class="info-card"><div class="info-label">Manager code</div><div class="info-value mono">' + (data.managerCode ? escapeHtml(data.managerCode) : '\u2014 not set') + '</div></div>';
+
+  const body = document.getElementById('detailBody');
+  body.innerHTML = '';
+
+  if (garments.length === 0) {
+    body.innerHTML = '<div class="empty-state">No garments have been added to this order yet.</div>';
+  }
+
+  let grandTotal = 0;
+  const summaryEl = document.getElementById('detailSummaryByGarment');
+  summaryEl.innerHTML = '';
+
+  garments.forEach(garment => {
+    const rows = rowsByGarment[garment] || [];
+    if (rows.length === 0) return;
+
+    const block = document.createElement('div');
+    block.className = 'review-garment-block';
+    const heading = document.createElement('div');
+    heading.className = 'review-garment-heading';
+    heading.innerHTML = '<span>' + escapeHtml(garment) + '</span><small>' + rows.length + (rows.length === 1 ? ' entry' : ' entries') + '</small>';
+    block.appendChild(heading);
+
+    const table = document.createElement('table');
+    table.className = 'review-table';
+    table.innerHTML = '<thead><tr><th>#</th><th>Name on back</th><th>Size</th><th>Number</th><th>Notes / sponsors</th><th>Added by</th></tr></thead>';
+    const tbody = document.createElement('tbody');
+    const counts = {};
+    rows.forEach((row, i) => {
+      if (row.size) { grandTotal += 1; counts[row.size] = (counts[row.size] || 0) + 1; }
+      const tr = document.createElement('tr');
+      const sizeCell = row.size ? escapeHtml(row.size) : '<span class="review-missing">missing</span>';
+      const nameCell = row.name ? escapeHtml(row.name) : '<span class="review-missing">missing</span>';
+      tr.innerHTML = '<td>' + (i + 1) + '</td><td>' + nameCell + '</td><td>' + sizeCell + '</td><td>' +
+        escapeHtml(row.number || '') + '</td><td class="notes-cell">' + escapeHtml(row.notes || '') + '</td><td>' + escapeHtml(row.addedBy || '') + '</td>';
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    block.appendChild(table);
+    body.appendChild(block);
+
+    const sizesUsed = Object.keys(counts);
+    if (sizesUsed.length > 0) {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'summary-garment-row';
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'summary-garment-name';
+      nameSpan.textContent = garment;
+      rowDiv.appendChild(nameSpan);
+      const chips = document.createElement('div');
+      chips.className = 'size-breakdown';
+      sizesUsed.forEach(s => {
+        const chip = document.createElement('span');
+        chip.className = 'size-chip';
+        chip.textContent = s + ' x' + counts[s];
+        chips.appendChild(chip);
+      });
+      rowDiv.appendChild(chips);
+      summaryEl.appendChild(rowDiv);
+    }
+  });
+
+  document.getElementById('detailGrandTotal').textContent = grandTotal;
+}
+
+function downloadDetailCSV() {
+  const order = allOrders.find(o => o.code === currentDetailCode);
+  if (!order) return;
+  const data = order.data || {};
+  const garments = data.garments || [];
+  const rowsByGarment = data.rowsByGarment || {};
+  const header = ['Garment', 'Name on back', 'Size', 'Number', 'Notes / sponsors', 'Added by'];
+  const lines = [header.join(',')];
+  garments.forEach(garment => {
+    (rowsByGarment[garment] || []).forEach(row => {
+      const line = [garment, row.name || '', row.size || '', row.number || '', row.notes || '', row.addedBy || '']
+        .map(v => '"' + String(v).replace(/"/g, '""') + '"')
+        .join(',');
+      lines.push(line);
+    });
+  });
+  const csvContent = lines.join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  const fileName = (data.teamName || order.code || 'order').replace(/[^a-zA-Z0-9-]/g, '-') + '-order.csv';
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+// --- Wire up events ---
+document.getElementById('searchInput').addEventListener('input', renderOrdersTable);
+document.getElementById('statusFilter').addEventListener('change', renderOrdersTable);
+document.getElementById('refreshBtn').addEventListener('click', loadOrders);
+document.getElementById('backLink').addEventListener('click', closeDetail);
+document.getElementById('detailCsvBtn').addEventListener('click', downloadDetailCSV);
+document.getElementById('detailPrintBtn').addEventListener('click', () => window.print());
+document.getElementById('detailStatusSelect').addEventListener('change', e => {
+  if (currentDetailCode) updateStatus(currentDetailCode, e.target.value);
+});
+document.getElementById('detailOpenCustomerBtn').addEventListener('click', () => {
+  if (!currentDetailCode) return;
+  window.open('index.html?order=' + encodeURIComponent(currentDetailCode), '_blank');
+});
+
+// --- Init ---
+async function initStaffDashboard() {
+  await loadOrders();
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  if (code) {
+    const order = allOrders.find(o => o.code === code);
+    if (order) openDetail(code);
+  }
+  // light polling to keep the dashboard fresh
+  setInterval(() => {
+    if (!currentDetailCode) loadOrders();
+  }, 30000);
+}
+
+// --- Kick off whichever view is active ---
+if (isStaffMode()) {
+  initStaffDashboard();
+} else {
+  initCustomerApp();
+}
+
 </script>
 </body>
 </html>
