@@ -577,7 +577,7 @@
   }
   .add-row-btn:hover { background: var(--accent); }
 
-  .row-actions-row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+  .row-actions-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
   .row-actions-row .add-row-btn { margin-top:0; flex:1; min-width:160px; }
   .import-row-btn {
     margin-top:0;
@@ -2843,6 +2843,33 @@ function renderSections() {
     ref.appendChild(refFooter);
     bodyDiv.appendChild(ref);
 
+    if (!query) {
+      const actionsRow = document.createElement('div');
+      actionsRow.className = 'row-actions-row';
+
+      const addBtn = document.createElement('button');
+      addBtn.className = 'add-row-btn';
+      addBtn.textContent = '+ Add a person';
+      addBtn.addEventListener('click', () => {
+        state.rowsByGarment[garment].push(newRow());
+        scheduleSave();
+        logActivity(teamCode, 'Person added', garment, personalContactName || 'Team member');
+        render();
+        focusNewRowInGarment(garment);
+      });
+      actionsRow.appendChild(addBtn);
+
+      const importBtn = document.createElement('button');
+      importBtn.type = 'button';
+      importBtn.className = 'import-row-btn';
+      importBtn.textContent = 'Import from Excel/CSV';
+      importBtn.title = 'Already have your team in a spreadsheet? Upload it here instead of typing everyone in.';
+      importBtn.addEventListener('click', () => openImportModal(garment));
+      actionsRow.appendChild(importBtn);
+
+      bodyDiv.appendChild(actionsRow);
+    }
+
     const customFields = state.customFields || [];
     const table = document.createElement('table');
     table.className = 'row-table';
@@ -3030,33 +3057,6 @@ function renderSections() {
     });
     table.appendChild(tbody);
     bodyDiv.appendChild(table);
-
-    if (!query) {
-      const actionsRow = document.createElement('div');
-      actionsRow.className = 'row-actions-row';
-
-      const addBtn = document.createElement('button');
-      addBtn.className = 'add-row-btn';
-      addBtn.textContent = '+ Add a person';
-      addBtn.addEventListener('click', () => {
-        state.rowsByGarment[garment].push(newRow());
-        scheduleSave();
-        logActivity(teamCode, 'Person added', garment, personalContactName || 'Team member');
-        render();
-        focusNewRowInGarment(garment);
-      });
-      actionsRow.appendChild(addBtn);
-
-      const importBtn = document.createElement('button');
-      importBtn.type = 'button';
-      importBtn.className = 'import-row-btn';
-      importBtn.textContent = 'Import from Excel/CSV';
-      importBtn.title = 'Already have your team in a spreadsheet? Upload it here instead of typing everyone in.';
-      importBtn.addEventListener('click', () => openImportModal(garment));
-      actionsRow.appendChild(importBtn);
-
-      bodyDiv.appendChild(actionsRow);
-    }
 
     section.appendChild(bodyDiv);
     container.appendChild(section);
